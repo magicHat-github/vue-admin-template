@@ -9,11 +9,11 @@ const mocks = [
   ...table
 ]
 
-// for front mock
-// please use it cautiously, it will redefine XMLHttpRequest,
-// which will cause many of your third-party libraries to be invalidated(like progress event).
+// 前端的响应模拟 （ mock ）
+// 请谨慎使用它，它将重新定义XMLHttpRequest，
+// 这将导致许多第三方库失效（如进度条事件）。
 export function mockXHR() {
-  // mock patch
+  // mock 补丁修复
   // https://github.com/nuysoft/Mock/issues/300
   Mock.XHR.prototype.proxy_send = Mock.XHR.prototype.send
   Mock.XHR.prototype.send = function() {
@@ -27,6 +27,10 @@ export function mockXHR() {
     this.proxy_send(...arguments)
   }
 
+  /**
+   * 绑定响应的执行方法，返回值为响应的参数
+   * @param {*} respond 响应方法
+   */
   function XHR2ExpressReqWrap(respond) {
     return function(options) {
       let result = null
@@ -45,7 +49,14 @@ export function mockXHR() {
     }
   }
 
+  /**
+   * 遍历模拟响应的集合，添加至 Mock中
+   * 记录用于生成响应数据的函数。
+   * 当拦截到匹配 rurl 和 rtype 的 Ajax 请求时，
+   * 函数 function(options) 将被执行，并把执行结果作为响应数据返回。
+   */
   for (const i of mocks) {
+    console.log('URL: ' + i.url + ' TYPE: ' + i.type)
     Mock.mock(new RegExp(i.url), i.type || 'get', XHR2ExpressReqWrap(i.response))
   }
 }
@@ -53,7 +64,11 @@ export function mockXHR() {
 // for mock server
 const responseFake = (url, type, respond) => {
   return {
-    url: new RegExp(`/mock${url}`),
+    /**
+     * 匹配请求的 URL,请求的路径中包含 /mock + url则匹配
+     */
+    // url: new RegExp(`/mock${url}`),
+    url: new RegExp(url),
     type: type || 'get',
     response(req, res) {
       res.json(Mock.mock(respond instanceof Function ? respond(req, res) : respond))

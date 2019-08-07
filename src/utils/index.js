@@ -47,6 +47,7 @@ export function parseTime(time, cFormat) {
 }
 
 /**
+ * 时间格式化 - 历史时间中文化
  * @param {number} time
  * @param {string} option
  * @returns {string}
@@ -90,6 +91,7 @@ export function formatTime(time, option) {
 }
 
 /**
+ * 参数转换成 JSON对象
  * @param {string} url
  * @returns {Object}
  */

@@ -31,7 +31,7 @@ module.exports = app => {
   // es6 polyfill
   require('@babel/register')
 
-  // parse app.body
+  // 格式化 app.body
   // https://expressjs.com/en/4x/api.html#req.body
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({
@@ -42,17 +42,17 @@ module.exports = app => {
   var mockRoutesLength = mockRoutes.mockRoutesLength
   var mockStartIndex = mockRoutes.mockStartIndex
 
-  // watch files, hot reload mock server
+  // 监听文件，热加载 mock server
   chokidar.watch(mockDir, {
     ignored: /mock-server/,
     ignoreInitial: true
   }).on('all', (event, path) => {
     if (event === 'change' || event === 'add') {
       try {
-        // remove mock routes stack
+        // 删除 mock路由栈 remove mock routes stack
         app._router.stack.splice(mockStartIndex, mockRoutesLength)
 
-        // clear routes cache
+        // 清空路由缓存 clear routes cache
         unregisterRoutes()
 
         const mockRoutes = registerRoutes(app)

@@ -7,28 +7,28 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 /**
- * Note: sub-menu only appear when route children.length >= 1
+ * Note: 子菜单仅在路由children.length> = 1时出现
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
  *
- * hidden: true                   if set true, item will not show in the sidebar(default is false)
- * alwaysShow: true               if set true, will always show the root menu
- *                                if not set alwaysShow, when item has more than one children route,
- *                                it will becomes nested mode, otherwise not show the root menu
- * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
+ * hidden: true                   如果设置为true，则项目不会显示在侧栏中（默认为false）
+ * alwaysShow: true               如果设置为true，将始终显示根菜单
+ *                                如果没有设置alwaysShow，当item有多个子路径时，
+ *                                它将成为嵌套模式，否则不会显示根菜单
+ * redirect: noRedirect           如果设置noRedirect将不会在面包屑中重定向
+ * name:'router-name'             该名称由<keep-alive>使用（必须设置!!!）
  * meta : {
-    roles: ['admin','editor']    control the page roles (you can set multiple roles)
-    title: 'title'               the name show in sidebar and breadcrumb (recommend set)
-    icon: 'svg-name'             the icon show in the sidebar
-    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
+    roles: ['admin','editor']    控制页面角色（可以设置多个角色）
+    title: 'title'               侧边栏和面包屑中显示的名称（推荐集）
+    icon: 'svg-name'             侧边栏中的图标显示
+    breadcrumb: false            如果设置为false，该项将隐藏在痕迹中（默认为true）
+    activeMenu: '/example/list'  如果设置路径，侧边栏将突出显示您设置的路径
   }
  */
 
 /**
  * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
+ * 没有权限要求的基础页面,
+ * 所有的角色都能访问
  */
 export const constantRoutes = [
   {
@@ -159,7 +159,7 @@ export const constantRoutes = [
     ]
   },
 
-  // 404 page must be placed at the end !!!
+  // 404 页面必须放在最后 !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
 

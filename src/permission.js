@@ -1,28 +1,28 @@
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import NProgress from 'nprogress' // 浏览器顶部进度条
+import 'nprogress/nprogress.css' // 进度条样式
+import { getToken } from '@/utils/auth' // 从cookie获取令牌
 import getPageTitle from '@/utils/get-page-title'
 
-NProgress.configure({ showSpinner: false }) // NProgress Configuration
+NProgress.configure({ showSpinner: false }) // 进度条配置
 
-const whiteList = ['/login'] // no redirect whitelist
+const whiteList = ['/login'] // 没有重定向白名单
 
 router.beforeEach(async(to, from, next) => {
-  // start progress bar
+  // 进度条开始加载
   NProgress.start()
 
-  // set page title
+  // 设置页面的标题 title
   document.title = getPageTitle(to.meta.title)
 
-  // determine whether the user has logged in
+  // 确定用户是否已登录
   const hasToken = getToken()
 
   if (hasToken) {
     if (to.path === '/login') {
-      // if is logged in, redirect to the home page
+      // 如果已登录，则重定向到主页
       next({ path: '/' })
       NProgress.done()
     } else {
@@ -31,12 +31,12 @@ router.beforeEach(async(to, from, next) => {
         next()
       } else {
         try {
-          // get user info
+          // 获取用户信息
           await store.dispatch('user/getInfo')
 
           next()
         } catch (error) {
-          // remove token and go to login page to re-login
+          // 删除令牌并转到登录页面重新登录
           await store.dispatch('user/resetToken')
           Message.error(error || 'Has Error')
           next(`/login?redirect=${to.path}`)
@@ -45,13 +45,13 @@ router.beforeEach(async(to, from, next) => {
       }
     }
   } else {
-    /* has no token*/
+    /* 没有令牌 */
 
     if (whiteList.indexOf(to.path) !== -1) {
-      // in the free login whitelist, go directly
+      // 在免费登录白名单中，直接进入
       next()
     } else {
-      // other pages that do not have permission to access are redirected to the login page.
+      // 其他无权访问的页面将重定向到登录页面。
       next(`/login?redirect=${to.path}`)
       NProgress.done()
     }
@@ -59,6 +59,6 @@ router.beforeEach(async(to, from, next) => {
 })
 
 router.afterEach(() => {
-  // finish progress bar
+  // 完成进度条加载
   NProgress.done()
 })
