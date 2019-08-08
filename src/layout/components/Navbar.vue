@@ -50,6 +50,12 @@ export default {
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
+      if (this.$store.state.settings.showUserInfo) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'showUserInfoCache',
+          value: !this.$store.state.settings.showUserInfoCache
+        })
+      }
     },
     async logout() {
       await this.$store.dispatch('user/logout')

@@ -22,3 +22,11 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function getMenu(token) {
+  return request({
+    url: '/user/menu',
+    method: 'get',
+    params: { token }
+  })
+}

@@ -56,6 +56,45 @@ export const constantRoutes = [
   },
 
   {
+    path: '/paper',
+    component: Layout,
+    redirect: '/paper/table',
+    name: 'Name',
+    meta: { title: '考卷管理', icon: 'example' },
+    children: [
+      {
+        path: 'composition',
+        name: 'Composition',
+        component: () => import('@/views/paper/composition/index'),
+        meta: { title: '组卷', icon: 'tree' }
+      },
+      {
+        path: 'upload',
+        name: 'Upload',
+        component: () => import('@/views/paper/upload/index'),
+        meta: { title: '上传试卷', icon: 'table' }
+      },
+      {
+        path: 'download',
+        name: 'Download',
+        component: () => import('@/views/paper/download/index'),
+        meta: { title: '下载试卷', icon: 'tree' }
+      },
+      {
+        path: 'maintenance',
+        name: 'Maintenance',
+        component: () => import('@/views/paper/maintenance/index'),
+        meta: { title: '维护试卷', icon: 'tree' }
+      }
+    ]
+  },
+
+  // 404 页面必须放在最后 !!!
+  { path: '*', redirect: '/404', hidden: true }
+]
+
+export const menuRoutes = [
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',
@@ -157,10 +196,7 @@ export const constantRoutes = [
         meta: { title: 'External Link', icon: 'link' }
       }
     ]
-  },
-
-  // 404 页面必须放在最后 !!!
-  { path: '*', redirect: '/404', hidden: true }
+  }
 ]
 
 const createRouter = () => new Router({

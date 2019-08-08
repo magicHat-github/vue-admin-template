@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, getInfo, getMenu } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -21,7 +21,7 @@ const mutations = {
 }
 
 const actions = {
-  // user login
+  // 用户登录
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
@@ -36,7 +36,7 @@ const actions = {
     })
   },
 
-  // get user info
+  // 获取用户基础信息
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
@@ -57,7 +57,28 @@ const actions = {
     })
   },
 
-  // user logout
+  // 获取用户菜单
+  getMenu({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      getMenu(state.token).then(response => {
+        const { data } = response
+
+        if (!data) {
+          reject('Verification failed, please Login again.')
+        }
+
+        const { name, avatar } = data
+
+        commit('SET_NAME', name)
+        commit('SET_AVATAR', avatar)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // 用户退出
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
@@ -71,7 +92,7 @@ const actions = {
     })
   },
 
-  // remove token
+  // 删除 token
   resetToken({ commit }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')

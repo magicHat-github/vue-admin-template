@@ -41,7 +41,7 @@ export default [
       }
 
       return {
-        code: 20000,
+        code: 200,
         data: token
       }
     }
@@ -64,7 +64,30 @@ export default [
       }
 
       return {
-        code: 20000,
+        code: 200,
+        data: info
+      }
+    }
+  },
+
+  // get user menu
+  {
+    url: '/user/menu',
+    type: 'get',
+    response: config => {
+      const { token } = config.query
+      const info = users[token]
+
+      // mock error
+      if (!info) {
+        return {
+          code: 50008,
+          message: 'Login failed, unable to get user details.'
+        }
+      }
+
+      return {
+        code: 200,
         data: info
       }
     }
@@ -76,7 +99,7 @@ export default [
     type: 'post',
     response: _ => {
       return {
-        code: 20000,
+        code: 200,
         data: 'success'
       }
     }

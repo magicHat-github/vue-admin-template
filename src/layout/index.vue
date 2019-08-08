@@ -24,6 +24,15 @@ export default {
   },
   mixins: [ResizeMixin],
   computed: {
+    showUserInfo() {
+      return this.$store.state.app.showUserInfo
+    },
+    showSettings() {
+      return this.$store.state.app.showSettings
+    },
+    needTagsView() {
+      return this.$store.state.app.tagsView
+    },
     sidebar() {
       return this.$store.state.app.sidebar
     },
