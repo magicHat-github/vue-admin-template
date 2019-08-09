@@ -1,3 +1,9 @@
+
+/**
+ * 用于处理滚动的工具类
+ * 暂时用于components/Pagination,分页插件中
+ */
+
 Math.easeInOutQuad = function(t, b, c, d) {
   t /= d / 2
   if (t < 1) {

@@ -1,5 +1,5 @@
 /**
- * Created by PanJiaChen on 16/11/18.
+ * 校验数据格式的工具类
  */
 
 /**

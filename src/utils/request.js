@@ -4,6 +4,12 @@ import store from '@/store'
 import { getToken } from '@/utils/auth'
 import { code } from './code' // 响应码
 
+/**
+ * 这个文件封装了API请求
+ * 项目中需要发送请求时,需要应用这个文件,引用格式如下
+ * import request from '@/utils/request'
+ */
+
 // 创建一个 axios 实例
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
