@@ -30,9 +30,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // set ElementUI lang to EN
-Vue.use(ElementUI, {
-  size: 'medium' // set element-ui default size
-})
+Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 

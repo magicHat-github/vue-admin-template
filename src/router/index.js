@@ -85,6 +85,12 @@ export const constantRoutes = [
         name: 'Maintenance',
         component: () => import('@/views/paper/maintenance/index'),
         meta: { title: '维护试卷', icon: 'tree' }
+      },
+      {
+        path: 'template',
+        name: 'Template',
+        component: () => import('@/views/paper/template/index'),
+        meta: { title: '试卷模板管理', icon: 'tree' }
       }
     ]
   },

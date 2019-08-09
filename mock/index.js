@@ -3,10 +3,12 @@ import { param2Obj } from '../src/utils'
 
 import user from './user'
 import table from './table'
+import paper from './paper'
 
 const mocks = [
   ...user,
-  ...table
+  ...table,
+  ...paper
 ]
 
 // 前端的响应模拟 （ mock ）
