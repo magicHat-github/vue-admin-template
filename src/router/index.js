@@ -21,6 +21,7 @@ import Layout from '@/layout'
     title: 'title'               侧边栏和面包屑中显示的名称（推荐集）
     icon: 'svg-name'             侧边栏中的图标显示
     breadcrumb: false            如果设置为false，该项将隐藏在痕迹中（默认为true）
+    affix: true                  如果设置为true，则标记将固定在tags-view中,建议所有的菜单栏中必须有一个,或者固定在首页
     activeMenu: '/example/list'  如果设置路径，侧边栏将突出显示您设置的路径
   }
  */
@@ -29,6 +30,11 @@ import Layout from '@/layout'
  * constantRoutes
  * 没有权限要求的基础页面,
  * 所有的角色都能访问
+ *
+ * 路由需要注意的点:
+ * 1.meta里面的属性 affix: true,固定该页面在顶部导航
+ * 2.菜单中根路径的 component 必须为 Layout
+ * 3.菜单中根路径的 redirect 需要有准确的路径(建议为子模块的第一个),不然会导航至404页面
  */
 export const constantRoutes = [
   {
@@ -46,7 +52,15 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/basedata'
+    redirect: '/welcome',
+    children: [
+      {
+        path: 'welcome',
+        name: 'Welcome',
+        component: () => import('@/views/welcome'),
+        meta: { title: '首页', icon: 'tree', affix: true }
+      }
+    ]
   },
 
   /**
@@ -63,7 +77,7 @@ export const constantRoutes = [
         path: 'dictionary',
         name: 'Dictionary',
         component: () => import('@/views/basedata/dictionary/index'),
-        meta: { title: '数据字典管理', icon: 'tree', affix: true }
+        meta: { title: '数据字典管理', icon: 'tree' }
       }
     ]
   },
@@ -74,7 +88,7 @@ export const constantRoutes = [
   {
     path: '/paper',
     component: Layout,
-    redirect: '/paper/table',
+    redirect: '/paper/composition',
     name: 'Paper',
     meta: { title: '考卷管理', icon: 'example' },
     children: [
