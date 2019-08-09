@@ -63,7 +63,7 @@ export const constantRoutes = [
         path: 'dictionary',
         name: 'Dictionary',
         component: () => import('@/views/basedata/dictionary/index'),
-        meta: { title: '数据字典管理', icon: 'tree' }
+        meta: { title: '数据字典管理', icon: 'tree', affix: true }
       }
     ]
   },

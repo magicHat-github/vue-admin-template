@@ -58,7 +58,7 @@ export function mockXHR() {
    * 函数 function(options) 将被执行，并把执行结果作为响应数据返回。
    */
   for (const i of mocks) {
-    console.log('URL: ' + i.url + ' TYPE: ' + i.type)
+    // console.log('URL: ' + i.url + ' TYPE: ' + i.type)
     Mock.mock(new RegExp(i.url), i.type || 'get', XHR2ExpressReqWrap(i.response))
   }
 }

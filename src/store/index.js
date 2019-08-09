@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import app from './modules/app'
 import settings from './modules/settings'
 import user from './modules/user'
+import tagsView from './modules/tagsView'
 
 Vue.use(Vuex)
 
@@ -18,6 +19,8 @@ const getters = {
   device: state => state.app.device,
   token: state => state.user.token,
   avatar: state => state.user.avatar,
+  visitedViews: state => state.tagsView.visitedViews,
+  cachedViews: state => state.tagsView.cachedViews,
   name: state => state.user.name
 }
 
@@ -25,7 +28,8 @@ const store = new Vuex.Store({
   modules: {
     app,
     settings,
-    user
+    user,
+    tagsView
   },
   getters
 })

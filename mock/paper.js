@@ -4,7 +4,7 @@ export default [
     url: '/paper/composition',
     type: 'get',
     response: config => {
-      console.log(config.body)
+      // console.log(config.body)
       return {
         code: 200,
         data: {

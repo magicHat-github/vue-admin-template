@@ -24,7 +24,7 @@ import '@/permission' // 权限控制
  * 请在上线前将其删除! ! !
  */
 import { mockXHR } from '../mock'
-console.log(process.env.NODE_ENV)
+
 if (process.env.NODE_ENV === 'production') {
   mockXHR()
 }

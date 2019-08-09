@@ -8,7 +8,7 @@ import request from '@/utils/request'
  * @param {*} params 参数
  */
 export function select(params) {
-  console.log(params)
+  // console.log(params)
   return request({
     url: '/paper/composition',
     method: 'get',
@@ -21,7 +21,7 @@ export function select(params) {
  * @param {*} params 参数
  */
 export function save(params) {
-  console.log(params)
+  // console.log(params)
   return request({
     url: '/paper/composition',
     method: 'post',
@@ -34,7 +34,7 @@ export function save(params) {
  * @param {*} params 参数
  */
 export function update(params) {
-  console.log(params)
+  // console.log(params)
   return request({
     url: '/paper/composition',
     method: 'put',
@@ -47,7 +47,7 @@ export function update(params) {
  * @param {*} ids 删除编号的集合
  */
 export function remove(ids) {
-  console.log(ids)
+  // console.log(ids)
   return request({
     url: '/paper/composition',
     method: 'delete',
@@ -60,7 +60,7 @@ export function remove(ids) {
  * @param {*} id 禁用编号
  */
 export function disable(id) {
-  console.log(id)
+  // console.log(id)
   return request({
     url: '/paper/composition/status',
     method: 'put',
