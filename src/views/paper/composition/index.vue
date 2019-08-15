@@ -29,9 +29,9 @@
     <el-card class="tableData">
       <div>
         <el-button class="filter-item" size="mini" type="primary" icon="el-icon-edit" @click="fastComposition">快速组卷</el-button>
-        <el-button class="filter-item" size="mini" type="danger" icon="el-icon-delete" @click="exportData">标准组卷</el-button>
-        <el-button class="filter-item" size="mini" type="warning" icon="el-icon-goods" @click="exportData">模板组卷</el-button>
-        <el-button class="filter-item" size="mini" type="warning" icon="el-icon-goods" @click="exportData">试卷详情</el-button>
+        <el-button class="filter-item" size="mini" type="danger" icon="el-icon-delete" @click="normalComposition">标准组卷</el-button>
+        <el-button class="filter-item" size="mini" type="warning" icon="el-icon-goods" @click="templateComposition">模板组卷</el-button>
+        <el-button class="filter-item" size="mini" type="warning" icon="el-icon-goods" @click="paperDetail">试卷详情</el-button>
       </div>
 
       <!-- 数据表格 -->
@@ -99,7 +99,8 @@
       <pagination v-show="total>0" :total="total" :page.sync="page.pageNumber" :limit.sync="page.size" @pagination="fetchData" />
     </el-card>
 
-    <el-drawer title="快速组卷" size="80%" :visible.sync="dialog" :wrapper-closable="false">
+    <!-- 快速组卷 -->
+    <el-drawer title="快速组卷" size="80%" :visible.sync="fastDialog" :wrapper-closable="false">
       <div class="drawerClass">
         <el-form ref="form" :model="searchData" size="mini" label-width="70px" inline>
           <el-form-item label="配置项">
@@ -146,10 +147,86 @@
       </div>
     </el-drawer>
 
-    <el-dialog title="提示" width="30%" :visible.sync="dialogVisible" :close-on-click-modal="false">
+    <!-- 标准组卷 -->
+    <el-drawer title="标准组卷" size="60%" :visible.sync="normalDialog" :wrapper-closable="false">
+      <div class="drawerClass">
+        <span>组卷配置信息</span>
+        <el-divider />
+        <div style="margin-left:20px;">
+          <el-form ref="form" :model="normalPaperConfig" size="medium" label-width="70px">
+            <el-form-item label="配置项" prop="normalPaperConfigName" required>
+              <el-input v-model="normalPaperConfig.name" placeholder="配置项名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+            </el-form-item>
+            <el-form-item label="是否启用" prop="normalPaperConfigStatus">
+              <el-radio-group v-model="normalPaperConfig.status">
+                <el-radio label="启用" />
+                <el-radio label="禁用" />
+              </el-radio-group>
+            </el-form-item>
+          </el-form>
+        </div>
+
+        <span style="margin-top:10px;">添加组卷明细</span>
+        <el-divider />
+        <el-card style="margin-top:5px;">
+          <div class="addCombConfigItemActions">
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCombConfigItem()">添加</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="editCombConfigItem()">修改</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCombConfigItem()">删除</el-link>
+          </div>
+          <el-table :data="gridData" size="mini">
+            <el-table-column type="index" label="序号" width="50" />
+            <el-table-column property="name" label="题目类别" />
+            <el-table-column property="address" label="题型" />
+            <el-table-column property="address" label="题目数量" />
+            <el-table-column property="address" label="题目难度" />
+            <el-table-column property="address" label="题目分值" />
+          </el-table>
+        </el-card>
+      </div>
+    </el-drawer>
+
+    <!-- 添加组卷明细弹框 -->
+    <el-dialog title="添加组卷明细" :visible.sync="addCombConfigItemDialog" width="20%">
+      <el-form :model="combConfigItem" size="medium" label-width="70px">
+        <el-form-item label="题目类别">
+          <el-select v-model="combConfigItem.type" placeholder="请选择题目类别.." style="width: 250px" class="filter-item" @change="handleFilter">
+            <el-option v-for="item in paperTypeList" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="题型">
+          <el-select v-model="combConfigItem.category" placeholder="请选择题型.." style="width: 250px" class="filter-item" @change="handleFilter">
+            <el-option v-for="item in paperTypeList" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="题目难度">
+          <el-select v-model="combConfigItem.difficult" placeholder="请选择题目难度.." style="width: 250px" class="filter-item" @change="handleFilter">
+            <el-option v-for="item in difficultList" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="题目数量">
+          <el-input v-model="combConfigItem.number" style="width: 250px" />
+        </el-form-item>
+        <el-form-item label="题目分值" style="width: 250px">
+          <el-input v-model="combConfigItem.score" style="width: 250px" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addCombConfigItemDialog = false">取 消</el-button>
+        <el-button type="primary" @click="addCombConfigItemDialog = false">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 试卷详情 -->
+    <el-drawer title="试卷详情" size="60%" :visible.sync="paperDetailDialog" :wrapper-closable="false">
+      试卷详情
+    </el-drawer>
+
+    <!-- 组卷提示框 -->
+    <el-dialog title="提示" width="30%" :visible.sync="paperTipDialog" :close-on-click-modal="false">
       <span>正在组卷.....</span>
       <span slot="footer" class="dialog-footer">
-        <el-button type="danger" @click="dialogVisible = false">取消组卷</el-button>
+        <el-button type="danger" @click="paperTipDialog = false">取消组卷</el-button>
       </span>
     </el-dialog>
   </div>
@@ -196,8 +273,23 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      dialog: false,
-      dialogVisible: false,
+      normalPaperConfig: {
+        name: '',
+        status: '启用'
+      },
+      combConfigItem: {
+        type: 'Java',
+        category: 'Java',
+        difficult: '困难',
+        number: '',
+        score: ''
+      },
+      fastDialog: false,
+      normalDialog: false,
+      paperTipDialog: false,
+      paperDetailDialog: false,
+      addCombConfigItemDialog: false,
+      editCombConfigItemDialog: false,
       listLoading: true,
       multipleSelection: []
     }
@@ -242,7 +334,13 @@ export default {
      * 快速组卷
      */
     fastComposition() {
-      this.dialog = true
+      this.fastDialog = true
+    },
+    /**
+     * 标准组卷
+     */
+    normalComposition() {
+      this.normalDialog = true
     },
     /**
      * 开始组卷
@@ -253,13 +351,25 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.dialogVisible = true
+        this.paperTipDialog = true
       }).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消删除'
         })
       })
+    },
+    /**
+     * 模板组卷
+     */
+    templateComposition() {
+      this.$router.push('/paper/download')
+    },
+    /**
+     * 试卷详情
+     */
+    paperDetail() {
+      this.paperDetailDialog = true
     },
     /**
      * 导入数据
@@ -269,6 +379,16 @@ export default {
         type: 'info',
         message: '该功能暂未开发...'
       })
+    },
+    addCombConfigItem() {
+      this.addCombConfigItemDialog = true
+    },
+    editCombConfigItem() {
+      // TODO: 添加修改弹窗
+      console.log('editCombConfigItem')
+    },
+    deleteCombConfigItem() {
+      console.log('deleteCombConfigItem')
     }
   }
 }
@@ -284,6 +404,14 @@ export default {
 .paginationSmall {
   margin-top: 5px;
   text-align: center;
+}
+.addCombConfigItemActions {
+  font-size: 20px;
+  margin-bottom: 10px;
+
+  .itemAction {
+    margin-right: 5px;
+  }
 }
 </style>
 
