@@ -97,18 +97,18 @@ export const constantRoutes = [
         name: 'position',
         component: () => import('@/views/user/position/position'),
         meta: { title: '职位管理', icon: 'tree' }
-      }, 
+      },
       {
         path: 'add',
         name: 'Add',
-        hidden:true,
+        hidden: true,
         component: () => import('@/views/user/position/addposition'),
         meta: { title: '职位增加', icon: 'tree' }
       },
       {
         path: 'update',
         name: 'update',
-        hidden:true,
+        hidden: true,
         component: () => import('@/views/user/position/updateposition'),
         meta: { title: '职位修改', icon: 'tree' }
       },
@@ -117,7 +117,7 @@ export const constantRoutes = [
         name: 'org',
         component: () => import('@/views/user/organization/organization'),
         meta: { title: '组织管理', icon: 'tree' }
-      },
+      }
     ]
   },
 
