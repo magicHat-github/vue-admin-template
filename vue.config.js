@@ -2,9 +2,8 @@
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
 
-function resolve(dir) {
-  return path.join(__dirname, dir)
-}
+const resolve = dir => path.join(__dirname, dir)
+
 // 页面标题
 const name = defaultSettings.title || 'vue Admin Template'
 

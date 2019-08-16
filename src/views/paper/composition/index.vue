@@ -17,11 +17,7 @@
             <el-option v-for="item in difficultList" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
-        <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchData">查询
-        </el-button>
-        <el-button class="filter-item" size="small" type="primary" icon="el-icon-remove-outline" @click="exportData">
-          清空
-        </el-button>
+        <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
       </el-form>
     </div>
     <el-card class="tableData">
@@ -42,8 +38,8 @@
         stripe
         highlight-current-row
         style="margin-top: 10px;"
-        @row-dblclick="exportData"
-        @selection-change="exportData"
+        @row-dblclick="editPaper"
+        @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="试卷名" width="110" align="center">
@@ -76,8 +72,8 @@
         </el-table-column>
         <el-table-column class-name="small-padding fixed-width" label="操作" width="230" align="center">
           <template slot-scope="{row}">
-            <el-button type="primary" size="mini" @click="exportData(row)">修改</el-button>
-            <el-button v-if="row.status" size="mini" type="danger" :disabled="row.status!=='启用'" @click="exportData(row)">删除</el-button>
+            <el-button type="primary" size="mini" @click="editPaper(row)">修改</el-button>
+            <el-button v-if="row.status" size="mini" type="danger" :disabled="row.status!=='启用'" @click="deletePaper(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -88,20 +84,19 @@
     <!-- 快速组卷 -->
     <el-drawer title="快速组卷" size="80%" :visible.sync="fastDialog" :wrapper-closable="false">
       <div class="drawerClass">
-        <el-form ref="form" :model="searchData" size="mini" label-width="70px" inline>
+        <el-form ref="form" :model="searchConfigData" size="mini" label-width="70px" inline>
           <el-form-item label="配置项">
-            <el-input v-model="searchData.name" placeholder="配置项" style="width: 160px;" class="filter-item" @keyup.enter.native="handleFilter" />
+            <el-input v-model="searchConfigData.name" placeholder="配置项" style="width: 200px;" class="filter-item" @keyup.enter.native="handleConfigFilter" />
           </el-form-item>
           <el-form-item label="难度">
-            <el-select v-model="searchData.difficult" placeholder="请选择难度.." size="mini" style="width: 160px" class="filter-item" @change="handleFilter">
+            <el-select :value="searchConfigData.difficult" placeholder="请选择难度.." size="mini" style="width: 200px" class="filter-item" @change="handleConfigFilter">
               <el-option v-for="item in difficultList" :key="item" :label="item" :value="item" />
             </el-select>
           </el-form-item>
-          <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
-          <el-button class="filter-item" size="small" type="primary" icon="el-icon-remove-outline" @click="exportData">清空</el-button>
+          <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchConfigData">查询</el-button>
         </el-form>
         <el-card>
-          <el-table :data="gridData" size="mini">
+          <el-table v-loading="listLoading" :data="gridData" size="mini">
             <el-table-column property="name" label="配置项" />
             <el-table-column property="difficult" label="难度" />
             <el-table-column property="updatedBy" label="修改人" />
@@ -117,7 +112,16 @@
             </el-table-column>
           </el-table>
           <div class="paginationSmall">
-            <el-pagination small layout="prev, pager, next" :hide-on-single-page="true" :total="50" />
+            <el-pagination
+              small
+              background
+              layout="prev, pager, next"
+              :page-size="pageConfig.size"
+              :pager-count="pageConfig.count"
+              :hide-on-single-page="true"
+              :total="configTotal"
+              @current-change="paperConfigPagination"
+            />
           </div>
         </el-card>
         <el-card style="margin-top:5px;">
@@ -176,17 +180,17 @@
     <el-dialog title="添加组卷明细" :visible.sync="addCombConfigItemDialog" width="20%">
       <el-form :model="combConfigItem" size="medium" label-width="70px">
         <el-form-item label="题目类别">
-          <el-select v-model="combConfigItem.type" placeholder="请选择题目类别.." style="width: 250px" class="filter-item" @change="handleFilter">
+          <el-select :value="combConfigItem.type" placeholder="请选择题目类别.." style="width: 250px" class="filter-item" @change="handleFilter">
             <el-option v-for="item in paperTypeList" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="题型">
-          <el-select v-model="combConfigItem.category" placeholder="请选择题型.." style="width: 250px" class="filter-item" @change="handleFilter">
+          <el-select :value="combConfigItem.category" placeholder="请选择题型.." style="width: 250px" class="filter-item" @change="handleFilter">
             <el-option v-for="item in paperTypeList" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="题目难度">
-          <el-select v-model="combConfigItem.difficult" placeholder="请选择题目难度.." style="width: 250px" class="filter-item" @change="handleFilter">
+          <el-select :value="combConfigItem.difficult" placeholder="请选择题目难度.." style="width: 250px" class="filter-item" @change="handleFilter">
             <el-option v-for="item in difficultList" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
@@ -229,16 +233,34 @@ export default {
       list: null,
       // 试卷总数
       total: 0,
+      // 配置项总数
+      configTotal: 0,
       // 试卷难度集合
       difficultList: [],
       // 试卷类型集合
       paperTypeList: [],
-      // 试卷查找对象
+      // 试卷查询条件
       searchData: {
         name: '',
         createdBy: '',
         difficult: '简单',
         comTime: ''
+      },
+      // 分页的页面数据
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // 配置项分页的页面数据
+      pageConfig: {
+        size: 5,
+        count: 7,
+        pageNumber: 1
+      },
+      // 配置项的查询条件
+      searchConfigData: {
+        name: '',
+        difficult: '简单'
       },
       gridData: [
         {
@@ -262,10 +284,7 @@ export default {
           address: '上海市普陀区金沙江路 1518 弄'
         }
       ],
-      page: {
-        size: 5,
-        pageNumber: 1
-      },
+      // 标准组卷的组卷配置
       normalPaperConfig: {
         name: '',
         status: '启用'
@@ -277,13 +296,21 @@ export default {
         number: '',
         score: ''
       },
+      // 快速组卷弹窗标志
       fastDialog: false,
+      // 标准组卷弹窗标志
       normalDialog: false,
+      // 正在组卷提示弹窗标志
       paperTipDialog: false,
+      // 试卷详情弹窗标志
       paperDetailDialog: false,
+      // 添加组卷明细弹框标志
       addCombConfigItemDialog: false,
+      // 修改组卷明细弹框标志
       editCombConfigItemDialog: false,
+      // load加载动画标志
       listLoading: true,
+      // 表格选择列表
       multipleSelection: []
     }
   },
@@ -294,7 +321,7 @@ export default {
   },
   methods: {
     /**
-     * 分页查询数据
+     * 分页查询试卷数据
      */
     fetchData() {
       this.listLoading = true
@@ -311,6 +338,27 @@ export default {
         this.total = result.data.total
         this.listLoading = false
       })
+    },
+    /**
+     * 分页查询配置项数据
+     */
+    fetchConfigData() {
+      this.listLoading = true
+      const params = {
+        size: this.pageConfig.size,
+        page: this.pageConfig.pageNumber,
+        name: this.searchConfigData.name,
+        difficult: this.searchConfigData.difficult
+      }
+      console.log(params)
+      this.configTotal = 100
+      this.listLoading = false
+      // TODO: 查询数据
+      // select(params).then(result => {
+      //   this.list = result.data.list
+      //   this.total = result.data.total
+      //   this.listLoading = false
+      // })
     },
     /**
      * 初始获取全部试卷难度
@@ -332,16 +380,31 @@ export default {
       this.fetchData()
     },
     /**
+     * 输入框响应enter查询
+     */
+    handleConfigFilter() {
+      this.pageConfig.pageNumber = 1
+      this.fetchConfigData()
+    },
+    /**
      * 获取表格选取的数据
      */
     handleSelectionChange(selection) {
       this.multipleSelection = selection
     },
     /**
+     * 响应分页事件
+     */
+    paperConfigPagination(number) {
+      console.log(number)
+      this.pageConfig.pageNumber = number
+    },
+    /**
      * 快速组卷
      */
     fastComposition() {
       this.fastDialog = true
+      this.fetchConfigData()
     },
     /**
      * 标准组卷
@@ -376,22 +439,25 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
+      }).then(() => {
+        this.$router.push('/paper/download')
+      }).catch(() => {
+        console.log('取消')
       })
-        .then(() => {
-          this.$router.push('/paper/download')
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消操作'
-          })
-        })
     },
     /**
      * 试卷详情
      */
     paperDetail() {
-      this.paperDetailDialog = true
+      if (this.multipleSelection.length === 1) {
+        console.log(this.multipleSelection[0])
+        this.paperDetailDialog = true
+      } else {
+        this.$message({
+          type: 'error',
+          message: '只能选择一条试卷数据'
+        })
+      }
     },
     /**
      * 导入数据
@@ -401,6 +467,31 @@ export default {
         type: 'info',
         message: '该功能暂未开发...'
       })
+    },
+    /**
+     * 删除试卷
+     * @param row
+     */
+    deletePaper(row) {
+      this.$confirm('是否删除' + row.name + '?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // TODO: 这里进行删除操作
+        console.log('这里进行删除操作')
+      }).catch(() => {
+        console.log('取消')
+      })
+    },
+    /**
+     * 删除试卷
+     * @param row
+     */
+    editPaper(row) {
+      // TODO: 这里进行修改试卷操作
+      console.log(row)
+      console.log('这里进行修改试卷操作!')
     },
     addCombConfigItem() {
       this.addCombConfigItemDialog = true
@@ -430,10 +521,9 @@ export default {
 .addCombConfigItemActions {
   font-size: 20px;
   margin-bottom: 10px;
-
-  .itemAction {
-    margin-right: 5px;
-  }
+}
+.itemAction {
+  margin-right: 10px;
 }
 </style>
 
