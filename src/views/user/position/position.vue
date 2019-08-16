@@ -4,7 +4,7 @@
     <div>
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="职位名称:">
-          <el-input size="mini" v-model="formInline.name"></el-input>
+          <el-input v-model="formInline.name" size="mini" />
         </el-form-item>
         <el-form-item>
           <el-button size="mini" type="primary">查询</el-button>
@@ -27,20 +27,20 @@
       stripe
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="company" label="姓名" width="120"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-      <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
-      <el-table-column prop="status" label="是否启用" show-overflow-tooltip></el-table-column>
+      <el-table-column type="selection" width="55" />
+      <el-table-column prop="company" label="姓名" width="120" />
+      <el-table-column prop="name" label="姓名" width="120" />
+      <el-table-column prop="remark" label="备注" show-overflow-tooltip />
+      <el-table-column prop="status" label="是否启用" show-overflow-tooltip />
       <el-table-column label="操作">
-        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto"></el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1"></el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1"></el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
+        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
       </el-table-column>
     </el-table>
     <!-- 分页部分 -->
     <div class="block">
-      <el-pagination :current-page.sync="currentPage1" :page-size="70" layout="prev, pager, next, jumper" :total="1000"></el-pagination>
+      <el-pagination :current-page.sync="currentPage1" :page-size="70" layout="prev, pager, next, jumper" :total="1000" />
     </div>
   </div>
 </template>

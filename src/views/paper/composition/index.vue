@@ -9,11 +9,6 @@
         <el-form-item label="组卷人">
           <el-input v-model="searchData.createdBy" placeholder="组卷人" style="width: 160px;" class="filter-item" @keyup.enter.native="handleFilter" />
         </el-form-item>
-        <el-form-item label="试卷类型">
-          <el-select v-model="searchData.paperType" placeholder="请选择难度.." size="mini" style="width: 160px" class="filter-item" @change="handleFilter">
-            <el-option v-for="item in paperTypeList" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="组卷时间">
           <el-date-picker v-model="searchData.comTime" type="daterange" size="small" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
         </el-form-item>
@@ -22,16 +17,19 @@
             <el-option v-for="item in difficultList" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
-        <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
-        <el-button class="filter-item" size="small" type="primary" icon="el-icon-remove-outline" @click="exportData">清空</el-button>
+        <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchData">查询
+        </el-button>
+        <el-button class="filter-item" size="small" type="primary" icon="el-icon-remove-outline" @click="exportData">
+          清空
+        </el-button>
       </el-form>
     </div>
     <el-card class="tableData">
       <div>
-        <el-button class="filter-item" size="mini" type="primary" icon="el-icon-edit" @click="fastComposition">快速组卷</el-button>
-        <el-button class="filter-item" size="mini" type="danger" icon="el-icon-delete" @click="normalComposition">标准组卷</el-button>
-        <el-button class="filter-item" size="mini" type="warning" icon="el-icon-goods" @click="templateComposition">模板组卷</el-button>
-        <el-button class="filter-item" size="mini" type="warning" icon="el-icon-goods" @click="paperDetail">试卷详情</el-button>
+        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="fastComposition">快速组卷</el-link>
+        <el-link class="itemAction" type="success" icon="el-icon-star-off" @click="normalComposition">标准组卷</el-link>
+        <el-link class="itemAction" type="warning" icon="el-icon-goods" @click="templateComposition">模板组卷</el-link>
+        <el-link class="itemAction" type="danger" icon="el-icon-info" @click="paperDetail">试卷详情</el-link>
       </div>
 
       <!-- 数据表格 -->
@@ -49,9 +47,7 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="试卷名" width="110" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.name }}
-          </template>
+          <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
         <el-table-column label="组卷人" width="110" align="center">
           <template slot-scope="scope">
@@ -59,29 +55,19 @@
           </template>
         </el-table-column>
         <el-table-column label="卷子类型" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.paperType }}
-          </template>
+          <template slot-scope="scope">{{ scope.row.paperType }}</template>
         </el-table-column>
         <el-table-column label="卷子难度" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.difficult }}
-          </template>
+          <template slot-scope="scope">{{ scope.row.difficult }}</template>
         </el-table-column>
         <el-table-column label="组卷时间" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.combExamTime }}
-          </template>
+          <template slot-scope="scope">{{ scope.row.combExamTime }}</template>
         </el-table-column>
         <el-table-column label="试卷总分" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.score }}
-          </template>
+          <template slot-scope="scope">{{ scope.row.score }}</template>
         </el-table-column>
         <el-table-column label="试卷描述" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.remark }}
-          </template>
+          <template slot-scope="scope">{{ scope.row.remark }}</template>
         </el-table-column>
         <el-table-column class-name="status-col" label="状态" width="110" align="center">
           <template slot-scope="scope">
@@ -218,9 +204,7 @@
     </el-dialog>
 
     <!-- 试卷详情 -->
-    <el-drawer title="试卷详情" size="60%" :visible.sync="paperDetailDialog" :wrapper-closable="false">
-      试卷详情
-    </el-drawer>
+    <el-drawer title="试卷详情" size="60%" :visible.sync="paperDetailDialog" :wrapper-closable="false">试卷详情</el-drawer>
 
     <!-- 组卷提示框 -->
     <el-dialog title="提示" width="30%" :visible.sync="paperTipDialog" :close-on-click-modal="false">
@@ -241,34 +225,43 @@ export default {
   components: { Pagination },
   data() {
     return {
+      // 试卷集合
       list: null,
+      // 试卷总数
       total: 0,
-      difficultList: ['困难', '一般', '简单'],
-      paperTypeList: ['Java', 'C#', 'Python'],
+      // 试卷难度集合
+      difficultList: [],
+      // 试卷类型集合
+      paperTypeList: [],
+      // 试卷查找对象
       searchData: {
         name: '',
         createdBy: '',
         difficult: '简单',
-        paperType: 'Java',
         comTime: ''
       },
-      gridData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
+      gridData: [
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        },
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        },
+        {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        },
+        {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }
+      ],
       page: {
         size: 5,
         pageNumber: 1
@@ -296,6 +289,8 @@ export default {
   },
   created() {
     this.fetchData()
+    this.getDifficultList()
+    this.getPaperTypeList()
   },
   methods: {
     /**
@@ -316,6 +311,18 @@ export default {
         this.total = result.data.total
         this.listLoading = false
       })
+    },
+    /**
+     * 初始获取全部试卷难度
+     */
+    getDifficultList() {
+      this.difficultList = ['困难', '一般', '简单']
+    },
+    /**
+     * 初始获取全部试卷类型
+     */
+    getPaperTypeList() {
+      this.paperTypeList = ['Java', 'C#', 'Python']
     },
     /**
      * 输入框响应enter查询
@@ -350,20 +357,35 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        this.paperTipDialog = true
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
+        .then(() => {
+          this.paperTipDialog = true
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     /**
      * 模板组卷
      */
     templateComposition() {
-      this.$router.push('/paper/download')
+      this.$confirm('该功能与下载试卷一致，是否打开下载试卷页面?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$router.push('/paper/download')
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          })
+        })
     },
     /**
      * 试卷详情

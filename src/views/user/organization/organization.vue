@@ -31,11 +31,11 @@
       <el-table-column prop="company" label="姓名" width="120" />
       <el-table-column prop="name" label="姓名" width="120" />
       <el-table-column prop="remark" label="备注" show-overflow-tooltip />
-      <el-table-column prop="status" label="是否启用" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="status" label="是否启用" show-overflow-tooltip />
       <el-table-column label="操作">
-        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto"></el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1"></el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1"></el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
+        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
       </el-table-column>
     </el-table>
     <!-- 分页部分 -->
@@ -45,7 +45,7 @@
         :page-size="70"
         layout="prev, pager, next, jumper"
         :total="1000"
-      ></el-pagination>
+      />
     </div>
   </div>
 </template>
