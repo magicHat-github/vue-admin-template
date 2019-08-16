@@ -83,6 +83,45 @@ export const constantRoutes = [
   },
 
   /**
+   * 系统管理管理
+   */
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/position',
+    name: 'User',
+    meta: { title: '系统管理', icon: 'example' },
+    children: [
+      {
+        path: 'position',
+        name: 'position',
+        component: () => import('@/views/user/position/position'),
+        meta: { title: '职位管理', icon: 'tree' }
+      }, 
+      {
+        path: 'add',
+        name: 'Add',
+        hidden:true,
+        component: () => import('@/views/user/position/addposition'),
+        meta: { title: '职位增加', icon: 'tree' }
+      },
+      {
+        path: 'update',
+        name: 'update',
+        hidden:true,
+        component: () => import('@/views/user/position/updateposition'),
+        meta: { title: '职位修改', icon: 'tree' }
+      },
+      {
+        path: 'org',
+        name: 'org',
+        component: () => import('@/views/user/organization/organization'),
+        meta: { title: '组织管理', icon: 'tree' }
+      },
+    ]
+  },
+
+  /**
    * 考卷管理
    */
   {
