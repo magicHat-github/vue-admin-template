@@ -26,7 +26,7 @@
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
             <!-- 部门名称输入框 -->
             <el-form-item label="部门名称:">
-              <el-input clearable v-model="formInline.departmentName" size="mini" />
+              <el-input v-model="formInline.departmentName" sclearable ize="mini" />
             </el-form-item>
             <!-- 部门等级下拉框 -->
             <el-form-item label="部门等级:">

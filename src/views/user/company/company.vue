@@ -26,11 +26,17 @@
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
             <!-- 公司名称输入框 -->
             <el-form-item label="公司名称:">
-              <el-input clearable v-model="formInline.companyName" size="mini" />
+              <el-input v-model="formInline.companyName" clearable size="mini" />
             </el-form-item>
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.organizationNames" filterable multiple placeholder="请选择" size="mini">
+              <el-select
+                v-model="formInline.organizationNames"
+                filterable
+                multiple
+                placeholder="请选择"
+                size="mini"
+              >
                 <el-option
                   v-for="company in companys"
                   :key="company.organizationName"
@@ -73,7 +79,7 @@
           <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
           <el-table-column prop="website" label="网址" show-overflow-tooltip />
           <el-table-column prop="status" label="是否启用" sortable="true" />
-          <el-table-column label="操作" >
+          <el-table-column label="操作">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
             <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
             <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
