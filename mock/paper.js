@@ -13,6 +13,34 @@ export default [
         }
       }
     }
+  },
+  {
+    url: '/paper/config/list',
+    type: 'get',
+    response: config => {
+      // console.log(config.body)
+      return {
+        code: 200,
+        data: {
+          list: paperConfigList,
+          total: 20
+        }
+      }
+    }
+  },
+  {
+    url: '/paper/config/item',
+    type: 'get',
+    response: config => {
+      console.log(config)
+      return {
+        code: 200,
+        data: {
+          list: configItemList,
+          total: 20
+        }
+      }
+    }
   }
 ]
 
@@ -46,5 +74,65 @@ const paperList = [
     score: '123',
     status: '启用',
     createdBy: '张三'
+  }
+]
+
+const paperConfigList = [
+  {
+    id: '123',
+    name: '配置2',
+    difficult: '简单',
+    updatedBy: '张三',
+    updatedTime: '123',
+    status: '启用',
+    company: '博思',
+    remark: '我是测试数据我是测试数据我是测试数据我是测试数据我是测试数据我是测试数据'
+  },
+  {
+    id: '234',
+    name: '配置1',
+    difficult: '简单',
+    updatedBy: '张三',
+    updatedTime: '123',
+    status: '启用',
+    company: '博思',
+    remark: '我是测试数据我是测试数据我是测试数据我是测试数据我是测试数据我是测试数据'
+  },
+  {
+    id: '345',
+    name: '配置3',
+    difficult: '简单',
+    updatedBy: '张三',
+    updatedTime: '123',
+    status: '启用',
+    company: '博思',
+    remark: '我是测试数据我是测试数据我是测试数据我是测试数据我是测试数据我是测试数据'
+  }
+]
+
+const configItemList = [
+  {
+    id: '123',
+    difficult: '简单',
+    category: 'java',
+    type: '选择题',
+    number: 20,
+    score: 40
+  },
+  {
+    id: '123',
+    difficult: '困难',
+    category: 'java',
+    type: '填空题',
+    number: 20,
+    score: 40
+  },
+  {
+    id: '123',
+    difficult: '容易',
+    category: 'java',
+    type: '主观题',
+    number: 20,
+    score: 40
   }
 ]

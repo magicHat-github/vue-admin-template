@@ -1,6 +1,6 @@
 <template>
   <div class="app-container allData">
-    <!-- 查询 -->
+    <!-- 试卷查询域 -->
     <div class="filter-container searchData">
       <el-form ref="form" :model="searchData" size="mini" label-width="70px" inline>
         <el-form-item label="试卷名">
@@ -20,6 +20,7 @@
         <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
       </el-form>
     </div>
+    <!-- 试卷数据域 -->
     <el-card class="tableData">
       <div>
         <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="fastComposition">快速组卷</el-link>
@@ -27,8 +28,7 @@
         <el-link class="itemAction" type="warning" icon="el-icon-goods" @click="templateComposition">模板组卷</el-link>
         <el-link class="itemAction" type="danger" icon="el-icon-info" @click="paperDetail">试卷详情</el-link>
       </div>
-
-      <!-- 数据表格 -->
+      <!-- 试卷数据表格 -->
       <el-table
         v-loading="listLoading"
         :data="list"
@@ -84,6 +84,7 @@
     <!-- 快速组卷 -->
     <el-drawer title="快速组卷" size="80%" :visible.sync="fastDialog" :wrapper-closable="false">
       <div class="drawerClass">
+        <!-- 配置项的查询框 -->
         <el-form ref="form" :model="searchConfigData" size="mini" label-width="70px" inline>
           <el-form-item label="配置项">
             <el-input v-model="searchConfigData.name" placeholder="配置项" style="width: 200px;" class="filter-item" @keyup.enter.native="handleConfigFilter" />
@@ -96,21 +97,31 @@
           <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchConfigData">查询</el-button>
         </el-form>
         <el-card>
-          <el-table v-loading="listLoading" :data="gridData" size="mini">
-            <el-table-column property="name" label="配置项" />
-            <el-table-column property="difficult" label="难度" />
-            <el-table-column property="updatedBy" label="修改人" />
-            <el-table-column property="updatedTime" label="修改时间" />
-            <el-table-column property="status" label="启用标志" />
-            <el-table-column property="company" label="公司" />
-            <el-table-column property="remark" label="备注" />
-            <el-table-column label="操作" width="160" align="center">
+          <!-- 配置项数据表格 -->
+          <el-table
+            v-loading="configListLoading"
+            :data="configList"
+            size="mini"
+            element-loading-text="Loading"
+            fit
+            stripe
+            highlight-current-row
+          >
+            <el-table-column align="center" property="name" label="配置项" />
+            <el-table-column align="center" property="difficult" label="难度" />
+            <el-table-column align="center" property="updatedBy" label="修改人" />
+            <el-table-column align="center" property="company" label="公司" />
+            <el-table-column align="center" property="updatedTime" label="修改时间" />
+            <el-table-column align="center" show-overflow-tooltip property="remark" label="备注" />
+            <el-table-column align="center" property="status" label="启用标志" />
+            <el-table-column align="center" label="操作" width="160">
               <template slot-scope="scope">
-                <el-button size="mini" type="primary" @click="exportData(scope.$index, scope.row)">查看</el-button>
+                <el-button size="mini" type="primary" @click="findCombConfigItem(scope.$index, scope.row)">查看</el-button>
                 <el-button size="mini" type="danger" @click="startComposition(scope.$index, scope.row)">组卷</el-button>
               </template>
             </el-table-column>
           </el-table>
+          <!-- 试卷配置项的分页组件 -->
           <div class="paginationSmall">
             <el-pagination
               small
@@ -125,13 +136,21 @@
           </div>
         </el-card>
         <el-card style="margin-top:5px;">
-          <el-table :data="gridData" size="mini">
+          <el-table
+            v-loading="configItemListLoading"
+            :data="configItemList"
+            size="mini"
+            element-loading-text="Loading"
+            fit
+            stripe
+            highlight-current-row
+          >
             <el-table-column type="index" label="序号" width="50" />
             <el-table-column property="name" label="题目类别" width="200" />
-            <el-table-column property="address" label="题型" />
-            <el-table-column property="address" label="题目数量" />
-            <el-table-column property="address" label="题目难度" />
-            <el-table-column property="address" label="题目分值" />
+            <el-table-column property="category" label="题型" />
+            <el-table-column property="number" label="题目数量" />
+            <el-table-column property="difficult" label="题目难度" />
+            <el-table-column property="score" label="题目分值" />
           </el-table>
         </el-card>
       </div>
@@ -143,9 +162,9 @@
         <span>组卷配置信息</span>
         <el-divider />
         <div style="margin-left:20px;">
-          <el-form ref="form" :model="normalPaperConfig" size="medium" label-width="70px">
+          <el-form ref="form" :model="normalPaperConfig" size="medium" label-width="70px" inline>
             <el-form-item label="配置项" prop="normalPaperConfigName" required>
-              <el-input v-model="normalPaperConfig.name" placeholder="配置项名称" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+              <el-input v-model="normalPaperConfig.name" placeholder="配置项名称" style="width: 200px;" class="filter-item" />
             </el-form-item>
             <el-form-item label="是否启用" prop="normalPaperConfigStatus">
               <el-radio-group v-model="normalPaperConfig.status">
@@ -156,7 +175,7 @@
           </el-form>
         </div>
 
-        <span style="margin-top:10px;">添加组卷明细</span>
+        <span style="margin-top:20px;">添加组卷明细</span>
         <el-divider />
         <el-card style="margin-top:5px;">
           <div class="addCombConfigItemActions">
@@ -164,13 +183,21 @@
             <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="editCombConfigItem()">修改</el-link>
             <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCombConfigItem()">删除</el-link>
           </div>
-          <el-table :data="gridData" size="mini">
+          <el-table
+            v-loading="normalConfigItemList"
+            :data="normalConfigListLoading"
+            size="mini"
+            element-loading-text="Loading"
+            fit
+            stripe
+            highlight-current-row
+          >
             <el-table-column type="index" label="序号" width="50" />
-            <el-table-column property="name" label="题目类别" />
-            <el-table-column property="address" label="题型" />
-            <el-table-column property="address" label="题目数量" />
-            <el-table-column property="address" label="题目难度" />
-            <el-table-column property="address" label="题目分值" />
+            <el-table-column property="category" label="题目类别" />
+            <el-table-column property="type" label="题型" />
+            <el-table-column property="number" label="题目数量" />
+            <el-table-column property="difficult" label="题目难度" />
+            <el-table-column property="score" label="题目分值" />
           </el-table>
         </el-card>
       </div>
@@ -208,7 +235,7 @@
     </el-dialog>
 
     <!-- 试卷详情 -->
-    <el-drawer title="试卷详情" size="60%" :visible.sync="paperDetailDialog" :wrapper-closable="false">试卷详情</el-drawer>
+    <paper-view :page-show="paperDetailDialog" :paper-info="paperInfo" @show-change="showChange" />
 
     <!-- 组卷提示框 -->
     <el-dialog title="提示" width="30%" :visible.sync="paperTipDialog" :close-on-click-modal="false">
@@ -221,16 +248,25 @@
 </template>
 
 <script>
-import { select } from '@/api/paper/composition.js'
+import { select, selectConfigList, selectConfigItemById } from '@/api/paper/composition.js'
 import Pagination from '@/components/Pagination'
+import PaperView from '@/components/PaperView'
 
 export default {
   name: 'Composition',
-  components: { Pagination },
+  components: { Pagination, PaperView },
   data() {
     return {
       // 试卷集合
       list: null,
+      // 配置项表格数据
+      configList: null,
+      // 试卷配置明细表格数据
+      configItemList: null,
+      // 标准组卷中配置明细的表格数据
+      normalConfigItemList: null,
+      // 试卷详细数据，用于预览
+      paperInfo: {},
       // 试卷总数
       total: 0,
       // 配置项总数
@@ -262,33 +298,12 @@ export default {
         name: '',
         difficult: '简单'
       },
-      gridData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }
-      ],
       // 标准组卷的组卷配置
       normalPaperConfig: {
         name: '',
         status: '启用'
       },
+      // 添加的组卷配置明细
       combConfigItem: {
         type: 'Java',
         category: 'Java',
@@ -309,7 +324,10 @@ export default {
       // 修改组卷明细弹框标志
       editCombConfigItemDialog: false,
       // load加载动画标志
-      listLoading: true,
+      listLoading: false,
+      configListLoading: false,
+      configItemListLoading: false,
+      normalConfigListLoading: false,
       // 表格选择列表
       multipleSelection: []
     }
@@ -343,22 +361,18 @@ export default {
      * 分页查询配置项数据
      */
     fetchConfigData() {
-      this.listLoading = true
+      this.configListLoading = true
       const params = {
         size: this.pageConfig.size,
         page: this.pageConfig.pageNumber,
         name: this.searchConfigData.name,
         difficult: this.searchConfigData.difficult
       }
-      console.log(params)
-      this.configTotal = 100
-      this.listLoading = false
-      // TODO: 查询数据
-      // select(params).then(result => {
-      //   this.list = result.data.list
-      //   this.total = result.data.total
-      //   this.listLoading = false
-      // })
+      selectConfigList(params).then(result => {
+        this.configList = result.data.list
+        this.configTotal = result.data.total
+        this.configListLoading = false
+      })
     },
     /**
      * 初始获取全部试卷难度
@@ -396,8 +410,8 @@ export default {
      * 响应分页事件
      */
     paperConfigPagination(number) {
-      console.log(number)
       this.pageConfig.pageNumber = number
+      this.fetchConfigData()
     },
     /**
      * 快速组卷
@@ -413,6 +427,19 @@ export default {
       this.normalDialog = true
     },
     /**
+     * 查看组卷配置明细
+     */
+    findCombConfigItem(index, row) {
+      this.configItemListLoading = true
+      const params = {
+        configId: row.id
+      }
+      selectConfigItemById(params).then(result => {
+        this.configItemList = result.data.list
+        this.configItemListLoading = false
+      })
+    },
+    /**
      * 开始组卷
      */
     startComposition() {
@@ -420,16 +447,15 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
+      }).then(() => {
+        this.paperTipDialog = true
+        // TODO: 这里进行组卷
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消组卷'
+        })
       })
-        .then(() => {
-          this.paperTipDialog = true
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
     },
     /**
      * 模板组卷
@@ -493,15 +519,33 @@ export default {
       console.log(row)
       console.log('这里进行修改试卷操作!')
     },
+    /**
+     * 添加组卷明细
+     */
     addCombConfigItem() {
+      // TODO: 添加组卷明细
       this.addCombConfigItemDialog = true
     },
+    /**
+     * 修改组卷明细
+     */
     editCombConfigItem() {
       // TODO: 添加修改弹窗
       console.log('editCombConfigItem')
     },
+    /**
+     * 删除组卷明细
+     */
     deleteCombConfigItem() {
+      // TODO: 删除组卷明细
       console.log('deleteCombConfigItem')
+    },
+    /**
+     * 同步试卷预览的值
+     * @param val
+     */
+    showChange(val) {
+      this.paperViewShow = val
     }
   }
 }

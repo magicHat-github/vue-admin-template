@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
 import { code } from './code' // 响应码
 
 /**
@@ -21,13 +20,14 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // 在发送请求之前做一些事情
-
-    if (store.getters.token) {
-      // 让每个请求携带令牌
-      // ['X-Token'] 是一个自定义的头部键值对
-      // 请根据实际情况进行修改
-      config.headers['X-Token'] = getToken()
-    }
+    // console.log('show request:')
+    // console.log(config)
+    // if (store.getters.token) {
+    //   // 让每个请求携带令牌
+    //   // ['X-Token'] 是一个自定义的头部键值对
+    //   // 请根据实际情况进行修改
+    //   config.headers['X-Token'] = getToken()
+    // }
     return config
   },
   error => {
