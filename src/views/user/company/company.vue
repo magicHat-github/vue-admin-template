@@ -6,13 +6,13 @@
         <el-header>
           <el-row>
             <el-col :span="8">
-              <i class="el-icon-edit"/>
+              <i class="el-icon-edit" />
             </el-col>
             <el-col :span="8">
               <div class="grid-content bg-purple-light">公司管理</div>
             </el-col>
             <el-col :span="8">
-              <el-button icon="el-icon-refresh-left" circle></el-button>
+              <el-button icon="el-icon-refresh-left" circle />
             </el-col>
           </el-row>
         </el-header>
@@ -36,7 +36,7 @@
             <el-dropdown>
               <el-button size="small" type="primary">
                 {{ formInline.orgName }}
-                <i class="el-icon-arrow-down el-icon--right"/>
+                <i class="el-icon-arrow-down el-icon--right" />
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>黄金糕</el-dropdown-item>
