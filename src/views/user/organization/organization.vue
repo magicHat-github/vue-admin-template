@@ -70,7 +70,7 @@ export default {
         {
           company: '腾讯',
           name: 'CEO',
-          remark: '何家伟是懒猪',
+          remark: 'xly是懒猪',
           status: '0'
         },
         {

@@ -117,6 +117,12 @@ export const constantRoutes = [
         name: 'org',
         component: () => import('@/views/user/organization/organization'),
         meta: { title: '组织管理', icon: 'tree' }
+      },
+      {
+        path: 'company',
+        name: 'Company',
+        component: () => import('@/views/user/company/company'),
+        meta: { title: '公司管理', icon: 'tree' }
       }
     ]
   },
