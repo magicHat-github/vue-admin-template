@@ -1,21 +1,17 @@
 <template>
   <el-container>
-    <!-- 左侧树 -->
-    <el-aside width="200px">
+    <!-- 左侧边栏 -->
+    <el-aside width="160px">
+      <!-- 树上方的信息 -->
       <el-container>
         <el-header>
           <el-row>
-            <el-col :span="8">
-              <i class="el-icon-edit" />
-            </el-col>
-            <el-col :span="8">
-              <div class="grid-content bg-purple-light">公司管理</div>
-            </el-col>
-            <el-col :span="8">
-              <el-button icon="el-icon-refresh-left" circle />
+            <el-col>
+              <h1 style="font-size:20px;" class="el-icon-menu">增加职位</h1>
             </el-col>
           </el-row>
         </el-header>
+        <!-- 树 -->
         <el-main>
           <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" />
         </el-main>
@@ -33,19 +29,15 @@
               <el-input v-model="formInline.companyName" size="mini" />
             </el-form-item>
             <!-- 组织机构下拉框 -->
-            <el-dropdown>
-              <el-button size="small" type="primary">
-                {{ formInline.orgName }}
-                <i class="el-icon-arrow-down el-icon--right" />
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>黄金糕</el-dropdown-item>
-                <el-dropdown-item>狮子头</el-dropdown-item>
-                <el-dropdown-item>螺蛳粉</el-dropdown-item>
-                <el-dropdown-item>双皮奶</el-dropdown-item>
-                <el-dropdown-item>蚵仔煎</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <el-form-item label="组织机构:">
+              <el-select v-model="formInline.orgName" filterable multiple placeholder="请选择" size="mini">
+                <el-option
+                  v-for="company in companys"
+                  :key="company.organizationName"
+                  :value="company.organizationName"
+                />
+              </el-select>
+            </el-form-item>
             <el-form-item>
               <el-button size="mini" type="primary">查询</el-button>
             </el-form-item>
@@ -58,21 +50,30 @@
           <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
           <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
         </div>
+
         <!-- 数据显示表单 -->
         <el-table
           ref="multipleTable"
-          :data="tableData3"
+          border="true"
+          :data="companys"
           tooltip-effect="dark"
-          style="width: 100%"
           stripe
+          height
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="company" label="姓名" width="120" />
-          <el-table-column prop="name" label="姓名" width="120" />
-          <el-table-column prop="remark" label="备注" show-overflow-tooltip />
-          <el-table-column prop="status" label="是否启用" show-overflow-tooltip />
-          <el-table-column label="操作">
+          <el-table-column prop="name" label="公司名称" />
+          <el-table-column prop="code" label="公司编号" />
+          <el-table-column prop="mnemonicCode" label="助记码" />
+          <el-table-column prop="master" label="法人" />
+          <el-table-column prop="organizationName" label="所属机构" />
+          <el-table-column prop="tax" label="税号" show-overflow-tooltip />
+          <el-table-column prop="fax" label="传真" show-overflow-tooltip />
+          <el-table-column prop="tel" label="电话" show-overflow-tooltip />
+          <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
+          <el-table-column prop="website" label="网址" show-overflow-tooltip />
+          <el-table-column prop="status" label="是否启用" />
+          <el-table-column label="操作" style="white-space:nowrap">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
             <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
             <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
@@ -156,54 +157,116 @@ export default {
        */
       formInline: {
         companyName: '',
-        orgName: ''
+        orgName: []
       },
 
       /**
-       * 职位管理
+       * 公司管理
        */
-      tableData3: [
+      companys: [
         {
-          company: '腾讯',
-          name: 'CEO',
-          remark: 'xly是懒猪',
-          status: '0'
+          name: '腾讯',
+          code: '001',
+          mnemonicCode: '公平的游戏公司',
+          master: '马化腾',
+          organizationName: 'China',
+          tax: '123456789012',
+          fax: '123456789012',
+          tel: '13000000000',
+          email: 'test@test.com',
+          website: 'www.test.com',
+          status: '启用'
         },
         {
-          company: '阿里巴巴',
-          name: '执行总裁',
-          remark: '福报厂',
-          status: '0'
+          name: '阿里',
+          code: '002',
+          mnemonicCode: '亏钱的濒危企业',
+          master: '马云',
+          organizationName: '中国',
+          tax: '123456789012',
+          fax: '123456789012',
+          tel: '13000000000',
+          email: 'test@test.com',
+          website: 'www.test.com',
+          status: '不启用'
         },
         {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
-          status: '1'
+          name: '百度',
+          code: '003',
+          mnemonicCode: '不接广告的搜索引擎',
+          master: '李红艳',
+          organizationName: 'China',
+          tax: '123456789012',
+          fax: '123456789012',
+          tel: '13000000000',
+          email: 'test@test.com',
+          website: 'www.test.com',
+          status: ' 启用'
         },
         {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
-          status: '1'
+          name: '腾讯',
+          code: '001',
+          mnemonicCode: '公平的游戏公司',
+          master: '马化腾',
+          organizationName: 'China',
+          tax: '123456789012',
+          fax: '123456789012',
+          tel: '13000000000',
+          email: 'test@test.com',
+          website: 'www.test.com',
+          status: ' 启用'
         },
         {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
-          status: '1'
+          name: '腾讯',
+          code: '001',
+          mnemonicCode: '公平的游戏公司',
+          master: '马化腾',
+          organizationName: 'China',
+          tax: '123456789012',
+          fax: '123456789012',
+          tel: '13000000000',
+          email: 'test@test.com',
+          website: 'www.test.com',
+          status: ' 启用'
         },
         {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
-          status: '1'
+          name: '腾讯',
+          code: '001',
+          mnemonicCode: '公平的游戏公司',
+          master: '马化腾',
+          organizationName: 'China',
+          tax: '123456789012',
+          fax: '123456789012',
+          tel: '13000000000',
+          email: 'test@test.com',
+          website: 'www.test.com',
+          status: ' 启用'
         },
         {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
-          status: '1'
+          name: '腾讯',
+          code: '001',
+          mnemonicCode: '公平的游戏公司',
+          master: '马化腾',
+          organizationName: 'China',
+          tax: '123456789012',
+          fax: '123456789012',
+          tel: '13000000000',
+          email: 'test@test.com',
+          website: 'www.test.com',
+          status: ' 启用'
+        },
+        {
+          name: '腾讯',
+          code: '001',
+          mnemonicCode: '公平的游戏公司',
+          master: '马化腾',
+          organizationName: 'China',
+          tax: '123456789012',
+          fax: '123456789012',
+          tel: '13000000000',
+          email: 'test@test.com',
+          website: 'www.test.com',
+          status: ' 启用'
         }
       ],
 
@@ -242,7 +305,7 @@ export default {
      */
     goto() {
       this.$router.push({
-        name: 'Add'
+        name: 'AddCompany'
       })
     },
     update1() {
