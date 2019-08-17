@@ -6,7 +6,7 @@
         <el-header>
           <el-row>
             <el-col :span="8">
-              <i class="el-icon-edit"></i>
+              <i class="el-icon-edit"/>
             </el-col>
             <el-col :span="8">
               <div class="grid-content bg-purple-light">公司管理</div>
@@ -17,7 +17,7 @@
           </el-row>
         </el-header>
         <el-main>
-          <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+          <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" />
         </el-main>
       </el-container>
     </el-aside>
@@ -36,7 +36,7 @@
             <el-dropdown>
               <el-button size="small" type="primary">
                 {{ formInline.orgName }}
-                <i class="el-icon-arrow-down el-icon--right"></i>
+                <i class="el-icon-arrow-down el-icon--right"/>
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>黄金糕</el-dropdown-item>
