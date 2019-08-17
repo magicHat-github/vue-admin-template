@@ -112,6 +112,12 @@ export const constantRoutes = [
         meta: { title: '新增公司' }
       },
       {
+        path: 'department',
+        name: 'Department',
+        component: () => import('@/views/user/department/department'),
+        meta: { title: '部门管理', icon: 'tree' }
+      },
+      {
         path: 'position',
         name: 'position',
         component: () => import('@/views/user/position/position'),

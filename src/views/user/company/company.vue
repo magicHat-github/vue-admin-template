@@ -7,13 +7,13 @@
         <el-header>
           <el-row>
             <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">增加职位</h1>
+              <h1 style="font-size:20px;" class="el-icon-menu">公司管理</h1>
             </el-col>
           </el-row>
         </el-header>
         <!-- 树 -->
         <el-main>
-          <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" />
+          <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
         </el-main>
       </el-container>
     </el-aside>
@@ -26,11 +26,11 @@
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
             <!-- 公司名称输入框 -->
             <el-form-item label="公司名称:">
-              <el-input v-model="formInline.companyName" size="mini" />
+              <el-input clearable v-model="formInline.companyName" size="mini" />
             </el-form-item>
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.orgName" filterable multiple placeholder="请选择" size="mini">
+              <el-select v-model="formInline.organizationNames" filterable multiple placeholder="请选择" size="mini">
                 <el-option
                   v-for="company in companys"
                   :key="company.organizationName"
@@ -72,8 +72,8 @@
           <el-table-column prop="tel" label="电话" show-overflow-tooltip />
           <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
           <el-table-column prop="website" label="网址" show-overflow-tooltip />
-          <el-table-column prop="status" label="是否启用" />
-          <el-table-column label="操作" style="white-space:nowrap">
+          <el-table-column prop="status" label="是否启用" sortable="true" />
+          <el-table-column label="操作" >
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
             <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
             <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
@@ -102,7 +102,7 @@ export default {
       /**
        * 树结构数据
        */
-      data: [
+      treeData: [
         {
           label: '组织机构 1',
           children: [
@@ -157,7 +157,7 @@ export default {
        */
       formInline: {
         companyName: '',
-        orgName: []
+        organizationNames: []
       },
 
       /**
