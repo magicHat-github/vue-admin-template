@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import { paperRequestApi } from '@/utils/requestUtil'
 /**
  * 组卷管理的相关API
  */
@@ -8,12 +9,24 @@ import request from '@/utils/request'
  * @param {*} params 参数
  */
 export function select(params) {
-  // console.log(params)
-  return request({
-    url: '/paper/composition',
-    method: 'get',
-    params
-  })
+  return paperRequestApi('/paper/composition', 'get', params)
+}
+
+/**
+ * 分页查询
+ * @param {*} params 参数
+ */
+export function selectConfigList(params) {
+  return paperRequestApi('/paper/config/list', 'get', params)
+}
+
+/**
+ * 根据试卷配置项编号获取配置项详情
+ * @param params
+ * @returns {AxiosPromise}
+ */
+export function selectConfigItemById(params) {
+  return paperRequestApi('/paper/config/item', 'get', params)
 }
 
 /**

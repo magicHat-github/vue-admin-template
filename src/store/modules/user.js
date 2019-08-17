@@ -1,5 +1,6 @@
 import { login, logout, getInfo, getMenu } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { saveHead } from '@/utils/requestUtil'
 import { resetRouter } from '@/router'
 
 const state = {
@@ -29,6 +30,7 @@ const actions = {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
+        saveHead('version', 'businessType', 'deviceId', 0, 0)
         resolve()
       }).catch(error => {
         reject(error)

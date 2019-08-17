@@ -134,6 +134,10 @@ export default {
     paperViewAction() {
       this.paperViewShow = true
     },
+    /**
+     * 同步试卷预览的值
+     * @param val
+     */
     showChange(val) {
       this.paperViewShow = val
     }
