@@ -12,7 +12,7 @@
               <div class="grid-content bg-purple-light">公司管理</div>
             </el-col>
             <el-col :span="8">
-              <i class="el-icon-refresh-left"></i>
+              <el-button icon="el-icon-refresh-left" circle></el-button>
             </el-col>
           </el-row>
         </el-header>
@@ -28,9 +28,24 @@
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <el-form-item label="职位名称:">
-              <el-input v-model="formInline.name" size="mini" />
+            <!-- 公司名称输入框 -->
+            <el-form-item label="公司名称:">
+              <el-input v-model="formInline.companyName" size="mini" />
             </el-form-item>
+            <!-- 组织机构下拉框 -->
+            <el-dropdown>
+              <el-button size="small" type="primary">
+                {{ formInline.orgName }}
+                <i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>黄金糕</el-dropdown-item>
+                <el-dropdown-item>狮子头</el-dropdown-item>
+                <el-dropdown-item>螺蛳粉</el-dropdown-item>
+                <el-dropdown-item>双皮奶</el-dropdown-item>
+                <el-dropdown-item>蚵仔煎</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
             <el-form-item>
               <el-button size="mini" type="primary">查询</el-button>
             </el-form-item>
@@ -140,7 +155,8 @@ export default {
        * 查询字段
        */
       formInline: {
-        name: ''
+        companyName: '',
+        orgName: ''
       },
 
       /**
