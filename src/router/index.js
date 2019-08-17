@@ -93,26 +93,6 @@ export const constantRoutes = [
     meta: { title: '系统管理', icon: 'example' },
     children: [
       {
-        path: 'position',
-        name: 'position',
-        component: () => import('@/views/user/position/position'),
-        meta: { title: '职位管理', icon: 'tree' }
-      },
-      {
-        path: 'add',
-        name: 'Add',
-        hidden: true,
-        component: () => import('@/views/user/position/addposition'),
-        meta: { title: '职位增加', icon: 'tree' }
-      },
-      {
-        path: 'update',
-        name: 'update',
-        hidden: true,
-        component: () => import('@/views/user/position/updateposition'),
-        meta: { title: '职位修改', icon: 'tree' }
-      },
-      {
         path: 'org',
         name: 'org',
         component: () => import('@/views/user/organization/organization'),
@@ -123,6 +103,33 @@ export const constantRoutes = [
         name: 'Company',
         component: () => import('@/views/user/company/company'),
         meta: { title: '公司管理', icon: 'tree' }
+      },
+      {
+        path: 'addCompany',
+        name: 'AddCompany',
+        hidden: true,
+        component: () => import('@/views/user/company/addCompany'),
+        meta: { title: '新增公司' }
+      },
+      {
+        path: 'position',
+        name: 'position',
+        component: () => import('@/views/user/position/position'),
+        meta: { title: '职位管理', icon: 'tree' }
+      },
+      {
+        path: 'add',
+        name: 'Add',
+        hidden: true,
+        component: () => import('@/views/user/position/addposition'),
+        meta: { title: '职位增加' }
+      },
+      {
+        path: 'update',
+        name: 'update',
+        hidden: true,
+        component: () => import('@/views/user/position/updateposition'),
+        meta: { title: '职位修改' }
       }
     ]
   },
