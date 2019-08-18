@@ -1,0 +1,66 @@
+<template>
+  <div>
+    <label for="answerFill"><span>{{ questionIndex + 1 }}.</span><span>({{ questionType }})</span><span>{{ questionDetail }}</span></label>
+    <input id="answerFill" v-model="userAnswerCache" class="fill-quest-answer">
+  </div>
+</template>
+<script>
+/**
+ * 填空题组件
+ */
+export default {
+  name: 'QuestionFillBlank',
+  props: {
+    questionIndex: {
+      type: Number,
+      require: true,
+      default: 0
+    },
+    questionType: {
+      type: String,
+      require: true,
+      default: ''
+    },
+    questionDetail: {
+      type: String,
+      require: true,
+      default: ''
+    },
+    questionId: {
+      type: String,
+      require: true,
+      default: ''
+    },
+    userAnswer: {
+      type: String,
+      require: true,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      userAnswerCache: ''
+    }
+  },
+  watch: {
+    userAnswer(val) {
+      this.userAnswerCache = val
+    },
+    userAnswerCache(val) {
+      this.$emit('userAnswerAction', {
+        questionId: this.questionId,
+        userAnswer: val
+      })
+    }
+  }
+}
+</script>
+<style>
+.fill-quest-answer{
+  width: 100px;
+  border: none;
+  border-bottom: 1px solid black;
+  padding-left: 10px;
+  outline: none;
+}
+</style>
