@@ -148,6 +148,12 @@ export const constantRoutes = [
         hidden: true,
         component: () => import('@/views/user/position/updateposition'),
         meta: { title: '职位修改' }
+      },
+      {
+        path: 'user',
+        name: 'User',
+        component: () => import('@/views/user/user/user'),
+        meta: { title: '用户管理', icon: 'tree' }
       }
     ]
   },
