@@ -7,7 +7,7 @@
         <el-header>
           <el-row>
             <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">部门管理</h1>
+              <h1 style="font-size:20px;" class="el-icon-menu">资源管理</h1>
             </el-col>
           </el-row>
         </el-header>
@@ -24,23 +24,23 @@
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <!-- 部门名称输入框 -->
-            <el-form-item label="部门名称:">
-              <el-input v-model="formInline.departmentName" clearable size="mini" />
+            <!-- 资源名称输入框 -->
+            <el-form-item label="资源名称:">
+              <el-input v-model="formInline.resourceName" clearable size="mini" />
             </el-form-item>
-            <!-- 部门等级下拉框 -->
-            <el-form-item label="部门等级:">
+            <!-- 资源等级下拉框 -->
+            <el-form-item label="资源等级:">
               <el-select
-                v-model="formInline.departmentLevels"
+                v-model="formInline.resourceLevels"
                 filterable
                 multiple
                 placeholder="请选择"
                 size="mini"
               >
                 <el-option
-                  v-for="department in departments"
-                  :key="department.level"
-                  :value="department.level"
+                  v-for="resource in resources"
+                  :key="resource.level"
+                  :value="resource.level"
                 />
               </el-select>
             </el-form-item>
@@ -61,17 +61,17 @@
         <el-table
           ref="multipleTable"
           border="true"
-          :data="departments"
+          :data="resources"
           tooltip-effect="dark"
           stripe
           height
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="部门名称" />
-          <el-table-column prop="code" label="部门编号" />
-          <el-table-column prop="level" label="部门等级" sortable="true" />
-          <el-table-column prop="parentName" label="上级部门" sortable="true" />
+          <el-table-column prop="name" label="资源名称" />
+          <el-table-column prop="code" label="资源编号" />
+          <el-table-column prop="level" label="资源等级" sortable="true" />
+          <el-table-column prop="parentName" label="上级资源" sortable="true" />
           <el-table-column prop="companyName" label="所属公司" />
           <el-table-column prop="master" label="负责人" />
           <el-table-column prop="status" label="是否启用" sortable="true" />
@@ -106,21 +106,21 @@ export default {
        */
       treeData: [
         {
-          label: '公司 1',
+          label: '资源树 1',
           children: [
             {
-              label: '部门 1-1'
+              label: '资源 1-1'
             }
           ]
         },
         {
-          label: '公司 2',
+          label: '资源树 2',
           children: [
             {
-              label: '部门 2-1'
+              label: '资源 2-1'
             },
             {
-              label: '部门 2-2'
+              label: '资源 2-2'
             }
           ]
         }
@@ -137,14 +137,14 @@ export default {
        * 查询字段
        */
       formInline: {
-        departmentName: '',
-        departmentLevels: []
+        resourceName: '',
+        resourceLevels: []
       },
 
       /**
-       * 部门管理
+       * 资源管理
        */
-      departments: [
+      resources: [
         {
           name: '人资部',
           parentName: 'parentDep',

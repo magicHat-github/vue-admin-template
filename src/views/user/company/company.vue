@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <!-- 左侧边栏 -->
-    <el-aside width="160px">
+    <el-aside width="180px">
       <!-- 树上方的信息 -->
       <el-container>
         <el-header>

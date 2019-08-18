@@ -73,13 +73,13 @@ export default {
     },
     save() {
       this.$router.push({
-        name: 'position'
+        name: 'Company'
       })
       this.$message('操作成功')
     },
     close() {
       this.$router.push({
-        name: 'position'
+        name: 'Company'
       })
     }
   }
