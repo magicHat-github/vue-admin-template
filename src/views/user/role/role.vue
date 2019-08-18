@@ -70,7 +70,7 @@
             type="primary"
             icon="el-icon-user"
             @click="distributeUser"
-          >角色分配</el-link>
+          >用户分配</el-link>
         </div>
 
         <!-- 数据显示表单 -->
