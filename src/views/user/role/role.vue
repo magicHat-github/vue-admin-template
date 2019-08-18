@@ -40,6 +40,37 @@
           <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
           <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
           <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+          <!-- 资源分配按钮 -->
+          <el-link
+            class="itemAction"
+            type="primary"
+            icon="el-icon-circle-plus-outline"
+            @click="distributeResource = true"
+          >资源分配</el-link>
+          <el-dialog title="为角色分配资源" :visible.sync="distributeResource">
+            <el-form :model="resourceDestribution">
+              <el-form-item label="活动名称" :label-width="formLabelWidth">
+                <el-input v-model="resourceDestribution.name" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="活动区域" :label-width="formLabelWidth">
+                <el-select v-model="resourceDestribution.region" placeholder="请选择活动区域">
+                  <el-option label="区域一" value="shanghai"></el-option>
+                  <el-option label="区域二" value="beijing"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="distributeResource = false">取 消</el-button>
+              <el-button type="primary" @click="distributeResource = false">确 定</el-button>
+            </div>
+          </el-dialog>
+          <!-- 用户分配按钮 -->
+          <el-link
+            class="itemAction"
+            type="primary"
+            icon="el-icon-user"
+            @click="distributeUser"
+          >角色分配</el-link>
         </div>
 
         <!-- 数据显示表单 -->
@@ -53,21 +84,23 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="公司名称" />
-          <el-table-column prop="code" label="公司编号" />
-          <el-table-column prop="mnemonicCode" label="助记码" />
-          <el-table-column prop="master" label="法人" />
+          <el-table-column prop="name" label="角色" />
+          <el-table-column prop="code" label="角色代号" />
+          <el-table-column prop="remark" label="角色备注" show-overflow-tooltip />
+          <el-table-column prop="companyName" label="所属公司" />
           <el-table-column prop="organizationName" label="所属机构" />
-          <el-table-column prop="tax" label="税号" show-overflow-tooltip />
-          <el-table-column prop="fax" label="传真" show-overflow-tooltip />
-          <el-table-column prop="tel" label="电话" show-overflow-tooltip />
-          <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
-          <el-table-column prop="website" label="网址" show-overflow-tooltip />
           <el-table-column prop="status" label="是否启用" sortable="true" />
           <el-table-column label="操作">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
             <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
             <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+            <el-link
+              class="itemAction"
+              type="primary"
+              icon="el-icon-circle-plus-outline"
+              @click="distributeResource = true"
+            />
+            <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeUser" />
           </el-table-column>
         </el-table>
         <!-- 分页部分 -->
@@ -147,117 +180,52 @@ export default {
        * 查询字段
        */
       formInline: {
-        companyName: '',
-        organizationNames: []
+        roleName: ''
       },
 
       /**
-       * 公司管理
+       * 角色管理
        */
       companys: [
         {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
+          name: 'name1',
+          code: 'code1',
+          remark: '傻瓜许林瑜',
+          companyName: '福报厂',
+          organizationName: '码农基地',
           status: '启用'
         },
         {
-          name: '阿里',
-          code: '002',
-          mnemonicCode: '亏钱的濒危企业',
-          master: '马云',
-          organizationName: '中国',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '不启用'
+          name: 'name1',
+          code: 'code1',
+          remark: '傻瓜许林瑜',
+          companyName: '福报厂',
+          organizationName: '码农基地',
+          status: '启用'
         },
         {
-          name: '百度',
-          code: '003',
-          mnemonicCode: '不接广告的搜索引擎',
-          master: '李红艳',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
+          name: 'name1',
+          code: 'code1',
+          remark: '傻瓜许林瑜',
+          companyName: '福报厂',
+          organizationName: '码农基地',
+          status: '启用'
         },
         {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
+          name: 'name1',
+          code: 'code1',
+          remark: '傻瓜许林瑜',
+          companyName: '福报厂',
+          organizationName: '码农基地',
+          status: '启用'
         },
         {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
+          name: 'name1',
+          code: 'code1',
+          remark: '傻瓜许林瑜',
+          companyName: '福报厂',
+          organizationName: '码农基地',
+          status: '启用'
         }
       ],
 
@@ -272,7 +240,23 @@ export default {
       currentPage2: 2,
       currentPage3: 3,
       currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
+      dynamicTags: ['标签一', '标签二', '标签三'],
+
+      /**
+       *  资源分配和角色分配
+       */
+      distributeResource: false,
+      formLabelWidth: '120px',
+      resourceDestribution: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      }
     }
   },
 
@@ -326,6 +310,15 @@ export default {
             message: '已取消删除'
           })
         })
+    },
+
+    /**
+     * 分配用户
+     */
+    distributeUser() {
+      this.$router.push({
+        name: 'update'
+      })
     }
   }
 }
