@@ -24,14 +24,10 @@
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <!-- 资源名称输入框 -->
-            <el-form-item label="资源名称:">
-              <el-input v-model="formInline.resourceName" clearable size="mini" />
-            </el-form-item>
-            <!-- 资源等级下拉框 -->
-            <el-form-item label="资源等级:">
+            <!-- 节点名称输入框 -->
+            <el-form-item label="节点名称:">
               <el-select
-                v-model="formInline.resourceLevels"
+                v-model="formInline.resourceNames"
                 filterable
                 multiple
                 placeholder="请选择"
@@ -39,8 +35,24 @@
               >
                 <el-option
                   v-for="resource in resources"
-                  :key="resource.level"
-                  :value="resource.level"
+                  :key="resource.name"
+                  :value="resource.name"
+                />
+              </el-select>
+            </el-form-item>
+            <!-- 父亲节点下拉框 -->
+            <el-form-item label="父亲节点:">
+              <el-select
+                v-model="formInline.parentResources"
+                filterable
+                multiple
+                placeholder="请选择"
+                size="mini"
+              >
+                <el-option
+                  v-for="resource in resources"
+                  :key="resource.parentName"
+                  :value="resource.parentName"
                 />
               </el-select>
             </el-form-item>
@@ -68,13 +80,14 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="资源名称" />
-          <el-table-column prop="code" label="资源编号" />
-          <el-table-column prop="level" label="资源等级" sortable="true" />
-          <el-table-column prop="parentName" label="上级资源" sortable="true" />
-          <el-table-column prop="companyName" label="所属公司" />
-          <el-table-column prop="master" label="负责人" />
-          <el-table-column prop="status" label="是否启用" sortable="true" />
+          <el-table-column prop="name" label="节点名称" />
+          <el-table-column prop="code" label="编号" />
+          <el-table-column prop="parentName" label="父亲节点" sortable="true" />
+          <el-table-column prop="url" label="URL" show-overflow-tooltip />
+          <el-table-column prop="resourceType" label="资源类型" sortable="true" />
+          <el-table-column prop="openImg" label="打开图标" />
+          <el-table-column prop="closeImg" label="关闭图标" />
+          <el-table-column prop="leaf" label="是否叶节点" sortable="true" />
           <el-table-column label="操作" style="white-space:nowrap">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
             <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
@@ -137,8 +150,8 @@ export default {
        * 查询字段
        */
       formInline: {
-        resourceName: '',
-        resourceLevels: []
+        resourceNames: [],
+        parentResources: []
       },
 
       /**
@@ -146,58 +159,24 @@ export default {
        */
       resources: [
         {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '1',
-          status: '启用',
-          companyName: 'boss'
+          name: '节点 1',
+          code: 'code1',
+          parentName: 'null',
+          url: '???不懂该是什么',
+          resourceType: '菜单栏',
+          openImg: '我是打开图标',
+          closeImg: '我是关闭图标',
+          leaf: '否'
         },
         {
-          name: '技术部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '5',
-          status: '启用',
-          companyName: 'boss'
-        },
-        {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '2',
-          status: '不启用',
-          companyName: 'boss'
-        },
-        {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '4',
-          status: '启用',
-          companyName: 'boss'
-        },
-        {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '3',
-          status: '启用',
-          companyName: 'boss'
-        },
-        {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '0',
-          status: '启用',
-          companyName: 'boss'
+          name: '节点 2',
+          code: 'code2',
+          parentName: '节点 1',
+          url: '不懂该是什么',
+          resourceType: '菜单栏',
+          openImg: '我是打开图标',
+          closeImg: '我是关闭图标',
+          leaf: '是'
         }
       ],
 
