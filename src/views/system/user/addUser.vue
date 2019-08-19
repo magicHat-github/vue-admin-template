@@ -90,11 +90,18 @@
 
         <!-- 第五行 -->
         <!-- 其它/微信输入框 -->
-        <el-row>
-          <el-col :span="10" :offset="1">
+        <el-row type="flex" justify="space-around">
+          <el-col :span="10">
             <el-form-item label="其它/微信:">
               <el-input placeholder="请输入内容" v-model="userForm.other" clearable />
             </el-form-item>
+          </el-col>
+          <el-col :span="10">
+          <el-form-item label="拥有角色:">
+            <el-select v-model="userForm.roles" filterable multiple placeholder="请选择">
+              <el-option v-for="role in roles" :key="role.name" :value="role.name" />
+            </el-select>
+          </el-form-item>
           </el-col>
         </el-row>
 
@@ -195,10 +202,11 @@ export default {
       /**
        * 职位下拉框选项
        */
-      positions: [
-        { name: '鼓励师' },
-        { name: '搬砖人' }
-      ]
+      positions: [{ name: '鼓励师' }, { name: '搬砖人' }],
+      /**
+       * 角色下拉框选项
+       */
+      roles: [{ name: '鼓励师' }, { name: '搬砖人' }]
     }
   },
   methods: {

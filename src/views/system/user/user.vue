@@ -72,7 +72,7 @@
         <!-- 数据显示表单 -->
         <el-table
           ref="multipleTable"
-          border="true"
+          :border="true"
           :data="users"
           tooltip-effect="dark"
           stripe
