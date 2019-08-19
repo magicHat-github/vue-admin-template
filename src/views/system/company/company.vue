@@ -33,13 +33,13 @@
             </el-form-item>
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.organizationNames" size="mini">
+              <el-select v-model="formInline.organizationNames">
                 <el-option label="博思软件" value="shanghai" />
                 <el-option label="阿里巴巴" value="beijing" />
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -81,11 +81,12 @@
           </el-table>
           <!-- 分页部分 -->
           <div class="block">
-            <el-pagination
-              :current-page.sync="currentPage1"
-              :page-size="70"
-              layout="prev, pager, next, jumper"
-              :total="1000"
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="page.pageNumber"
+              :limit.sync="page.size"
+              @click="queryData"
             />
           </div>
         </el-card>
@@ -95,9 +96,11 @@
 </template>
 
 <script>
+import Pagination from '@/components/Pagination'
 // import { log } from 'util'
 export default {
   name: 'App',
+  components: { Pagination },
   data() {
     return {
       /**
@@ -162,7 +165,7 @@ export default {
       },
 
       /**
-       * 公司管理
+       * 公司的表单数据
        */
       companys: [
         {
@@ -229,64 +232,41 @@ export default {
           email: 'test@test.com',
           website: 'www.test.com',
           status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
         }
       ],
 
       /**
-       * 待确认字段
+       * 多选事件中的数据
        */
       multipleSelection: [],
+
       /**
-       * 初始显示的页数
+       * 默认的分页的页面数据
        */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // 试卷总数
+      total: 0
     }
   },
-
+  created() {
+    this.queryData()
+  },
   methods: {
+    /**
+     * 查询数据
+     */
+    queryData() {
+      const params = {
+        size: this.page.size,
+        page: this.page.pageNumber,
+        companyName: this.formInline.companyName,
+        organizationName: this.formInline.organizationName
+      }
+      this.total = this.companys.length
+    },
     /**
      * 树结构的点击事件
      */
