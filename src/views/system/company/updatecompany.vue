@@ -1,13 +1,13 @@
 <template>
   <div class="app-container allData">
     <h1 style="font-size:25px;" class="el-icon-menu">修改公司基本信息</h1>
-    <hr />
-    <br />
+    <hr>
+    <br>
     <el-col :span="5" :offset="1">
       <font style="font-size:15px;" color="blue">公司的基本信息</font>
     </el-col>
     <div class="app-container allData">
-      <hr />
+      <hr>
       <!--表单输入 -->
       <el-form
         ref="companyForm"
@@ -19,29 +19,29 @@
       >
         <!-- 第一行 -->
         <el-row type="flex" justify="space-around">
-          <!-- 工号输入框 -->
+          <!-- 公司名输入框 -->
           <el-col :span="10">
             <el-form-item label="公司名:" prop="name">
-              <el-input placeholder="请输入内容" v-model="companyForm.name" clearable />
+              <el-input v-model="companyForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
-          <!-- 密码输入框 -->
+          <!-- 公司编号输入框 -->
           <el-col :span="10">
             <el-form-item label="公司编号:" prop="code">
-              <el-input placeholder="请输入内容" v-model="companyForm.code" clearable />
+              <el-input v-model="companyForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 第二行 -->
         <el-row type="flex" justify="space-around">
-          <!-- 姓名输入框 -->
+          <!-- 助记码输入框 -->
           <el-col :span="10">
             <el-form-item label="助记码:" prop="mnemonic_code">
-              <el-input placeholder="请输入内容" v-model="companyForm.mnemonic_code" clearable />
+              <el-input v-model="companyForm.mnemonic_code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
-          <!-- 职位下拉框 -->
+          <!-- 法人下拉框 -->
           <el-col :span="10">
             <el-form-item label="法人:" prop="master">
               <el-select v-model="companyForm.master" placeholder="请选择">
@@ -50,7 +50,7 @@
                   :key="position.name"
                   :label="position.name"
                   :value="position.name"
-                ></el-option>
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -58,16 +58,16 @@
 
         <!-- 第三行 -->
         <el-row type="flex" justify="space-around">
-          <!-- 性别输入框 -->
+          <!-- 税号输入框 -->
           <el-col :span="10">
             <el-form-item label="税号:" prop="tax">
-              <el-input placeholder="请输入内容" v-model="companyForm.tax" clearable />
+              <el-input v-model="companyForm.tax" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
-          <!-- 生日输入框 -->
+          <!-- 传真输入框 -->
           <el-col :span="10">
             <el-form-item label="传真:" prop="fax">
-              <el-input placeholder="请输入内容" v-model="companyForm.fax" clearable />
+              <el-input v-model="companyForm.fax" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -77,29 +77,30 @@
           <!-- 电话输入框 -->
           <el-col :span="10">
             <el-form-item label="电话:">
-              <el-input placeholder="请输入内容" v-model="companyForm.tel" clearable />
+              <el-input v-model="companyForm.tel" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
-          <!-- 邮箱输入框 -->
+          <!-- 地址输入框 -->
           <el-col :span="10">
             <el-form-item label="地址:">
-              <el-input placeholder="请输入内容" v-model="companyForm.address" clearable />
+              <el-input v-model="companyForm.address" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 第五行 -->
-        <!-- 其它/微信输入框 -->
+        <!-- 所属机构输入框 -->
         <el-row type="flex" justify="space-around">
           <el-col :span="10">
             <el-form-item label="所属机构:" prop="org_name">
-              <el-input placeholder="请输入内容" v-model="companyForm.org_name" clearable />
+              <el-input v-model="companyForm.org_name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="10">
-          <el-form-item label="邮箱:"  prop="email">
-            <el-input placeholder="请输入内容" v-model="companyForm.email" clearable />
-          </el-form-item>
+            <!-- 邮箱输入框 -->
+            <el-form-item label="邮箱:" prop="email">
+              <el-input v-model="companyForm.email" placeholder="请输入内容" clearable />
+            </el-form-item>
           </el-col>
         </el-row>
 

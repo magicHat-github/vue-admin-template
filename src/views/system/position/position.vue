@@ -141,12 +141,12 @@ export default {
      */
     goto() {
       this.$router.push({
-        name: 'Add'
+        name: 'Addposition'
       })
     },
     update1() {
       this.$router.push({
-        name: 'update'
+        name: 'updateposition'
       })
     },
 

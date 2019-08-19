@@ -130,6 +130,9 @@ export const constantRoutes = [
     name: 'System',
     meta: { title: '系统管理', icon: 'example' },
     children: [
+      /**
+       * 组织管理界面
+       */
       {
         path: 'org',
         name: 'org',
@@ -150,6 +153,9 @@ export const constantRoutes = [
         component: () => import('@/views/system/organization/updateorg'),
         meta: { title: '修改组织机构' }
       },
+      /**
+       * 公司管理界面
+       */
       {
         path: 'company',
         name: 'Company',
@@ -170,11 +176,28 @@ export const constantRoutes = [
         component: () => import('@/views/system/company/updatecompany'),
         meta: { title: '修改公司' }
       },
+      /**
+       * 部门管理界面
+       */
       {
         path: 'department',
         name: 'Department',
         component: () => import('@/views/system/department/department'),
         meta: { title: '部门管理', icon: 'tree' }
+      },
+      {
+        path: 'adddepartment',
+        name: 'addDepartment',
+        hidden: true,
+        component: () => import('@/views/system/department/adddepartment'),
+        meta: { title: '新增部门', icon: 'tree' }
+      },
+      {
+        path: 'updatedepartment',
+        name: 'updateDepartment',
+        hidden: true,
+        component: () => import('@/views/system/department/updatedepartment'),
+        meta: { title: '新增部门', icon: 'tree' }
       },
       {
         path: 'resource',
@@ -195,6 +218,9 @@ export const constantRoutes = [
         component: () => import('@/views/system/role/distributeUser'),
         meta: { title: '为角色分配用户' }
       },
+      /**
+       * 职位管理界面
+       */
       {
         path: 'position',
         name: 'position',
@@ -202,15 +228,15 @@ export const constantRoutes = [
         meta: { title: '职位管理', icon: 'tree' }
       },
       {
-        path: 'add',
-        name: 'Add',
+        path: 'addposition',
+        name: 'Addposition',
         hidden: true,
         component: () => import('@/views/system/position/addposition'),
         meta: { title: '职位增加' }
       },
       {
-        path: 'update',
-        name: 'update',
+        path: 'updateposition',
+        name: 'updateposition',
         hidden: true,
         component: () => import('@/views/system/position/updateposition'),
         meta: { title: '职位修改' }

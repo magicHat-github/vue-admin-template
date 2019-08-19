@@ -1,13 +1,13 @@
 <template>
   <div class="app-container allData">
     <h1 style="font-size:25px;" class="el-icon-menu">新增用户</h1>
-    <hr />
-    <br />
+    <hr>
+    <br>
     <el-col :span="5" :offset="1">
       <font style="font-size:15px;" color="blue">基本信息</font>
     </el-col>
     <div class="app-container allData">
-      <hr />
+      <hr>
       <!--表单输入 -->
       <el-form
         ref="userForm"
@@ -22,13 +22,13 @@
           <!-- 工号输入框 -->
           <el-col :span="10">
             <el-form-item label="用户工号:" prop="code">
-              <el-input placeholder="请输入内容" v-model="userForm.code" clearable />
+              <el-input v-model="userForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 密码输入框 -->
           <el-col :span="10">
             <el-form-item label="初始密码:" prop="password">
-              <el-input placeholder="请输入内容" v-model="userForm.password" clearable />
+              <el-input v-model="userForm.password" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -38,7 +38,7 @@
           <!-- 姓名输入框 -->
           <el-col :span="10">
             <el-form-item label="用户名:" prop="name">
-              <el-input placeholder="请输入内容" v-model="userForm.name" clearable />
+              <el-input v-model="userForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 职位下拉框 -->
@@ -50,7 +50,7 @@
                   :key="position.name"
                   :label="position.name"
                   :value="position.name"
-                ></el-option>
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -61,13 +61,13 @@
           <!-- 性别输入框 -->
           <el-col :span="10">
             <el-form-item label="性别:" prop="sex">
-              <el-input placeholder="请输入内容" v-model="userForm.sex" clearable />
+              <el-input v-model="userForm.sex" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 生日输入框 -->
           <el-col :span="10">
             <el-form-item label="生日:" prop="birthday">
-              <el-input placeholder="请输入内容" v-model="userForm.birthday" clearable />
+              <el-input v-model="userForm.birthday" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -77,13 +77,13 @@
           <!-- 电话输入框 -->
           <el-col :span="10">
             <el-form-item label="电话:" prop="tel">
-              <el-input placeholder="请输入内容" v-model="userForm.tel" clearable />
+              <el-input v-model="userForm.tel" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 邮箱输入框 -->
           <el-col :span="10">
             <el-form-item label="邮箱:" prop="email">
-              <el-input placeholder="请输入内容" v-model="userForm.email" clearable />
+              <el-input v-model="userForm.email" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -93,15 +93,15 @@
         <el-row type="flex" justify="space-around">
           <el-col :span="10">
             <el-form-item label="其它/微信:">
-              <el-input placeholder="请输入内容" v-model="userForm.other" clearable />
+              <el-input v-model="userForm.other" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="10">
-          <el-form-item label="拥有角色:">
-            <el-select v-model="userForm.roles" filterable multiple placeholder="请选择">
-              <el-option v-for="role in roles" :key="role.name" :value="role.name" />
-            </el-select>
-          </el-form-item>
+            <el-form-item label="拥有角色:">
+              <el-select v-model="userForm.roles" filterable multiple placeholder="请选择">
+                <el-option v-for="role in roles" :key="role.name" :value="role.name" />
+              </el-select>
+            </el-form-item>
           </el-col>
         </el-row>
 
@@ -110,7 +110,7 @@
         <el-row>
           <el-col :span="10" :offset="1">
             <el-form-item label="备注:">
-              <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="userForm.remark" />
+              <el-input v-model="userForm.remark" type="textarea" :rows="2" placeholder="请输入内容" />
             </el-form-item>
           </el-col>
         </el-row>

@@ -11,7 +11,7 @@
                 <h1 style="font-size:20px;" class="el-icon-menu">公司管理</h1>
               </el-col>
             </el-row>
-            <hr />
+            <hr>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -34,9 +34,9 @@
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
               <el-select v-model="formInline.organizationNames" size="mini">
-              <el-option label="博思软件" value="shanghai" />
-              <el-option label="阿里巴巴" value="beijing" />
-            </el-select>
+                <el-option label="博思软件" value="shanghai" />
+                <el-option label="阿里巴巴" value="beijing" />
+              </el-select>
             </el-form-item>
             <el-form-item>
               <el-button size="mini" type="primary">查询</el-button>

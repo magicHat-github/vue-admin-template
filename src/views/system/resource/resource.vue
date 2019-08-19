@@ -11,7 +11,7 @@
                 <h1 style="font-size:20px;" class="el-icon-menu">资源管理</h1>
               </el-col>
             </el-row>
-            <hr />
+            <hr>
           </el-header>
           <!-- 树 -->
           <el-main>

@@ -1,25 +1,25 @@
 <template>
   <el-container>
-<el-card>
-    <!-- 左侧边栏 -->
-    <el-aside width="160px">
-      <!-- 树上方的信息 -->
-      <el-container>
-        <el-header>
-          <el-row>
-            <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">部门管理</h1>
-            </el-col>
-          </el-row>
-        <hr />
-        </el-header>
-        <!-- 树 -->
-        <el-main>
-          <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
-        </el-main>
-      </el-container>
-    </el-aside>
-</el-card>
+    <el-card>
+      <!-- 左侧边栏 -->
+      <el-aside width="160px">
+        <!-- 树上方的信息 -->
+        <el-container>
+          <el-header>
+            <el-row>
+              <el-col>
+                <h1 style="font-size:20px;" class="el-icon-menu">部门管理</h1>
+              </el-col>
+            </el-row>
+            <hr>
+          </el-header>
+          <!-- 树 -->
+          <el-main>
+            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+          </el-main>
+        </el-container>
+      </el-aside>
+    </el-card>
 
     <!-- 主体部分 -->
     <el-main>
@@ -35,8 +35,6 @@
             <el-form-item label="部门等级:">
               <el-select
                 v-model="formInline.departmentLevels"
-                filterable
-                multiple
                 placeholder="请选择"
                 size="mini"
               >
@@ -240,12 +238,12 @@ export default {
      */
     goto() {
       this.$router.push({
-        name: 'AddCompany'
+        name: 'addDepartment'
       })
     },
     update1() {
       this.$router.push({
-        name: 'update'
+        name: 'updateDepartment'
       })
     },
 

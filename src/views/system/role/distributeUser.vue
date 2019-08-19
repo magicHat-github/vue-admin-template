@@ -204,7 +204,7 @@ export default {
       currentPage2: 2,
       currentPage3: 3,
       currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三'],
+      dynamicTags: ['标签一', '标签二', '标签三']
 
     }
   },
