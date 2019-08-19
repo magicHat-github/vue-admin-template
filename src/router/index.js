@@ -62,7 +62,6 @@ export const constantRoutes = [
       }
     ]
   },
-
   /**
    * 基础数据管理
    */
@@ -78,6 +77,30 @@ export const constantRoutes = [
         name: 'Dictionary',
         component: () => import('@/views/basedata/dictionary/index'),
         meta: { title: '数据字典管理', icon: 'tree' }
+      },
+      {
+        path: 'category',
+        name: 'Category',
+        component: () => import('@/views/basedata/category/index'),
+        meta: { title: '题目类别管理', icon: 'tree' }
+      },
+      {
+        path: 'type',
+        name: 'Type',
+        component: () => import('@/views/basedata/type/index'),
+        meta: { title: '题型管理', icon: 'tree' }
+      },
+      {
+        path: 'subject',
+        name: 'Subject',
+        component: () => import('@/views/basedata/subject/index'),
+        meta: { title: '题目管理', icon: 'tree' }
+      },
+      {
+        path: 'config',
+        name: 'Config',
+        component: () => import('@/views/basedata/config/index'),
+        meta: { title: '组卷管理', icon: 'tree' }
       }
     ]
   },
@@ -128,6 +151,18 @@ export const constantRoutes = [
         name: 'position',
         component: () => import('@/views/user/position/position'),
         meta: { title: '职位管理', icon: 'tree' }
+      },
+      {
+        path: 'param',
+        name: 'Param',
+        component: () => import('@/views/user/param/index'),
+        meta: { title: '参数管理', icon: 'tree' }
+      },
+      {
+        path: 'online',
+        name: 'Online',
+        component: () => import('@/views/user/online/index'),
+        meta: { title: '在线用户情况', icon: 'tree' }
       },
       {
         path: 'add',
