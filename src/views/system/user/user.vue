@@ -57,9 +57,9 @@
 
         <!-- 增删改按钮框 -->
         <div>
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser">增加</el-link>
+          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteUser">删除</el-link>
+          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateUser">修改</el-link>
           <!-- 角色分配按钮 -->
           <el-link
             class="itemAction"
@@ -92,9 +92,9 @@
           <el-table-column prop="other" label="其它/微信" />
           <el-table-column prop="status" label="是否启用" sortable="true" />
           <el-table-column label="操作">
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser" />
+            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteUser" />
+            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateUser" />
             <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeRole" />
           </el-table-column>
         </el-table>
@@ -249,21 +249,21 @@ export default {
     /**
      * 跳转到增加界面
      */
-    goto() {
+    addUser() {
       this.$router.push({
-        name: 'AddCompany'
+        name: 'AddUser'
       })
     },
-    update1() {
+    updateUser() {
       this.$router.push({
-        name: 'update'
+        name: 'UpdateUser'
       })
     },
 
     /**
      * 删除信息
      */
-    delete1() {
+    deleteUser() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

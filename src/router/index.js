@@ -179,6 +179,20 @@ export const constantRoutes = [
         meta: { title: '用户管理', icon: 'tree' }
       },
       {
+        path: 'addUser',
+        name: 'AddUser',
+        hidden: true,
+        component: () => import('@/views/system/user/addUser'),
+        meta: { title: '新增用户' }
+      },
+      {
+        path: 'updateUser',
+        name: 'UpdateUser',
+        hidden: true,
+        component: () => import('@/views/system/user/updateUser'),
+        meta: { title: '修改用户' }
+      },
+      {
         path: 'param',
         name: 'Param',
         component: () => import('@/views/system/param/index'),
