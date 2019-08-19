@@ -119,7 +119,7 @@ export default {
       this.pageShowCache = val
     },
     pageShowCache(val) {
-      this.$emit('showChange', val)
+      this.$emit('show-change', val)
     }
   },
   methods: {
