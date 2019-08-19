@@ -317,7 +317,7 @@ export default {
      */
     distributeUser() {
       this.$router.push({
-        name: 'update'
+        name: 'DistributeUser'
       })
     }
   }

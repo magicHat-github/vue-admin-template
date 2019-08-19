@@ -168,6 +168,13 @@ export const constantRoutes = [
         meta: { title: '角色管理', icon: 'tree' }
       },
       {
+        path: 'distributeUser',
+        name: 'DistributeUser',
+        hidden: true,
+        component: () => import('@/views/system/role/distributeUser'),
+        meta: { title: '为角色分配用户' }
+      },
+      {
         path: 'position',
         name: 'position',
         component: () => import('@/views/system/position/position'),
