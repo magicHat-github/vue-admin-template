@@ -41,10 +41,17 @@
               <el-input placeholder="请输入内容" v-model="userForm.name" clearable />
             </el-form-item>
           </el-col>
-          <!-- 职位输入框 -->
+          <!-- 职位下拉框 -->
           <el-col :span="10">
             <el-form-item label="职位:" prop="position">
-              <el-input placeholder="请输入内容" v-model="userForm.position" clearable />
+              <el-select v-model="userForm.position" placeholder="请选择">
+                <el-option
+                  v-for="position in positions"
+                  :key="position.name"
+                  :label="position.name"
+                  :value="position.name"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -84,7 +91,7 @@
         <!-- 第五行 -->
         <!-- 其它/微信输入框 -->
         <el-row>
-          <el-col :span="10" offset="1">
+          <el-col :span="10" :offset="1">
             <el-form-item label="其它/微信:">
               <el-input placeholder="请输入内容" v-model="userForm.other" clearable />
             </el-form-item>
@@ -94,7 +101,7 @@
         <!-- 第六行 -->
         <!-- 备注栏 -->
         <el-row>
-          <el-col :span="10" offset="1">
+          <el-col :span="10" :offset="1">
             <el-form-item label="备注:">
               <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="userForm.remark" />
             </el-form-item>
@@ -104,7 +111,7 @@
         <!-- 第七行 -->
         <!--复选按钮 -->
         <el-row>
-          <el-col :span="8" offset="1">
+          <el-col :span="8" :offset="1">
             <el-form-item label="是否启用:">
               <el-radio v-model="userForm.status" label="1">是</el-radio>
               <el-radio v-model="userForm.status" label="2">否</el-radio>
@@ -116,7 +123,7 @@
         <!-- 按钮组件 -->
         <el-row :gutter="0">
           <el-form-item>
-            <el-col :span="4" offset="8">
+            <el-col :span="4" :offset="8">
               <el-button type="primary" @click="submitForm('userForm')">保存</el-button>
             </el-col>
             <el-col :span="4">
@@ -133,6 +140,9 @@
 export default {
   data() {
     return {
+      /**
+       * 表单数据
+       */
       userForm: {
         code: '',
         name: '',
@@ -146,6 +156,9 @@ export default {
         remark: '',
         status: '1'
       },
+      /**
+       * 表单校验规则
+       */
       userRules: {
         code: [
           { required: true, message: '请输入工号', trigger: 'blur' },
@@ -160,8 +173,7 @@ export default {
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         position: [
-          { required: true, message: '请输入职位', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入职位', trigger: 'change' }
         ],
         sex: [
           { required: true, message: '请输入性别', trigger: 'blur' },
@@ -179,7 +191,14 @@ export default {
           { required: true, message: '请输入邮箱', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ]
-      }
+      },
+      /**
+       * 职位下拉框选项
+       */
+      positions: [
+        { name: '鼓励师' },
+        { name: '搬砖人' }
+      ]
     }
   },
   methods: {
@@ -192,7 +211,7 @@ export default {
           console.log('submit!')
           this.submit()
         } else {
-          console.log('error submit!!')
+          console.log(this.userForm.status)
           return false
         }
       })
