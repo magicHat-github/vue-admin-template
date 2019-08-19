@@ -115,6 +115,48 @@ export const constantRoutes = [
         name: 'Config',
         component: () => import('@/views/basedata/config/index'),
         meta: { title: '组卷配置管理', icon: 'tree' }
+      },
+      {
+        path: 'addCategory',
+        name: 'AddCategory',
+        hidden: true,
+        component: () => import('@/views/basedata/category/addCategory'),
+        meta: { title: '增加题目类别', icon: 'tree' }
+      },
+      {
+        path: 'updateCategory',
+        name: 'UpdateCategory',
+        hidden: true,
+        component: () => import('@/views/basedata/category/updateCategory'),
+        meta: { title: '修改题目类别', icon: 'tree' }
+      },
+      {
+        path: 'addType',
+        name: 'AddType',
+        hidden: true,
+        component: () => import('@/views/basedata/type/addType'),
+        meta: { title: '修改题目类型', icon: 'tree' }
+      },
+      {
+        path: 'updateType',
+        name: 'UpdateType',
+        hidden: true,
+        component: () => import('@/views/basedata/type/updateType'),
+        meta: { title: '修改题目类型', icon: 'tree' }
+      },
+      {
+        path: 'addSubject',
+        name: 'AddSubject',
+        hidden: true,
+        component: () => import('@/views/basedata/subject/addSubject'),
+        meta: { title: '增加题目' }
+      },
+      {
+        path: 'updateSubject',
+        name: 'UpdateSubject',
+        hidden: true,
+        component: () => import('@/views/basedata/subject/updateSubject'),
+        meta: { title: '修改题目' }
       }
 
     ]

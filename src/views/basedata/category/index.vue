@@ -1,23 +1,24 @@
 <template>
   <el-container>
-    <!-- 左侧边栏 -->
-    <el-aside width="180px">
-      <!-- 树上方的信息 -->
-      <el-container>
-        <el-header>
-          <el-row>
-            <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">题目类别</h1>
-            </el-col>
-          </el-row>
-        </el-header>
-        <!-- 树 -->
-        <el-main>
-          <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
-        </el-main>
-      </el-container>
-    </el-aside>
-
+    <el-card class="tableData">
+      <!-- 左侧边栏 -->
+      <el-aside width="180px">
+        <!-- 树上方的信息 -->
+        <el-container>
+          <el-header>
+            <el-row>
+              <el-col>
+                <h1 style="font-size:20px;" class="el-icon-menu">题目类别</h1>
+              </el-col>
+            </el-row>
+          </el-header>
+          <!-- 树 -->
+          <el-main>
+            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+          </el-main>
+        </el-container>
+      </el-aside>
+    </el-card>
     <!-- 主体部分 -->
     <el-main>
       <div class="app-container allData">
@@ -27,16 +28,16 @@
             <!-- 组织机构下拉框 -->
             <el-form-item label="题目类别:">
               <el-select
-                v-model="formInline.organizationNames"
+                v-model="formInline.name"
                 filterable
                 multiple
                 placeholder="请选择"
                 size="mini"
               >
                 <el-option
-                  v-for="company in companys"
-                  :key="company.organizationName"
-                  :value="company.organizationName"
+                  v-for="category in categories"
+                  :key="category.name"
+                  :value="category.name"
                 />
               </el-select>
             </el-form-item>
@@ -45,46 +46,46 @@
             </el-form-item>
           </el-form>
         </div>
+        <el-card class="tableData">
+          <!-- 增删改按钮框 -->
+          <div>
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1">修改</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="update1">导入</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="update1">导出</el-link>
+          </div>
 
-        <!-- 增删改按钮框 -->
-        <div>
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="update1">导入</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-download" @click="update1">导出</el-link>
-        </div>
-
-        <!-- 数据显示表单 -->
-        <el-table
-          ref="multipleTable"
-          border="true"
-          :data="companys"
-          tooltip-effect="dark"
-          stripe
-          height
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="公司名称" />
-          <el-table-column prop="website" label="备注" show-overflow-tooltip />
-          <el-table-column prop="website" label="更新时间" />
-          <el-table-column prop="status" label="是否启用" sortable="true" />
-          <el-table-column label="操作">
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-          </el-table-column>
-        </el-table>
-        <!-- 分页部分 -->
-        <div class="block">
-          <el-pagination
-            :current-page.sync="currentPage1"
-            :page-size="70"
-            layout="prev, pager, next, jumper"
-            :total="1000"
-          />
-        </div>
+          <!-- 数据显示表单 -->
+          <el-table
+            ref="multipleTable"
+            :data="categories"
+            tooltip-effect="dark"
+            stripe
+            height
+            @selection-change="handleSelectionChange"
+          >
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="name" label="题目类别" />
+            <el-table-column prop="remark" label="备注" show-overflow-tooltip />
+            <el-table-column prop="updatedTime" label="更新时间" />
+            <el-table-column prop="status" label="是否启用" sortable="true" />
+            <el-table-column label="操作">
+              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
+              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+            </el-table-column>
+          </el-table>
+          <!-- 分页部分 -->
+          <div class="block">
+            <el-pagination
+              :current-page.sync="currentPage1"
+              :page-size="70"
+              layout="prev, pager, next, jumper"
+              :total="1000"
+            />
+          </div>
+        </el-card>
       </div>
     </el-main>
   </el-container>
@@ -132,118 +133,63 @@ export default {
          * 查询字段
          */
       formInline: {
-        companyName: '',
+        categoryName: '',
         organizationNames: []
       },
 
       /**
          * 公司管理
          */
-      companys: [
+      categories: [
         {
           name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
+          categoryId: '001',
+          remark: '腾讯',
+          updatedTime: '2019/8/19',
           status: '启用'
         },
         {
           name: '阿里',
-          code: '002',
-          mnemonicCode: '亏钱的濒危企业',
-          master: '马云',
-          organizationName: '中国',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
+          categoryId: '002',
+          remark: '腾讯',
+          updatedTime: '2019/8/19',
           status: '不启用'
-        },
-        {
-          name: '百度',
-          code: '003',
-          mnemonicCode: '不接广告的搜索引擎',
-          master: '李红艳',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
         }
+        // {
+        //   name: '百度',
+        //   categoryId: '003',
+        //   remark: '腾讯sd',
+        //   updatedTime: '2019/8/19',
+        //   status: ' 启用'
+        // },
+        // {
+        //   name: '百度',
+        //   categoryId: '003',
+        //   remark: '腾讯',
+        //   updatedTime: '2019/8/19',
+        //   status: ' 启用'
+        // },
+        // {
+        //   name: '百度',
+        //   categoryId: '003',
+        //   remark: '腾讯',
+        //   updatedTime: '2019/8/19',
+        //   status: ' 启用'
+        // },
+        // {
+        //   name: '百度',
+        //   categoryId: '003',
+        //   remark: '腾讯',
+        //   updatedTime: '2019/8/19',
+        //   status: ' 启用'
+        // },
+        // {
+        //   name: '百度',
+        //   categoryId: '003',
+        //   remark: '腾讯',
+        //   updatedTime: '2019/8/19',
+        //   status: ' 启用'
+        // }
       ],
 
       /**
@@ -281,12 +227,12 @@ export default {
        */
     goto() {
       this.$router.push({
-        name: 'AddCompany'
+        name: 'AddCategory'
       })
     },
     update1() {
       this.$router.push({
-        name: 'update'
+        name: 'UpdateCategory'
       })
     },
 
