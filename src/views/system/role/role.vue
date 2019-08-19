@@ -41,9 +41,9 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addRole">增加</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteRole">删除</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateRole">修改</el-link>
             <!-- 资源分配按钮 -->
             <el-link
               class="itemAction"
@@ -81,22 +81,22 @@
           <el-table
             ref="multipleTable"
             :border="true"
-            :data="companys"
+            :data="roles"
             tooltip-effect="dark"
             stripe
             @selection-change="handleSelectionChange"
           >
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="name" label="角色" />
-            <el-table-column prop="code" label="角色代号" />
-            <el-table-column prop="remark" label="角色备注" show-overflow-tooltip />
-            <el-table-column prop="companyName" label="所属公司" />
-            <el-table-column prop="organizationName" label="所属机构" />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
-            <el-table-column label="操作">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+            <el-table-column type="selection" width="55" align="center" />
+            <el-table-column prop="name" label="角色" align="center" />
+            <el-table-column prop="code" label="角色代号" align="center" />
+            <el-table-column prop="remark" label="角色备注" show-overflow-tooltip align="center" />
+            <el-table-column prop="companyName" label="所属公司" align="center" />
+            <el-table-column prop="organizationName" label="所属机构" align="center" />
+            <el-table-column prop="status" label="是否启用" sortable="true" align="center" />
+            <el-table-column label="操作" width="160" align="center">
+              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addRole" />
+              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteRole" />
+              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateRole" />
               <el-link
                 class="itemAction"
                 type="primary"
@@ -113,11 +113,12 @@
           </el-table>
           <!-- 分页部分 -->
           <div class="block">
-            <el-pagination
-              :current-page.sync="currentPage1"
-              :page-size="70"
-              layout="prev, pager, next, jumper"
-              :total="1000"
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="page.pageNumber"
+              :limit.sync="page.size"
+              @click="queryData"
             />
           </div>
         </el-card>
@@ -127,9 +128,12 @@
 </template>
 
 <script>
+// 引入分页组件
+import Pagination from '@/components/Pagination'
 // import { log } from 'util'
 export default {
   name: 'App',
+  components: { Pagination },
   data() {
     return {
       /**
@@ -195,7 +199,7 @@ export default {
       /**
        * 角色管理
        */
-      companys: [
+      roles: [
         {
           name: 'name1',
           code: 'code1',
@@ -242,14 +246,6 @@ export default {
        * 待确认字段
        */
       multipleSelection: [],
-      /**
-       * 初始显示的页数
-       */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三'],
 
       /**
        *  资源分配和角色分配
@@ -265,11 +261,34 @@ export default {
         type: [],
         resource: '',
         desc: ''
-      }
+      },
+
+      /**
+       * 默认的分页的页面数据
+       */
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // 试卷总数
+      total: 0
     }
   },
-
+  created() {
+    this.queryData()
+  },
   methods: {
+    /**
+     * 查询数据
+     */
+    queryData() {
+      const params = {
+        size: this.page.size,
+        page: this.page.pageNumber,
+        roleName: this.formInline.roleName
+      }
+      this.total = this.roles.length
+    },
     /**
      * 树结构的点击事件
      */
@@ -287,12 +306,12 @@ export default {
     /**
      * 跳转到增加界面
      */
-    goto() {
+    addRole() {
       this.$router.push({
         name: 'AddCompany'
       })
     },
-    update1() {
+    updateRole() {
       this.$router.push({
         name: 'update'
       })
@@ -301,7 +320,7 @@ export default {
     /**
      * 删除信息
      */
-    delete1() {
+    deleteRole() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

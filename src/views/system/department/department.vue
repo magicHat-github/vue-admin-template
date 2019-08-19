@@ -42,7 +42,7 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -50,9 +50,9 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment">增加</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteDepartment">删除</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateDepartment">修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
@@ -64,31 +64,32 @@
             stripe
             @selection-change="handleSelectionChange"
           >
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="name" label="部门名称" />
-            <el-table-column prop="code" label="部门编号" />
-            <el-table-column prop="level" label="部门等级" sortable="true" />
-            <el-table-column prop="parentName" label="上级部门" sortable="true" />
-            <el-table-column prop="companyName" label="所属公司" />
-            <el-table-column prop="master" label="负责人" />
+            <el-table-column type="selection" width="55" align="center" />
+            <el-table-column prop="name" label="部门名称" align="center" />
+            <el-table-column prop="code" label="部门编号" align="center" />
+            <el-table-column prop="level" label="部门等级" sortable="true" align="center" />
+            <el-table-column prop="parentName" label="上级部门" sortable="true" align="center" />
+            <el-table-column prop="companyName" label="所属公司" align="center" />
+            <el-table-column prop="master" label="负责人" align="center" />
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
                 <el-tag>{{ scope.row.status }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="操作" style="white-space:nowrap">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+            <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
+              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment" />
+              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteDepartment" />
+              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateDepartment" />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
           <div class="block">
-            <el-pagination
-              :current-page.sync="currentPage1"
-              :page-size="70"
-              layout="prev, pager, next, jumper"
-              :total="1000"
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="page.pageNumber"
+              :limit.sync="page.size"
+              @click="queryData"
             />
           </div>
         </el-card>
@@ -98,9 +99,12 @@
 </template>
 
 <script>
+// 引入分页组件
+import Pagination from '@/components/Pagination'
 // import { log } from 'util'
 export default {
   name: 'App',
+  components: { Pagination },
   data() {
     return {
       /**
@@ -207,18 +211,34 @@ export default {
        * 待确认字段
        */
       multipleSelection: [],
+
       /**
-       * 初始显示的页数
+       * 默认的分页的页面数据
        */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // 试卷总数
+      total: 0
     }
   },
-
+  created() {
+    this.queryData()
+  },
   methods: {
+    /**
+     * 查询数据
+     */
+    queryData() {
+      const params = {
+        size: this.page.size,
+        page: this.page.pageNumber,
+        departmentName: this.formInline.departmentName,
+        departmentLevels: this.formInline.departmentLevels
+      }
+      this.total = this.departments.length
+    },
     /**
      * 树结构的点击事件
      */
@@ -236,12 +256,12 @@ export default {
     /**
      * 跳转到增加界面
      */
-    goto() {
+    addDepartment() {
       this.$router.push({
         name: 'addDepartment'
       })
     },
-    update1() {
+    updateDepartment() {
       this.$router.push({
         name: 'updateDepartment'
       })
@@ -250,7 +270,7 @@ export default {
     /**
      * 删除信息
      */
-    delete1() {
+    deleteDepartment() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

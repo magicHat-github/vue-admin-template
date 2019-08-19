@@ -75,25 +75,25 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :border="true"
+            :border=true
             :data="users"
             tooltip-effect="dark"
             stripe
             @selection-change="handleSelectionChange"
           >
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="code" label="用户工号" />
-            <el-table-column prop="password" label="初始密码" />
-            <el-table-column prop="name" label="用户名" />
-            <el-table-column prop="role" label="角色" />
-            <el-table-column prop="sex" label="性别" />
-            <el-table-column prop="birthday" label="生日" />
-            <el-table-column prop="position" label="职位" />
-            <el-table-column prop="tel" label="电话" />
-            <el-table-column prop="email" label="邮箱" />
-            <el-table-column prop="other" label="其它/微信" />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
-            <el-table-column label="操作">
+            <el-table-column type="selection" width="55" align="center" />
+            <el-table-column prop="code" label="用户工号" align="center" />
+            <el-table-column prop="password" label="初始密码" align="center" />
+            <el-table-column prop="name" label="用户名" align="center" />
+            <el-table-column prop="role" label="角色" align="center" />
+            <el-table-column prop="sex" label="性别" align="center" />
+            <el-table-column prop="birthday" label="生日" align="center" />
+            <el-table-column prop="position" label="职位" align="center" />
+            <el-table-column prop="tel" label="电话" align="center" />
+            <el-table-column prop="email" label="邮箱" align="center" />
+            <el-table-column prop="other" label="其它/微信" width="105" align="center" />
+            <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
+            <el-table-column label="操作" width="130" align="center">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser" />
               <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteUser" />
               <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateUser" />
@@ -107,11 +107,12 @@
           </el-table>
           <!-- 分页部分 -->
           <div class="block">
-            <el-pagination
-              :current-page.sync="currentPage1"
-              :page-size="70"
-              layout="prev, pager, next, jumper"
-              :total="1000"
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="page.pageNumber"
+              :limit.sync="page.size"
+              @click="queryData"
             />
           </div>
         </el-card>
@@ -121,9 +122,12 @@
 </template>
 
 <script>
+// 引入分页组件
+import Pagination from '@/components/Pagination'
 // import { log } from 'util'
 export default {
   name: 'App',
+  components: { Pagination },
   data() {
     return {
       /**
@@ -213,33 +217,34 @@ export default {
        */
       multipleSelection: [],
       /**
-       * 初始显示的页数
+       * 默认的分页的页面数据
        */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三'],
-
-      /**
-       *  资源分配和角色分配
-       */
-      distributeResource: false,
-      formLabelWidth: '120px',
-      resourceDestribution: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      }
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // 试卷总数
+      total: 0
     }
   },
-
+  created() {
+    this.queryData()
+  },
   methods: {
+    /**
+     * 查询数据
+     */
+    queryData() {
+      const params = {
+        size: this.page.size,
+        page: this.page.pageNumber,
+        userName: this.formInline.userName,
+        userCode: this.formInline.userCode,
+        tel: this.formInline.tel,
+        roles: this.formInline.roles
+      }
+      this.total = this.users.length
+    },
     /**
      * 树结构的点击事件
      */

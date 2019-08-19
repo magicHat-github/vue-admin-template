@@ -61,19 +61,19 @@
             stripe
             @selection-change="handleSelectionChange"
           >
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="name" label="公司名称" />
-            <el-table-column prop="code" label="公司编号" />
-            <el-table-column prop="mnemonicCode" label="助记码" />
-            <el-table-column prop="master" label="法人" />
-            <el-table-column prop="organizationName" label="所属机构" />
-            <el-table-column prop="tax" label="税号" show-overflow-tooltip />
-            <el-table-column prop="fax" label="传真" show-overflow-tooltip />
-            <el-table-column prop="tel" label="电话" show-overflow-tooltip />
-            <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
-            <el-table-column prop="website" label="网址" show-overflow-tooltip />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
-            <el-table-column label="操作">
+            <el-table-column type="selection" width="55" align="center" />
+            <el-table-column prop="name" label="公司名称" align="center" />
+            <el-table-column prop="code" label="公司编号" align="center" />
+            <el-table-column prop="mnemonicCode" label="助记码" align="center" />
+            <el-table-column prop="master" label="法人" align="center" />
+            <el-table-column prop="organizationName" label="所属机构" align="center" />
+            <el-table-column prop="tax" label="税号" show-overflow-tooltip align="center" />
+            <el-table-column prop="fax" label="传真" show-overflow-tooltip align="center" />
+            <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
+            <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
+            <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
+            <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
+            <el-table-column label="操作" width="110" align="center">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
               <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
               <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
@@ -96,6 +96,7 @@
 </template>
 
 <script>
+// 引入分页组件
 import Pagination from '@/components/Pagination'
 // import { log } from 'util'
 export default {
