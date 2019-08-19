@@ -78,7 +78,47 @@ export const constantRoutes = [
         name: 'Dictionary',
         component: () => import('@/views/basedata/dictionary/index'),
         meta: { title: '数据字典管理', icon: 'tree' }
+      },
+      {
+        path: 'add',
+        name: 'AddDictionary',
+        hidden: true,
+        component: () => import('@/views/basedata/dictionary/addDictionary'),
+        meta: { title: '新增数据字典' }
+      },
+      {
+        path: 'update',
+        name: 'UpdateDictionary',
+        hidden: true,
+        component: () => import('@/views/basedata/dictionary/updateDictionary'),
+        meta: { title: '修改数据字典' }
+      },
+      {
+        path: 'category',
+        name: 'Category',
+        component: () => import('@/views/basedata/category/index'),
+        meta: { title: '题目类别管理', icon: 'tree' }
+
+      },
+      {
+        path: 'type',
+        name: 'Type',
+        component: () => import('@/views/basedata/type/index'),
+        meta: { title: '题型管理', icon: 'tree' }
+      },
+      {
+        path: 'subject',
+        name: 'Subject',
+        component: () => import('@/views/basedata/subject/index'),
+        meta: { title: '题目管理', icon: 'tree' }
+      },
+      {
+        path: 'config',
+        name: 'Config',
+        component: () => import('@/views/basedata/config/index'),
+        meta: { title: '组卷配置管理', icon: 'tree' }
       }
+
     ]
   },
 
