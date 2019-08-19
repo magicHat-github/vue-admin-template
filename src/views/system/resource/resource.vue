@@ -1,22 +1,25 @@
 <template>
   <el-container>
-    <!-- 左侧边栏 -->
-    <el-aside width="180px">
-      <!-- 树上方的信息 -->
-      <el-container>
-        <el-header>
-          <el-row>
-            <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">资源管理</h1>
-            </el-col>
-          </el-row>
-        </el-header>
-        <!-- 树 -->
-        <el-main>
-          <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
-        </el-main>
-      </el-container>
-    </el-aside>
+    <el-card>
+      <!-- 左侧边栏 -->
+      <el-aside width="160px">
+        <!-- 树上方的信息 -->
+        <el-container>
+          <el-header>
+            <el-row>
+              <el-col>
+                <h1 style="font-size:20px;" class="el-icon-menu">资源管理</h1>
+              </el-col>
+            </el-row>
+            <hr />
+          </el-header>
+          <!-- 树 -->
+          <el-main>
+            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+          </el-main>
+        </el-container>
+      </el-aside>
+    </el-card>
 
     <!-- 主体部分 -->
     <el-main>
@@ -62,46 +65,48 @@
           </el-form>
         </div>
 
-        <!-- 增删改按钮框 -->
-        <div>
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
-        </div>
+        <el-card>
+          <!-- 增删改按钮框 -->
+          <div>
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+          </div>
 
-        <!-- 数据显示表单 -->
-        <el-table
-          ref="multipleTable"
-          :border="true"
-          :data="resources"
-          tooltip-effect="dark"
-          stripe
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="节点名称" />
-          <el-table-column prop="code" label="编号" />
-          <el-table-column prop="parentName" label="父亲节点" sortable="true" />
-          <el-table-column prop="url" label="URL" show-overflow-tooltip />
-          <el-table-column prop="resourceType" label="资源类型" sortable="true" />
-          <el-table-column prop="openImg" label="打开图标" />
-          <el-table-column prop="closeImg" label="关闭图标" />
-          <el-table-column prop="leaf" label="是否叶节点" sortable="true" />
-          <el-table-column label="操作" style="white-space:nowrap">
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
-          </el-table-column>
-        </el-table>
-        <!-- 分页部分 -->
-        <div class="block">
-          <el-pagination
-            :current-page.sync="currentPage1"
-            :page-size="70"
-            layout="prev, pager, next, jumper"
-            :total="1000"
-          />
-        </div>
+          <!-- 数据显示表单 -->
+          <el-table
+            ref="multipleTable"
+            :border="true"
+            :data="resources"
+            tooltip-effect="dark"
+            stripe
+            @selection-change="handleSelectionChange"
+          >
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="name" label="节点名称" />
+            <el-table-column prop="code" label="编号" />
+            <el-table-column prop="parentName" label="父亲节点" sortable="true" />
+            <el-table-column prop="url" label="URL" show-overflow-tooltip />
+            <el-table-column prop="resourceType" label="资源类型" sortable="true" />
+            <el-table-column prop="openImg" label="打开图标" />
+            <el-table-column prop="closeImg" label="关闭图标" />
+            <el-table-column prop="leaf" label="是否叶节点" sortable="true" />
+            <el-table-column label="操作" style="white-space:nowrap">
+              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
+              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+            </el-table-column>
+          </el-table>
+          <!-- 分页部分 -->
+          <div class="block">
+            <el-pagination
+              :current-page.sync="currentPage1"
+              :page-size="70"
+              layout="prev, pager, next, jumper"
+              :total="1000"
+            />
+          </div>
+        </el-card>
       </div>
     </el-main>
   </el-container>
