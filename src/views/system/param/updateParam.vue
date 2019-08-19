@@ -1,6 +1,6 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">修改数据字典</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">更新系统参数</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
@@ -12,19 +12,19 @@
       <hr>
       <el-form ref="form" :model="form" label-width="80px" size="mini" style="padding-left:30%;">
 
-        <el-form-item label="字典名称">
+        <el-form-item label="父参数类型">
           <el-col :span="8">
-            <el-input v-model="form.name" />
+            <el-input v-model="form.parentType" />
           </el-col>
         </el-form-item>
 
-        <el-form-item label="字典类型">
+        <el-form-item label="子参数类型">
           <el-col :span="8">
-            <el-input v-model="form.type" />
+            <el-input v-model="form.childType" />
           </el-col>
         </el-form-item>
 
-        <el-form-item label="字典值">
+        <el-form-item label="参数值">
           <el-col :span="8">
             <el-input v-model="form.value" />
           </el-col>
@@ -62,8 +62,8 @@ export default {
   data() {
     return {
       form: {
-        name: '',
-        type: '',
+        parentType: '',
+        childType: '',
         value: '',
         remark: ''
       },
@@ -79,13 +79,13 @@ export default {
     },
     save() {
       this.$router.push({
-        name: 'Dictionary'
+        name: 'Param'
       })
       this.$message('操作成功')
     },
     close() {
       this.$router.push({
-        name: 'Dictionary'
+        name: 'Param'
       })
     }
   }

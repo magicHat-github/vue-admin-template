@@ -214,6 +214,20 @@ export const constantRoutes = [
         meta: { title: '参数管理', icon: 'tree' }
       },
       {
+        path: 'addParam',
+        name: 'AddParam',
+        hidden: true,
+        component: () => import('@/views/system/param/addParam'),
+        meta: { title: '添加系统参数', icon: 'tree' }
+      },
+      {
+        path: 'updateParam',
+        name: 'UpdateParam',
+        hidden: true,
+        component: () => import('@/views/system/param/updateParam'),
+        meta: { title: '修改系统参数', icon: 'tree' }
+      },
+      {
         path: 'online',
         name: 'Online',
         component: () => import('@/views/system/online/index'),
