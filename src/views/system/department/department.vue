@@ -11,7 +11,7 @@
                 <h1 style="font-size:20px;" class="el-icon-menu">部门管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <hr />
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -33,11 +33,7 @@
             </el-form-item>
             <!-- 部门等级下拉框 -->
             <el-form-item label="部门等级:">
-              <el-select
-                v-model="formInline.departmentLevels"
-                placeholder="请选择"
-                size="mini"
-              >
+              <el-select v-model="formInline.departmentLevels" placeholder="请选择" size="mini">
                 <el-option
                   v-for="department in departments"
                   :key="department.level"
@@ -75,7 +71,11 @@
             <el-table-column prop="parentName" label="上级部门" sortable="true" />
             <el-table-column prop="companyName" label="所属公司" />
             <el-table-column prop="master" label="负责人" />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag>{{ scope.row.status }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" style="white-space:nowrap">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
               <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
@@ -153,7 +153,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '1',
-          status: '启用',
+          status: '是',
           companyName: 'boss'
         },
         {
@@ -162,7 +162,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '5',
-          status: '启用',
+          status: '是',
           companyName: 'boss'
         },
         {
@@ -171,7 +171,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '2',
-          status: '不启用',
+          status: '否',
           companyName: 'boss'
         },
         {
@@ -180,7 +180,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '4',
-          status: '启用',
+          status: '是',
           companyName: 'boss'
         },
         {
@@ -189,7 +189,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '3',
-          status: '启用',
+          status: '是',
           companyName: 'boss'
         },
         {
@@ -198,7 +198,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '0',
-          status: '启用',
+          status: '是',
           companyName: 'boss'
         }
       ],
