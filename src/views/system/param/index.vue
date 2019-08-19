@@ -7,7 +7,7 @@
         <el-header>
           <el-row>
             <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">题目类别</h1>
+              <h1 style="font-size:20px;" class="el-icon-menu">参数管理</h1>
             </el-col>
           </el-row>
         </el-header>
@@ -40,6 +40,9 @@
                 />
               </el-select>
             </el-form-item>
+            <el-form-item label="输入参数项:">
+              <el-input v-model="formInline.companyName" clearable size="mini" />
+            </el-form-item>
             <el-form-item>
               <el-button size="mini" type="primary">查询</el-button>
             </el-form-item>
@@ -66,14 +69,15 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="公司名称" />
-          <el-table-column prop="website" label="备注" show-overflow-tooltip />
-          <el-table-column prop="website" label="更新时间" />
-          <el-table-column prop="status" label="是否启用" sortable="true" />
+          <el-table-column prop="name" label="选择参数类型" sortable="true" />
+          <el-table-column prop="website" label="输入参数类型" />
+          <el-table-column prop="website" label="参数值" />
+          <el-table-column prop="status" label="启用标记" sortable="true" />
           <el-table-column label="操作">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
             <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
             <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
+            <el-link class="itemAction" type="primary" icon="el-icon-switch-button" @click="delete1" />
           </el-table-column>
         </el-table>
         <!-- 分页部分 -->

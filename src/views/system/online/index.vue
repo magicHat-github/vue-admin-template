@@ -1,44 +1,30 @@
 <template>
   <el-container>
-    <!-- 左侧边栏 -->
-    <el-aside width="180px">
-      <!-- 树上方的信息 -->
-      <el-container>
-        <el-header>
-          <el-row>
-            <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">题目类别</h1>
-            </el-col>
-          </el-row>
-        </el-header>
-        <!-- 树 -->
-        <el-main>
-          <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
-        </el-main>
-      </el-container>
-    </el-aside>
-
     <!-- 主体部分 -->
     <el-main>
       <div class="app-container allData">
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <!-- 组织机构下拉框 -->
-            <el-form-item label="题目类别:">
-              <el-select
-                v-model="formInline.organizationNames"
-                filterable
-                multiple
-                placeholder="请选择"
-                size="mini"
-              >
-                <el-option
-                  v-for="company in companys"
-                  :key="company.organizationName"
-                  :value="company.organizationName"
-                />
-              </el-select>
+            <el-form-item label="工号:">
+              <el-input v-model="formInline.companyName" clearable size="mini" />
+            </el-form-item>
+            <el-form-item label="用户名:">
+              <el-input v-model="formInline.companyName" clearable size="mini" />
+            </el-form-item>
+            <el-form-item label="在线时间段：">
+              <el-date-picker
+                v-model="value1"
+                type="datetime"
+                placeholder="选择日期时间"
+              />
+            </el-form-item>
+            <el-form-item label="至">
+              <el-date-picker
+                v-model="value1"
+                type="datetime"
+                placeholder="选择日期时间"
+              />
             </el-form-item>
             <el-form-item>
               <el-button size="mini" type="primary">查询</el-button>
@@ -48,10 +34,7 @@
 
         <!-- 增删改按钮框 -->
         <div>
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="update1">导入</el-link>
+          <el-link class="itemAction" type="primary" icon="el-icon-switch-button" @click="update1">强制下线</el-link>
           <el-link class="itemAction" type="primary" icon="el-icon-download" @click="update1">导出</el-link>
         </div>
 
@@ -66,14 +49,15 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="公司名称" />
-          <el-table-column prop="website" label="备注" show-overflow-tooltip />
-          <el-table-column prop="website" label="更新时间" />
-          <el-table-column prop="status" label="是否启用" sortable="true" />
+          <el-table-column prop="name" label="工号" />
+          <el-table-column prop="website" label="用户" />
+          <el-table-column prop="website" label="IP" />
+          <el-table-column prop="website" label="上线时间" />
+          <el-table-column prop="website" label="下线时间" />
+          <el-table-column prop="status" label="状态" />
           <el-table-column label="操作">
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
+            <el-link class="itemAction" type="primary" icon="el-icon-switch-button" @click="delete1" />
+            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="delete1" />
           </el-table-column>
         </el-table>
         <!-- 分页部分 -->

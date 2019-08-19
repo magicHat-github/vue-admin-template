@@ -235,7 +235,7 @@
     </el-dialog>
 
     <!-- 试卷详情 -->
-    <paper-view :page-show="paperDetailDialog" :paper-info="paperInfo" @show-change="showChange" />
+    <paper-view :page-show="paperDetailDialog" :paper-info="paperInfo" size="50%" @show-change="showChange" />
 
     <!-- 组卷提示框 -->
     <el-dialog title="提示" width="30%" :visible.sync="paperTipDialog" :close-on-click-modal="false">
@@ -318,7 +318,7 @@ export default {
       // 正在组卷提示弹窗标志
       paperTipDialog: false,
       // 试卷详情弹窗标志
-      paperDetailDialog: false,
+      paperDetailDialog: true,
       // 添加组卷明细弹框标志
       addCombConfigItemDialog: false,
       // 修改组卷明细弹框标志
