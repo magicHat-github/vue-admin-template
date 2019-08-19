@@ -159,6 +159,20 @@ export const constantRoutes = [
         meta: { title: '职位管理', icon: 'tree' }
       },
       {
+        path: 'addorg',
+        name: 'Addorg',
+        hidden: true,
+        component: () => import('@/views/system/organization/addorg'),
+        meta: { title: '组织机构增加' }
+      },
+      {
+        path: 'updateorg',
+        name: 'updateorg',
+        hidden: true,
+        component: () => import('@/views/system/organization/updateorg'),
+        meta: { title: '组织机构修改' }
+      },
+      {
         path: 'param',
         name: 'Param',
         component: () => import('@/views/system/param/index'),
