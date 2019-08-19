@@ -147,6 +147,12 @@ export const constantRoutes = [
         meta: { title: '资源管理', icon: 'tree' }
       },
       {
+        path: 'role',
+        name: 'Role',
+        component: () => import('@/views/user/role/role'),
+        meta: { title: '角色管理', icon: 'tree' }
+      },
+      {
         path: 'position',
         name: 'position',
         component: () => import('@/views/user/position/position'),
@@ -177,6 +183,12 @@ export const constantRoutes = [
         hidden: true,
         component: () => import('@/views/user/position/updateposition'),
         meta: { title: '职位修改' }
+      },
+      {
+        path: 'user',
+        name: 'User',
+        component: () => import('@/views/user/user/user'),
+        meta: { title: '用户管理', icon: 'tree' }
       }
     ]
   },
