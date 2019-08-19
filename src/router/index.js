@@ -159,18 +159,6 @@ export const constantRoutes = [
         meta: { title: '职位管理', icon: 'tree' }
       },
       {
-        path: 'param',
-        name: 'Param',
-        component: () => import('@/views/system/param/index'),
-        meta: { title: '参数管理', icon: 'tree' }
-      },
-      {
-        path: 'online',
-        name: 'Online',
-        component: () => import('@/views/system/online/index'),
-        meta: { title: '在线用户情况', icon: 'tree' }
-      },
-      {
         path: 'add',
         name: 'Add',
         hidden: true,
@@ -189,6 +177,18 @@ export const constantRoutes = [
         name: 'User',
         component: () => import('@/views/system/user/user'),
         meta: { title: '用户管理', icon: 'tree' }
+      },
+      {
+        path: 'param',
+        name: 'Param',
+        component: () => import('@/views/system/param/index'),
+        meta: { title: '参数管理', icon: 'tree' }
+      },
+      {
+        path: 'online',
+        name: 'Online',
+        component: () => import('@/views/system/online/index'),
+        meta: { title: '在线用户情况', icon: 'tree' }
       }
     ]
   },
