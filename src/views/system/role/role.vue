@@ -70,17 +70,16 @@
             type="primary"
             icon="el-icon-user"
             @click="distributeUser"
-          >角色分配</el-link>
+          >用户分配</el-link>
         </div>
 
         <!-- 数据显示表单 -->
         <el-table
           ref="multipleTable"
-          border="true"
+          :border="true"
           :data="companys"
           tooltip-effect="dark"
           stripe
-          height
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" />
@@ -317,7 +316,7 @@ export default {
      */
     distributeUser() {
       this.$router.push({
-        name: 'update'
+        name: 'DistributeUser'
       })
     }
   }

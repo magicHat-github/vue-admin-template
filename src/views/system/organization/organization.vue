@@ -3,7 +3,7 @@
     <!--查询框 -->
     <div>
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="职位名称:">
+        <el-form-item label="组织机构:">
           <el-input v-model="formInline.name" size="mini" />
         </el-form-item>
         <el-form-item>
@@ -28,9 +28,11 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="company" label="姓名" width="120" />
-      <el-table-column prop="name" label="姓名" width="120" />
-      <el-table-column prop="remark" label="备注" show-overflow-tooltip />
+      <el-table-column prop="orgname" label="组织机构" width="120" />
+      <el-table-column prop="code" label="机构代码" width="120" />
+      <el-table-column prop="master" label="负责人" show-overflow-tooltip />
+      <el-table-column prop="tel" label="电话" show-overflow-tooltip />
+      <el-table-column prop="address" label="地址" show-overflow-tooltip />
       <el-table-column prop="status" label="是否启用" show-overflow-tooltip />
       <el-table-column label="操作">
         <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
@@ -68,45 +70,59 @@ export default {
        */
       tableData3: [
         {
-          company: '腾讯',
-          name: 'CEO',
-          remark: 'xly是懒猪',
-          status: '0'
-        },
-        {
-          company: '阿里巴巴',
-          name: '执行总裁',
-          remark: '福报厂',
-          status: '0'
-        },
-        {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
+          orgname: '腾讯',
+          code: 'CEO',
+          master: 'xly是懒猪',
+          tel: '0',
+          address: '博思大厦',
           status: '1'
         },
         {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
+          orgname: '腾讯',
+          code: 'CEO',
+          master: 'xly是懒猪',
+          tel: '0',
+          address: '博思大厦',
           status: '1'
         },
         {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
+          orgname: '腾讯',
+          code: 'CEO',
+          master: 'xly是懒猪',
+          tel: '0',
+          address: '博思大厦',
           status: '1'
         },
         {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
+          orgname: '腾讯',
+          code: 'CEO',
+          master: 'xly是懒猪',
+          tel: '0',
+          address: '博思大厦',
           status: '1'
         },
         {
-          company: '博思软件',
-          name: '软件研发工程师',
-          remark: ' 史上最苦命打工仔',
+          orgname: '腾讯',
+          code: 'CEO',
+          master: 'xly是懒猪',
+          tel: '0',
+          address: '博思大厦',
+          status: '1'
+        },
+        {
+          orgname: '腾讯',
+          code: 'CEO',
+          master: 'xly是懒猪',
+          tel: '0',
+          address: '博思大厦',
+          status: '1'
+        },
+        {
+          orgname: '腾讯',
+          code: 'CEO',
+          master: 'xly是懒猪',
+          tel: '0',
+          address: '博思大厦',
           status: '1'
         }
       ],
@@ -139,12 +155,12 @@ export default {
      */
     goto() {
       this.$router.push({
-        name: 'Add'
+        name: 'Addorg'
       })
     },
     update1() {
       this.$router.push({
-        name: 'update'
+        name: 'updateorg'
       })
     },
 

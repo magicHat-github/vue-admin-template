@@ -62,7 +62,6 @@ export const constantRoutes = [
       }
     ]
   },
-
   /**
    * 基础数据管理
    */
@@ -78,7 +77,46 @@ export const constantRoutes = [
         name: 'Dictionary',
         component: () => import('@/views/basedata/dictionary/index'),
         meta: { title: '数据字典管理', icon: 'tree' }
+      },
+      {
+        path: 'add',
+        name: 'AddDictionary',
+        hidden: true,
+        component: () => import('@/views/basedata/dictionary/addDictionary'),
+        meta: { title: '新增数据字典' }
+      },
+      {
+        path: 'update',
+        name: 'UpdateDictionary',
+        hidden: true,
+        component: () => import('@/views/basedata/dictionary/updateDictionary'),
+        meta: { title: '修改数据字典' }
+      },
+      {
+        path: 'category',
+        name: 'Category',
+        component: () => import('@/views/basedata/category/index'),
+        meta: { title: '题目类别管理', icon: 'tree' }
+      },
+      {
+        path: 'type',
+        name: 'Type',
+        component: () => import('@/views/basedata/type/index'),
+        meta: { title: '题型管理', icon: 'tree' }
+      },
+      {
+        path: 'subject',
+        name: 'Subject',
+        component: () => import('@/views/basedata/subject/index'),
+        meta: { title: '题目管理', icon: 'tree' }
+      },
+      {
+        path: 'config',
+        name: 'Config',
+        component: () => import('@/views/basedata/config/index'),
+        meta: { title: '组卷配置管理', icon: 'tree' }
       }
+
     ]
   },
 
@@ -86,74 +124,135 @@ export const constantRoutes = [
    * 系统管理管理
    */
   {
-    path: '/user',
+    path: '/system',
     component: Layout,
-    redirect: '/user/position',
-    name: 'User',
+    redirect: '/system/position',
+    name: 'System',
     meta: { title: '系统管理', icon: 'example' },
     children: [
       {
         path: 'org',
         name: 'org',
-        component: () => import('@/views/user/organization/organization'),
+        component: () => import('@/views/system/organization/organization'),
         meta: { title: '组织管理', icon: 'tree' }
+      },
+      {
+        path: 'addorg',
+        name: 'Addorg',
+        hidden: true,
+        component: () => import('@/views/system/organization/addorg'),
+        meta: { title: '新增组织机构' }
+      },
+      {
+        path: 'updateorg',
+        name: 'updateorg',
+        hidden: true,
+        component: () => import('@/views/system/organization/updateorg'),
+        meta: { title: '修改组织机构' }
       },
       {
         path: 'company',
         name: 'Company',
-        component: () => import('@/views/user/company/company'),
+        component: () => import('@/views/system/company/company'),
         meta: { title: '公司管理', icon: 'tree' }
       },
       {
         path: 'addCompany',
         name: 'AddCompany',
         hidden: true,
-        component: () => import('@/views/user/company/addCompany'),
+        component: () => import('@/views/system/company/addCompany'),
         meta: { title: '新增公司' }
       },
       {
         path: 'department',
         name: 'Department',
-        component: () => import('@/views/user/department/department'),
+        component: () => import('@/views/system/department/department'),
         meta: { title: '部门管理', icon: 'tree' }
       },
       {
         path: 'resource',
         name: 'Resource',
-        component: () => import('@/views/user/resource/resource'),
+        component: () => import('@/views/system/resource/resource'),
         meta: { title: '资源管理', icon: 'tree' }
       },
       {
         path: 'role',
         name: 'Role',
-        component: () => import('@/views/user/role/role'),
+        component: () => import('@/views/system/role/role'),
         meta: { title: '角色管理', icon: 'tree' }
+      },
+      {
+        path: 'distributeUser',
+        name: 'DistributeUser',
+        hidden: true,
+        component: () => import('@/views/system/role/distributeUser'),
+        meta: { title: '为角色分配用户' }
       },
       {
         path: 'position',
         name: 'position',
-        component: () => import('@/views/user/position/position'),
+        component: () => import('@/views/system/position/position'),
         meta: { title: '职位管理', icon: 'tree' }
       },
       {
         path: 'add',
         name: 'Add',
         hidden: true,
-        component: () => import('@/views/user/position/addposition'),
+        component: () => import('@/views/system/position/addposition'),
         meta: { title: '职位增加' }
       },
       {
         path: 'update',
         name: 'update',
         hidden: true,
-        component: () => import('@/views/user/position/updateposition'),
+        component: () => import('@/views/system/position/updateposition'),
         meta: { title: '职位修改' }
       },
       {
         path: 'user',
         name: 'User',
-        component: () => import('@/views/user/user/user'),
+        component: () => import('@/views/system/user/user'),
         meta: { title: '用户管理', icon: 'tree' }
+      },
+      {
+        path: 'addUser',
+        name: 'AddUser',
+        hidden: true,
+        component: () => import('@/views/system/user/addUser'),
+        meta: { title: '新增用户' }
+      },
+      {
+        path: 'updateUser',
+        name: 'UpdateUser',
+        hidden: true,
+        component: () => import('@/views/system/user/updateUser'),
+        meta: { title: '修改用户' }
+      },
+      {
+        path: 'param',
+        name: 'Param',
+        component: () => import('@/views/system/param/index'),
+        meta: { title: '参数管理', icon: 'tree' }
+      },
+      {
+        path: 'addParam',
+        name: 'AddParam',
+        hidden: true,
+        component: () => import('@/views/system/param/addParam'),
+        meta: { title: '添加系统参数', icon: 'tree' }
+      },
+      {
+        path: 'updateParam',
+        name: 'UpdateParam',
+        hidden: true,
+        component: () => import('@/views/system/param/updateParam'),
+        meta: { title: '修改系统参数', icon: 'tree' }
+      },
+      {
+        path: 'online',
+        name: 'Online',
+        component: () => import('@/views/system/online/index'),
+        meta: { title: '在线用户情况', icon: 'tree' }
       }
     ]
   },
