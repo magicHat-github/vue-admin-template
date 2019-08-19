@@ -1,22 +1,25 @@
 <template>
   <el-container>
-    <!-- 左侧边栏 -->
-    <el-aside width="180px">
-      <!-- 树上方的信息 -->
-      <el-container>
-        <el-header>
-          <el-row>
-            <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">角色管理</h1>
-            </el-col>
-          </el-row>
-        </el-header>
-        <!-- 树 -->
-        <el-main>
-          <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
-        </el-main>
-      </el-container>
-    </el-aside>
+    <el-card>
+      <!-- 左侧边栏 -->
+      <el-aside width="160px">
+        <!-- 树上方的信息 -->
+        <el-container>
+          <el-header>
+            <el-row>
+              <el-col>
+                <h1 style="font-size:20px;" class="el-icon-menu">角色管理</h1>
+              </el-col>
+            </el-row>
+            <hr />
+          </el-header>
+          <!-- 树 -->
+          <el-main>
+            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+          </el-main>
+        </el-container>
+      </el-aside>
+    </el-card>
 
     <!-- 主体部分 -->
     <el-main>
@@ -35,82 +38,89 @@
           </el-form>
         </div>
 
-        <!-- 增删改按钮框 -->
-        <div>
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
-          <!-- 资源分配按钮 -->
-          <el-link
-            class="itemAction"
-            type="primary"
-            icon="el-icon-circle-plus-outline"
-            @click="distributeResource = true"
-          >资源分配</el-link>
-          <el-dialog title="为角色分配资源" :visible.sync="distributeResource">
-            <el-form :model="resourceDestribution">
-              <el-form-item label="活动名称" :label-width="formLabelWidth">
-                <el-input v-model="resourceDestribution.name" autocomplete="off" />
-              </el-form-item>
-              <el-form-item label="活动区域" :label-width="formLabelWidth">
-                <el-select v-model="resourceDestribution.region" placeholder="请选择活动区域">
-                  <el-option label="区域一" value="shanghai" />
-                  <el-option label="区域二" value="beijing" />
-                </el-select>
-              </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-              <el-button @click="distributeResource = false">取 消</el-button>
-              <el-button type="primary" @click="distributeResource = false">确 定</el-button>
-            </div>
-          </el-dialog>
-          <!-- 用户分配按钮 -->
-          <el-link
-            class="itemAction"
-            type="primary"
-            icon="el-icon-user"
-            @click="distributeUser"
-          >用户分配</el-link>
-        </div>
-
-        <!-- 数据显示表单 -->
-        <el-table
-          ref="multipleTable"
-          :border="true"
-          :data="companys"
-          tooltip-effect="dark"
-          stripe
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="角色" />
-          <el-table-column prop="code" label="角色代号" />
-          <el-table-column prop="remark" label="角色备注" show-overflow-tooltip />
-          <el-table-column prop="companyName" label="所属公司" />
-          <el-table-column prop="organizationName" label="所属机构" />
-          <el-table-column prop="status" label="是否启用" sortable="true" />
-          <el-table-column label="操作">
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+        <el-card>
+          <!-- 增删改按钮框 -->
+          <div>
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+            <!-- 资源分配按钮 -->
             <el-link
               class="itemAction"
               type="primary"
               icon="el-icon-circle-plus-outline"
               @click="distributeResource = true"
+            >资源分配</el-link>
+            <el-dialog title="为角色分配资源" :visible.sync="distributeResource">
+              <el-form :model="resourceDestribution">
+                <el-form-item label="活动名称" :label-width="formLabelWidth">
+                  <el-input v-model="resourceDestribution.name" autocomplete="off" />
+                </el-form-item>
+                <el-form-item label="活动区域" :label-width="formLabelWidth">
+                  <el-select v-model="resourceDestribution.region" placeholder="请选择活动区域">
+                    <el-option label="区域一" value="shanghai" />
+                    <el-option label="区域二" value="beijing" />
+                  </el-select>
+                </el-form-item>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click="distributeResource = false">取 消</el-button>
+                <el-button type="primary" @click="distributeResource = false">确 定</el-button>
+              </div>
+            </el-dialog>
+            <!-- 用户分配按钮 -->
+            <el-link
+              class="itemAction"
+              type="primary"
+              icon="el-icon-user"
+              @click="distributeUser"
+            >用户分配</el-link>
+          </div>
+
+          <!-- 数据显示表单 -->
+          <el-table
+            ref="multipleTable"
+            :border="true"
+            :data="companys"
+            tooltip-effect="dark"
+            stripe
+            @selection-change="handleSelectionChange"
+          >
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="name" label="角色" />
+            <el-table-column prop="code" label="角色代号" />
+            <el-table-column prop="remark" label="角色备注" show-overflow-tooltip />
+            <el-table-column prop="companyName" label="所属公司" />
+            <el-table-column prop="organizationName" label="所属机构" />
+            <el-table-column prop="status" label="是否启用" sortable="true" />
+            <el-table-column label="操作">
+              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
+              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+              <el-link
+                class="itemAction"
+                type="primary"
+                icon="el-icon-circle-plus-outline"
+                @click="distributeResource = true"
+              />
+              <el-link
+                class="itemAction"
+                type="primary"
+                icon="el-icon-user"
+                @click="distributeUser"
+              />
+            </el-table-column>
+          </el-table>
+          <!-- 分页部分 -->
+          <div class="block">
+            <el-pagination
+              :current-page.sync="currentPage1"
+              :page-size="70"
+              layout="prev, pager, next, jumper"
+              :total="1000"
             />
-            <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeUser" />
-          </el-table-column>
-        </el-table>
-        <!-- 分页部分 -->
-        <div class="block">
-          <el-pagination
-            :current-page.sync="currentPage1"
-            :page-size="70"
-            layout="prev, pager, next, jumper"
-            :total="1000"
-          />
-        </div>
+          </div>
+        </el-card>
       </div>
     </el-main>
   </el-container>

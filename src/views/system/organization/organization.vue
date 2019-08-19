@@ -13,42 +13,45 @@
     </div>
 
     <!-- 增删改按钮框 -->
-    <div>
-      <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-      <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-      <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
-    </div>
-    <!-- 数据显示表单 -->
-    <el-table
-      ref="multipleTable"
-      :data="tableData3"
-      tooltip-effect="dark"
-      style="width: 100%"
-      stripe
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column prop="orgname" label="组织机构" width="120" />
-      <el-table-column prop="code" label="机构代码" width="120" />
-      <el-table-column prop="master" label="负责人" show-overflow-tooltip />
-      <el-table-column prop="tel" label="电话" show-overflow-tooltip />
-      <el-table-column prop="address" label="地址" show-overflow-tooltip />
-      <el-table-column prop="status" label="是否启用" show-overflow-tooltip />
-      <el-table-column label="操作">
-        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
-      </el-table-column>
-    </el-table>
-    <!-- 分页部分 -->
-    <div class="block">
-      <el-pagination
-        :current-page.sync="currentPage1"
-        :page-size="70"
-        layout="prev, pager, next, jumper"
-        :total="1000"
-      />
-    </div>
+    <el-card>
+      <div>
+        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+      </div>
+      <!-- 数据显示表单 -->
+      <el-table
+        ref="multipleTable"
+        :data="tableData3"
+        :border="true"
+        tooltip-effect="dark"
+        style="width: 100%"
+        stripe
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="orgname" label="组织机构" width="120" />
+        <el-table-column prop="code" label="机构代码" width="120" />
+        <el-table-column prop="master" label="负责人" show-overflow-tooltip />
+        <el-table-column prop="tel" label="电话" show-overflow-tooltip />
+        <el-table-column prop="address" label="地址" show-overflow-tooltip />
+        <el-table-column prop="status" label="是否启用" show-overflow-tooltip />
+        <el-table-column label="操作">
+          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
+          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+        </el-table-column>
+      </el-table>
+      <!-- 分页部分 -->
+      <div class="block">
+        <el-pagination
+          :current-page.sync="currentPage1"
+          :page-size="70"
+          layout="prev, pager, next, jumper"
+          :total="1000"
+        />
+      </div>
+    </el-card>
   </div>
 </template>
 
