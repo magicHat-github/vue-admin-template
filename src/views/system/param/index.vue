@@ -285,12 +285,12 @@ export default {
        */
     goto() {
       this.$router.push({
-        name: 'AddCompany'
+        name: 'AddParam'
       })
     },
     update1() {
       this.$router.push({
-        name: 'update'
+        name: 'UpdateParam'
       })
     },
 

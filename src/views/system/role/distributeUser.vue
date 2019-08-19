@@ -7,7 +7,7 @@
         <el-header>
           <el-row>
             <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">用户管理</h1>
+              <h1 style="font-size:20px;" class="el-icon-menu">分配用户</h1>
             </el-col>
           </el-row>
         </el-header>
@@ -55,18 +55,14 @@
           </el-form>
         </div>
 
-        <!-- 增删改按钮框 -->
+        <!-- 角色分配按钮 -->
         <div>
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser">增加</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteUser">删除</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateUser">修改</el-link>
-          <!-- 角色分配按钮 -->
           <el-link
             class="itemAction"
             type="primary"
             icon="el-icon-user"
             @click="distributeRole"
-          >角色分配</el-link>
+          >分配角色给选定用户</el-link>
         </div>
 
         <!-- 数据显示表单 -->
@@ -92,9 +88,6 @@
           <el-table-column prop="other" label="其它/微信" />
           <el-table-column prop="status" label="是否启用" sortable="true" />
           <el-table-column label="操作">
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser" />
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteUser" />
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateUser" />
             <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeRole" />
           </el-table-column>
         </el-table>
@@ -213,21 +206,6 @@ export default {
       currentPage4: 4,
       dynamicTags: ['标签一', '标签二', '标签三'],
 
-      /**
-       *  资源分配和角色分配
-       */
-      distributeResource: false,
-      formLabelWidth: '120px',
-      resourceDestribution: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      }
     }
   },
 
@@ -287,9 +265,23 @@ export default {
      * 分配角色
      */
     distributeRole() {
-      this.$router.push({
-        name: 'update'
+      this.$confirm('将角色分配给选定用户？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
+        .then(() => {
+          this.$message({
+            type: 'success',
+            message: '分配成功!'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消分配'
+          })
+        })
     }
   }
 }
