@@ -1,17 +1,18 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">新增公司</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">新增用户</h1>
     <hr />
     <br />
     <el-col :span="5" :offset="1">
-      <font style="font-size:15px;" color="blue">公司基本信息</font>
+      <font style="font-size:15px;" color="blue">基本信息</font>
     </el-col>
     <!--表单输入 -->
     <div class="app-container allData">
       <hr />
-      <el-form ref="form" :model="form" label-width="80px" size="mini" style="padding-left:30%;">
+      <el-form ref="form" :model="form" label-width="80px" size="mini" style="text-align:center" >
+        <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="公司">
-          <el-col :span="8">
+          <el-col style="margin-right:30px">
             <el-select v-model="form.company">
               <el-option label="博思软件" value="shanghai" />
               <el-option label="阿里巴巴" value="beijing" />
@@ -20,10 +21,11 @@
         </el-form-item>
 
         <el-form-item label="职位名">
-          <el-col :span="8">
+          <el-col>
             <el-input v-model="form.name" />
           </el-col>
         </el-form-item>
+        </el-form>
 
         <el-form-item label="备注">
           <el-col :span="8">
