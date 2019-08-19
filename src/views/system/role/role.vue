@@ -76,11 +76,10 @@
         <!-- 数据显示表单 -->
         <el-table
           ref="multipleTable"
-          border="true"
+          :border="true"
           :data="companys"
           tooltip-effect="dark"
           stripe
-          height
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" />
