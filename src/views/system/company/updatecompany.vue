@@ -1,6 +1,6 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">新增公司基本信息</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">修改公司基本信息</h1>
     <hr />
     <br />
     <el-col :span="5" :offset="1">

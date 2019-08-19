@@ -164,6 +164,13 @@ export const constantRoutes = [
         meta: { title: '新增公司' }
       },
       {
+        path: 'updateCompany',
+        name: 'UpdateCompany',
+        hidden: true,
+        component: () => import('@/views/system/company/updatecompany'),
+        meta: { title: '修改公司' }
+      },
+      {
         path: 'department',
         name: 'Department',
         component: () => import('@/views/system/department/department'),
