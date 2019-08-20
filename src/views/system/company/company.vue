@@ -51,8 +51,6 @@
             <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
             <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateCompany">修改</el-link>
           </div>
-
-          
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
