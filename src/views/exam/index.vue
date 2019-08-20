@@ -320,6 +320,20 @@ export default {
      * 发布记录操作处理函数
      */
     publishRecord(row) {
+      if (row.status === '已发布') {
+        this.$confirm('该场考试已经发布过了,是否重新发布?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(() => {
+          // 调用重新发布函数
+          this.rePublish(row)
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消重新发布'
+          })
+        })
+      }
       // 1.获得id
       // 2.向后台请求发布记录
       // 3.显示相关消息
@@ -397,6 +411,12 @@ export default {
       })
       // 调用api进行删除
       console.log(deleteForm)
+    },
+    /**
+     * 重新发布的函数
+     */
+    rePublish(row) {
+      alert('重新发布成功')
     },
     /**
      * 选中和不选中

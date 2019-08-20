@@ -1,7 +1,7 @@
 /**
  * 分页布局
  */
-export const layout = 'prev, pager, next'
+export const layout = 'total,sizes,prev,pager,next,jumper'
 /**
  * 分页大小
  */
@@ -106,3 +106,126 @@ export const rules = {
     { required: true, message: '必须选择阅卷截止时间', trigger: 'blur' }
   ]
 }
+/**
+ * 模拟答卷数据
+ */
+export const answerData = [
+  {
+    title: '秋招',
+    examSessionName: '十月份场次',
+    endTime: '2019-10-29 12:00:00',
+    tel: '12312341234',
+    examerName: '龙同学',
+    actualStartTime: '2019-10-29 11:00:00',
+    actualEndTime: '2019-10-29 11:00:00',
+    makingStopTime: '2019-11-10 12:00:00',
+    objectiveScore: 24,
+    subjectiveScore: 34
+  },
+  {
+    title: '秋招',
+    examSessionName: '十月份场次',
+    endTime: '2019-10-29 12:00:00',
+    tel: '12312341234',
+    examerName: '龙同学',
+    actualStartTime: '2019-10-29 11:00:00',
+    actualEndTime: '2019-10-29 11:00:00',
+    makingStopTime: '2019-11-10 12:00:00',
+    objectiveScore: 24,
+    subjectiveScore: 34
+  },
+  {
+    title: '秋招',
+    examSessionName: '十月份场次',
+    endTime: '2019-10-29 12:00:00',
+    tel: '12312341234',
+    examerName: '龙同学',
+    actualStartTime: '2019-10-29 11:00:00',
+    actualEndTime: '2019-10-29 11:00:00',
+    makingStopTime: '2019-11-10 12:00:00',
+    objectiveScore: 24,
+    subjectiveScore: 34
+  },
+  {
+    title: '秋招',
+    examSessionName: '十月份场次',
+    endTime: '2019-10-29 12:00:00',
+    tel: '12312341234',
+    examerName: '龙同学',
+    actualStartTime: '2019-10-29 11:00:00',
+    actualEndTime: '2019-10-29 11:00:00',
+    makingStopTime: '2019-11-10 12:00:00',
+    objectiveScore: 24,
+    subjectiveScore: 34
+  }
+]
+/**
+ * 考试批阅
+ */
+export const markingStatuOptions = [
+  {
+    value: 'marked',
+    label: '已批阅'
+  },
+  {
+    value: 'unmark',
+    label: '未批阅'
+  }
+]
+/**
+ * 考试批阅的数据
+ */
+export const markingMockData = [
+  {
+    paperName: 'java基础',
+    examSessionName: '秋招第一场',
+    publishTime: '2019-10-11 11:11:11',
+    tel: '12312341234',
+    examerName: '李同学',
+    actualEndTime: '2019-10-1 11:11:11',
+    makingStopTime: '2019-11-1 11:11:11',
+    objectiveScore: '50',
+    subjectiveScore: '49',
+    systemEvaluate: 'A',
+    status: 1
+  },
+  {
+    paperName: 'java基础',
+    examSessionName: '秋招第一场',
+    publishTime: '2019-10-11 11:11:11',
+    tel: '12312341234',
+    examerName: '李同学',
+    actualEndTime: '2019-10-1 11:11:11',
+    makingStopTime: '2019-11-1 11:11:11',
+    objectiveScore: '50',
+    subjectiveScore: '49',
+    systemEvaluate: 'A',
+    status: 1
+  },
+  {
+    paperName: 'java基础',
+    examSessionName: '秋招第一场',
+    publishTime: '2019-10-11 11:11:11',
+    tel: '12312341234',
+    examerName: '李同学',
+    actualEndTime: '2019-10-1 11:11:11',
+    makingStopTime: '2019-11-1 11:11:11',
+    objectiveScore: '50',
+    subjectiveScore: '49',
+    systemEvaluate: 'A',
+    status: 1
+  },
+  {
+    paperName: 'java基础',
+    examSessionName: '秋招第一场',
+    publishTime: '2019-10-11 11:11:11',
+    tel: '12312341234',
+    examerName: '李同学',
+    actualEndTime: '2019-10-1 11:11:11',
+    makingStopTime: '2019-11-1 11:11:11',
+    objectiveScore: '50',
+    subjectiveScore: '49',
+    systemEvaluate: 'A',
+    status: 1
+  }
+]

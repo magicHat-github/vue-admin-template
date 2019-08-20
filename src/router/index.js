@@ -447,7 +447,7 @@ export const constantRoutes = [
         path: 'queryanswer',
         name: 'queryanswer',
         component: () => import('@/views/exam/queryanswer/index'),
-        meta: { title: '答案查询', icon: 'example' }
+        meta: { title: '答卷查询', icon: 'example' }
       },
       {
         path: 'marking',
