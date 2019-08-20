@@ -1,6 +1,6 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">增加题目类型</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">增加组卷配置</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
@@ -9,8 +9,8 @@
     <!--表单输入 -->
     <div class="app-container allData">
       <hr>
-      <el-form ref="form" :label-position="left" :rules="rules" :model="form" label-width="80px" size="mini" style="padding-left:30%;">
-        <el-form-item label="题目类型" prop="name">
+      <el-form ref="form" :label-position="left" :rules="rules" :model="form" size="mini">
+        <el-form-item label="配置项名称" prop="name">
           <el-col :span="8">
             <el-input v-model="form.name" />
           </el-col>
@@ -22,15 +22,34 @@
             <el-radio v-model="form.status" label="2">否</el-radio>
           </el-col>
         </el-form-item>
-        <el-form-item label="备注信息">
-          <el-col :span="8">
-            <el-input
-              v-model="form.remark"
-              type="textarea"
-              :rows="10"
-              placeholder="请输入内容"
-            />
-          </el-col>
+        <el-form-item label="添加配置信息" />
+        <el-form-item>
+          <el-card class="tableData">
+            <el-table
+              ref="multipleTable"
+              :data="chooseDetails"
+              tooltip-effect="dark"
+              stripe
+              height
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column
+                label="序号"
+                type="index"
+                width="50"
+              />
+              <el-table-column prop="category" label="题目类别" />
+              <el-table-column prop="type" label="题型" />
+              <el-table-column prop="num" label="题目数量" />
+              <el-table-column prop="difficult" label="题目难度" />
+              <el-table-column prop="score" label="题目分值" />
+              <el-table-column label="操作">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+              </el-table-column>
+            </el-table>
+          </el-card>
         </el-form-item>
         <!-- 按钮组件 -->
         <el-form-item>
