@@ -345,8 +345,8 @@ export const constantRoutes = [
         meta: { title: '修改用户' }
       },
       {
-        path: 'distributeUser',
-        name: 'DistributeUser',
+        path: 'distributeRole',
+        name: 'DistributeRole',
         hidden: true,
         component: () => import('@/views/system/user/distributeRole'),
         meta: { title: '为用户分配角色' }

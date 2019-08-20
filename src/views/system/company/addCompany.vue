@@ -195,7 +195,7 @@ export default {
       /**
        * 角色下拉框选项
        */
-      roles: [{ name: '鼓励师' }, { name: '搬砖人' }, { name: '搬砖人' }]
+      roles: [{ name: '鼓励师' }, { name: '搬砖人' }]
     }
   },
   methods: {
