@@ -15,9 +15,9 @@
     <el-card>
       <!-- 增删改按钮框 -->
       <div>
-        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addPosition">增加</el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deletePosition">删除</el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updatePosition">修改</el-link>
       </div>
       <!-- 数据显示表单 -->
       <el-table
@@ -41,9 +41,9 @@
           align="center"
         />
         <el-table-column label="操作" width="110" align="center">
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addPosition" />
+          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deletePosition" />
+          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updatePosition" />
         </el-table-column>
       </el-table>
       <!-- 分页部分 -->
@@ -159,21 +159,21 @@ export default {
     /**
      * 跳转到增加界面
      */
-    goto() {
+    addPosition() {
       this.$router.push({
-        name: 'Addposition'
+        name: 'AddPosition'
       })
     },
-    update1() {
+    updatePosition() {
       this.$router.push({
-        name: 'updateposition'
+        name: 'UpdatePosition'
       })
     },
 
     /**
      * 删除信息
      */
-    delete1() {
+    deletePosition() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
