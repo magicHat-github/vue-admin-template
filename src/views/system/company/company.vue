@@ -31,27 +31,29 @@
             <el-form-item label="公司名称:">
               <el-input v-model="formInline.companyName" clearable size="mini" />
             </el-form-item>
+
             <!-- 组织机构下拉框 -->
-            <el-form-item label="组织机构:">
+            <el-form-item label="组织机构:" size="mini">
               <el-select v-model="formInline.organizationNames">
                 <el-option label="博思软件" value="shanghai" />
                 <el-option label="阿里巴巴" value="beijing" />
               </el-select>
             </el-form-item>
+
             <el-form-item>
               <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
+
         </div>
 
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany">增加</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany">修改</el-link>
           </div>
-
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
@@ -74,9 +76,9 @@
             <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
             <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
             <el-table-column label="操作" width="110" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
+              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteCompany" />
+              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateCompany" />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
@@ -91,6 +93,7 @@
           </div>
         </el-card>
       </div>
+
     </el-main>
   </el-container>
 </template>
@@ -279,12 +282,12 @@ export default {
     /**
      * 跳转到增加界面
      */
-    goto() {
+    addCompany() {
       this.$router.push({
         name: 'AddCompany'
       })
     },
-    update1() {
+    updateCompany() {
       this.$router.push({
         name: 'UpdateCompany'
       })
@@ -293,7 +296,7 @@ export default {
     /**
      * 删除信息
      */
-    delete1() {
+    deleteCompany() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

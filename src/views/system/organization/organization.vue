@@ -15,15 +15,14 @@
     <!-- 增删改按钮框 -->
     <el-card>
       <div>
-        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addOrg">增加</el-link>
+        <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteOrg">删除</el-link>
+        <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateOrg">修改</el-link>
       </div>
       <!-- 数据显示表单 -->
       <el-table
         ref="multipleTable"
         :data="organizations"
-        :border="true"
         tooltip-effect="dark"
         style="width: 100%"
         stripe
@@ -43,9 +42,9 @@
           align="center"
         />
         <el-table-column label="操作" width="110" align="center">
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addOrg" />
+          <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteOrg" />
+          <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateOrg" />
         </el-table-column>
       </el-table>
       <!-- 分页部分 -->
@@ -175,21 +174,21 @@ export default {
     /**
      * 跳转到增加界面
      */
-    goto() {
+    addOrg() {
       this.$router.push({
-        name: 'Addorg'
+        name: 'AddOrg'
       })
     },
-    update1() {
+    updateOrg() {
       this.$router.push({
-        name: 'updateorg'
+        name: 'UpdateOrg'
       })
     },
 
     /**
      * 删除信息
      */
-    delete1() {
+    deleteOrg() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

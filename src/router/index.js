@@ -190,20 +190,20 @@ export const constantRoutes = [
        */
       {
         path: 'org',
-        name: 'org',
+        name: 'Org',
         component: () => import('@/views/system/organization/organization'),
         meta: { title: '组织管理', icon: 'tree' }
       },
       {
         path: 'addorg',
-        name: 'Addorg',
+        name: 'AddOrg',
         hidden: true,
         component: () => import('@/views/system/organization/addorg'),
         meta: { title: '新增组织机构' }
       },
       {
         path: 'updateorg',
-        name: 'updateorg',
+        name: 'UpdateOrg',
         hidden: true,
         component: () => import('@/views/system/organization/updateorg'),
         meta: { title: '修改组织机构' }
@@ -229,7 +229,7 @@ export const constantRoutes = [
         name: 'UpdateCompany',
         hidden: true,
         component: () => import('@/views/system/company/updatecompany'),
-        meta: { title: '修改公司' }
+        meta: { title: '修改公司信息' }
       },
       /**
        * 部门管理界面
@@ -241,18 +241,18 @@ export const constantRoutes = [
         meta: { title: '部门管理', icon: 'tree' }
       },
       {
-        path: 'adddepartment',
-        name: 'addDepartment',
+        path: 'addDepartment',
+        name: 'AddDepartment',
         hidden: true,
         component: () => import('@/views/system/department/adddepartment'),
         meta: { title: '新增部门', icon: 'tree' }
       },
       {
-        path: 'updatedepartment',
-        name: 'updateDepartment',
+        path: 'updateDepartment',
+        name: 'UpdateDepartment',
         hidden: true,
         component: () => import('@/views/system/department/updatedepartment'),
-        meta: { title: '新增部门', icon: 'tree' }
+        meta: { title: '修改部门信息', icon: 'tree' }
       },
       {
         path: 'resource',
@@ -261,10 +261,38 @@ export const constantRoutes = [
         meta: { title: '资源管理', icon: 'tree' }
       },
       {
+        path: 'addResource',
+        name: 'AddResource',
+        hidden: true,
+        component: () => import('@/views/system/resource/addResource'),
+        meta: { title: '新增资源', icon: 'tree' }
+      },
+      {
+        path: 'updateResource',
+        name: 'UpdateResource',
+        hidden: true,
+        component: () => import('@/views/system/resource/updateResource'),
+        meta: { title: '修改资源信息', icon: 'tree' }
+      },
+      {
         path: 'role',
         name: 'Role',
         component: () => import('@/views/system/role/role'),
         meta: { title: '角色管理', icon: 'tree' }
+      },
+      {
+        path: 'addRole',
+        name: 'AddRole',
+        hidden: true,
+        component: () => import('@/views/system/role/addRole'),
+        meta: { title: '新增角色', icon: 'tree' }
+      },
+      {
+        path: 'updateRole',
+        name: 'UpdateRole',
+        hidden: true,
+        component: () => import('@/views/system/role/updateRole'),
+        meta: { title: '修改角色信息', icon: 'tree' }
       },
       {
         path: 'distributeUser',
@@ -284,14 +312,14 @@ export const constantRoutes = [
       },
       {
         path: 'addposition',
-        name: 'Addposition',
+        name: 'AddPosition',
         hidden: true,
         component: () => import('@/views/system/position/addposition'),
         meta: { title: '职位增加' }
       },
       {
         path: 'updateposition',
-        name: 'updateposition',
+        name: 'UpdatePosition',
         hidden: true,
         component: () => import('@/views/system/position/updateposition'),
         meta: { title: '职位修改' }
@@ -315,6 +343,13 @@ export const constantRoutes = [
         hidden: true,
         component: () => import('@/views/system/user/updateUser'),
         meta: { title: '修改用户' }
+      },
+      {
+        path: 'distributeUser',
+        name: 'DistributeUser',
+        hidden: true,
+        component: () => import('@/views/system/user/distributeRole'),
+        meta: { title: '为用户分配角色' }
       },
       {
         path: 'param',
@@ -387,7 +422,47 @@ export const constantRoutes = [
       }
     ]
   },
-
+  /**
+   * 考试管理
+   */
+  {
+    path: '/exam',
+    component: Layout,
+    name: 'Exam',
+    meta: { title: '考试管理', icon: 'example' },
+    children: [
+      {
+        path: 'examPublic',
+        name: 'examPublic',
+        component: () => import('@/views/exam/index'),
+        meta: { title: '发布试卷管理', icon: 'example' }
+      },
+      {
+        path: 'phoneanswer',
+        name: 'phoneanswer',
+        component: () => import('@/views/exam/phoneanswer/index'),
+        meta: { title: '手机答卷', icon: 'example' }
+      },
+      {
+        path: 'queryanswer',
+        name: 'queryanswer',
+        component: () => import('@/views/exam/queryanswer/index'),
+        meta: { title: '答案查询', icon: 'example' }
+      },
+      {
+        path: 'marking',
+        name: 'marking',
+        component: () => import('@/views/exam/markingmanagement/index'),
+        meta: { title: '评卷管理', icon: 'example' }
+      },
+      {
+        path: 'report',
+        name: 'report',
+        component: () => import('@/views/exam/exam-report/index'),
+        meta: { title: '考试报表', icon: 'example' }
+      }
+    ]
+  },
   // 404 页面必须放在最后 !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

@@ -51,14 +51,13 @@
           <!-- 增删改按钮框 -->
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteDepartment">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateDepartment">修改</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDepartment">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDepartment">修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :border="true"
             :data="departments"
             tooltip-effect="dark"
             stripe
@@ -78,8 +77,8 @@
             </el-table-column>
             <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteDepartment" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateDepartment" />
+              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDepartment" />
+              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDepartment" />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
