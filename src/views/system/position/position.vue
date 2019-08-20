@@ -42,9 +42,11 @@
           align="center"
         />
         <el-table-column label="操作" width="110" align="center">
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addPosition" />
-          <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deletePosition" />
-          <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updatePosition" />
+          <template slot-scope="scope">
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addPosition" />
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deletePosition" />
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updatePosition(scope.row)" />
+          </template>
         </el-table-column>
       </el-table>
       <!-- 分页部分 -->
@@ -165,9 +167,12 @@ export default {
         name: 'AddPosition'
       })
     },
-    updatePosition() {
+    updatePosition(row) {
       this.$router.push({
-        name: 'UpdatePosition'
+        name: 'UpdatePosition',
+        params: {
+          'row': row
+        }
       })
     },
 

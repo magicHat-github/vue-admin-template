@@ -105,6 +105,11 @@ export default {
       }
     }
   },
+  created() {
+    var x = this
+    x.form = this.$route.params.row
+    console.log(x.form)
+  },
   methods: {
     /**
 		 * 路由跳转

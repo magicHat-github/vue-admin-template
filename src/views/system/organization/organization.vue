@@ -45,9 +45,11 @@
             align="center"
           />
           <el-table-column label="操作" width="110" align="center">
-            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addOrg" />
-            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteOrg" />
-            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateOrg" />
+            <template slot-scope="scope">
+              <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addOrg" />
+              <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteOrg" />
+              <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateOrg(scope.row)" />
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -183,9 +185,12 @@ export default {
         name: 'AddOrg'
       })
     },
-    updateOrg() {
+    updateOrg(row) {
       this.$router.push({
-        name: 'UpdateOrg'
+        name: 'UpdateOrg',
+        params: {
+          'row': row
+        }
       })
     },
 

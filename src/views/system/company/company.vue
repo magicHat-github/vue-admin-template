@@ -34,13 +34,7 @@
 
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.organizationNames" placeholder="请选择" size="mini">
-                <el-option
-                  v-for="organizationName in organizationNames"
-                  :key="organizationName.level"
-                  :value="organizationName.level"
-                />
-              </el-select>
+              <el-select v-model="formInline.organizationNames" placeholder="请选择" size="mini" />
             </el-form-item>
 
             <el-form-item>
@@ -57,8 +51,6 @@
             <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
             <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateCompany">修改</el-link>
           </div>
-<<<<<<< HEAD
-
           <div>
             <!-- 数据显示表单 -->
             <el-table
@@ -84,9 +76,11 @@
               <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
               <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
               <el-table-column label="操作" width="110" align="center">
-                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany" />
+                <template slot-scope="scope">
+                  <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
+                  <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany" />
+                  <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany(scope.row)" />
+                </template>
               </el-table-column>
             </el-table>
             <!-- 分页部分 -->
@@ -99,44 +93,6 @@
                 @click="queryData"
               />
             </div>
-=======
-          <!-- 数据显示表单 -->
-          <el-table
-            ref="multipleTable"
-            :border="true"
-            :data="companys"
-            tooltip-effect="dark"
-            stripe
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column type="selection" width="55" align="center" />
-            <el-table-column prop="name" label="公司名称" align="center" />
-            <el-table-column prop="code" label="公司编号" align="center" />
-            <el-table-column prop="mnemonicCode" label="助记码" align="center" />
-            <el-table-column prop="master" label="法人" align="center" />
-            <el-table-column prop="organizationName" label="所属机构" align="center" />
-            <el-table-column prop="tax" label="税号" show-overflow-tooltip align="center" />
-            <el-table-column prop="fax" label="传真" show-overflow-tooltip align="center" />
-            <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
-            <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
-            <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
-            <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
-            <el-table-column label="操作" width="110" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteCompany" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateCompany" />
-            </el-table-column>
-          </el-table>
-          <!-- 分页部分 -->
-          <div class="block">
-            <pagination
-              v-show="total>0"
-              :total="total"
-              :page.sync="page.pageNumber"
-              :limit.sync="page.size"
-              @click="queryData"
-            />
->>>>>>> 1a9fbbff8c0fd8fd4c2c35fca12cd907f4ad3ed1
           </div>
         </el-card>
       </div>
@@ -329,14 +285,18 @@ export default {
     /**
      * 跳转到增加界面
      */
-    addCompany() {
+    addCompany(row) {
       this.$router.push({
         name: 'AddCompany'
       })
     },
-    updateCompany() {
+
+    updateCompany(row) {
       this.$router.push({
-        name: 'UpdateCompany'
+        name: 'UpdateCompany',
+        params: {
+          'row': row
+        }
       })
     },
 
