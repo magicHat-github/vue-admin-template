@@ -20,33 +20,37 @@
         <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateOrg">修改</el-link>
       </div>
       <!-- 数据显示表单 -->
-      <el-table
-        ref="multipleTable"
-        :data="organizations"
-        tooltip-effect="dark"
-        style="width: 100%"
-        stripe
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="orgname" label="组织机构" width="120" align="center" />
-        <el-table-column prop="code" label="机构代码" width="120" align="center" />
-        <el-table-column prop="master" label="负责人" show-overflow-tooltip align="center" />
-        <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
-        <el-table-column prop="address" label="地址" show-overflow-tooltip align="center" />
-        <el-table-column
-          prop="status"
-          label="是否启用"
-          show-overflow-tooltip
-          width="110"
-          align="center"
-        />
-        <el-table-column label="操作" width="110" align="center">
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addOrg" />
-          <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteOrg" />
-          <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateOrg" />
-        </el-table-column>
-      </el-table>
+      <div>
+        <el-table
+          ref="multipleTable"
+          :data="organizations"
+          tooltip-effect="dark"
+          style="width: 100%; margin-top: 10px;"
+          stripe
+          size="mini"
+          fit
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" align="center" />
+          <el-table-column prop="orgname" label="组织机构" width="120" align="center" />
+          <el-table-column prop="code" label="机构代码" width="120" align="center" />
+          <el-table-column prop="master" label="负责人" show-overflow-tooltip align="center" />
+          <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
+          <el-table-column prop="address" label="地址" show-overflow-tooltip align="center" />
+          <el-table-column
+            prop="status"
+            label="是否启用"
+            show-overflow-tooltip
+            width="110"
+            align="center"
+          />
+          <el-table-column label="操作" width="110" align="center">
+            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addOrg" />
+            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteOrg" />
+            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateOrg" />
+          </el-table-column>
+        </el-table>
+      </div>
       <!-- 分页部分 -->
       <div class="block">
         <pagination

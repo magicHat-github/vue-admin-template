@@ -2,13 +2,13 @@
   <el-container>
     <el-card>
       <!-- 左侧边栏 -->
-      <el-aside width="160px">
+      <el-aside width="120px">
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:20px;" class="el-icon-menu">部门管理</h1>
+                <h1 style="font-size:15px;" class="el-icon-menu">部门管理</h1>
               </el-col>
             </el-row>
             <hr>
@@ -23,7 +23,7 @@
 
     <!-- 主体部分 -->
     <el-main>
-      <div class="app-container allData">
+      <div>
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -50,37 +50,42 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment">增加</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDepartment">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDepartment">修改</el-link>
+            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addDepartment">增加</el-link>
+            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteDepartment">删除</el-link>
+            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateDepartment">修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
-          <el-table
-            ref="multipleTable"
-            :data="departments"
-            tooltip-effect="dark"
-            stripe
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column type="selection" width="55" align="center" />
-            <el-table-column prop="name" label="部门名称" align="center" />
-            <el-table-column prop="code" label="部门编号" align="center" />
-            <el-table-column prop="level" label="部门等级" sortable="true" align="center" />
-            <el-table-column prop="parentName" label="上级部门" sortable="true" align="center" />
-            <el-table-column prop="companyName" label="所属公司" align="center" />
-            <el-table-column prop="master" label="负责人" align="center" />
-            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
-              <template slot-scope="scope">
-                <el-tag>{{ scope.row.status }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDepartment" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDepartment" />
-            </el-table-column>
-          </el-table>
+          <div>
+            <el-table
+              ref="multipleTable"
+              :data="departments"
+              tooltip-effect="dark"
+              stripe
+              style="width: 100%; margin-top: 10px;"
+              fit
+              size="mini"
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column type="selection" width="55" align="center" />
+              <el-table-column prop="name" label="部门名称" align="center" />
+              <el-table-column prop="code" label="部门编号" align="center" />
+              <el-table-column prop="level" label="部门等级" sortable="true" align="center" />
+              <el-table-column prop="parentName" label="上级部门" sortable="true" align="center" />
+              <el-table-column prop="companyName" label="所属公司" align="center" />
+              <el-table-column prop="master" label="负责人" align="center" />
+              <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+                <template slot-scope="scope">
+                  <el-tag>{{ scope.row.status }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDepartment" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDepartment" />
+              </el-table-column>
+            </el-table>
+          </div>
           <!-- 分页部分 -->
           <div class="block">
             <pagination

@@ -1,26 +1,29 @@
 <template>
   <el-container>
-    <!-- 左侧边栏 -->
-    <el-aside width="180px">
-      <!-- 树上方的信息 -->
-      <el-container>
-        <el-header>
-          <el-row>
-            <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">分配用户</h1>
-            </el-col>
-          </el-row>
-        </el-header>
-        <!-- 树 -->
-        <el-main>
-          <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
-        </el-main>
-      </el-container>
-    </el-aside>
+    <el-card>
+      <!-- 左侧边栏 -->
+      <el-aside width="120px">
+        <!-- 树上方的信息 -->
+        <el-container>
+          <el-header>
+            <el-row>
+              <el-col>
+                <h1 style="font-size:15px;" class="el-icon-menu">分配用户</h1>
+              </el-col>
+            </el-row>
+            <hr>
+          </el-header>
+          <!-- 树 -->
+          <el-main>
+            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+          </el-main>
+        </el-container>
+      </el-aside>
+    </el-card>
 
     <!-- 主体部分 -->
     <el-main>
-      <div class="app-container allData">
+      <div>
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -55,51 +58,54 @@
           </el-form>
         </div>
 
-        <!-- 角色分配按钮 -->
-        <div>
-          <el-link
-            class="itemAction"
-            type="primary"
-            icon="el-icon-user"
-            @click="distributeRole"
-          >分配角色给选定用户</el-link>
-        </div>
+        <el-card>
+          <!-- 角色分配按钮 -->
+          <div>
+            <el-link
+              class="itemAction"
+              type="primary"
+              icon="el-icon-user"
+              size="mini"
+              @click="distributeRole"
+            >分配角色给选定用户</el-link>
+          </div>
 
-        <!-- 数据显示表单 -->
-        <el-table
-          ref="multipleTable"
-          border="true"
-          :data="users"
-          tooltip-effect="dark"
-          stripe
-          height
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="code" label="用户工号" />
-          <el-table-column prop="password" label="初始密码" />
-          <el-table-column prop="name" label="用户名" />
-          <el-table-column prop="role" label="角色" />
-          <el-table-column prop="sex" label="性别" />
-          <el-table-column prop="birthday" label="生日" />
-          <el-table-column prop="position" label="职位" />
-          <el-table-column prop="tel" label="电话" />
-          <el-table-column prop="email" label="邮箱" />
-          <el-table-column prop="other" label="其它/微信" />
-          <el-table-column prop="status" label="是否启用" sortable="true" />
-          <el-table-column label="操作">
-            <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeRole" />
-          </el-table-column>
-        </el-table>
-        <!-- 分页部分 -->
-        <div class="block">
-          <el-pagination
-            :current-page.sync="currentPage1"
-            :page-size="70"
-            layout="prev, pager, next, jumper"
-            :total="1000"
-          />
-        </div>
+          <!-- 数据显示表单 -->
+          <el-table
+            ref="multipleTable"
+            :data="users"
+            tooltip-effect="dark"
+            style="width: 100%; margin-top: 10px;"
+            stripe
+            size="mini"
+            @selection-change="handleSelectionChange"
+          >
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="code" label="用户工号" />
+            <el-table-column prop="password" label="初始密码" />
+            <el-table-column prop="name" label="用户名" />
+            <el-table-column prop="role" label="角色" />
+            <el-table-column prop="sex" label="性别" />
+            <el-table-column prop="birthday" label="生日" />
+            <el-table-column prop="position" label="职位" />
+            <el-table-column prop="tel" label="电话" />
+            <el-table-column prop="email" label="邮箱" />
+            <el-table-column prop="other" label="其它/微信" />
+            <el-table-column prop="status" label="是否启用" sortable="true" />
+            <el-table-column label="操作">
+              <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeRole" />
+            </el-table-column>
+          </el-table>
+          <!-- 分页部分 -->
+          <div class="block">
+            <el-pagination
+              :current-page.sync="currentPage1"
+              :page-size="70"
+              layout="prev, pager, next, jumper"
+              :total="1000"
+            />
+          </div>
+        </el-card>
       </div>
     </el-main>
   </el-container>

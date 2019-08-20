@@ -2,13 +2,13 @@
   <el-container>
     <el-card>
       <!-- 左侧边栏 -->
-      <el-aside width="160px">
+      <el-aside width="120px">
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:20px;" class="el-icon-menu">用户管理</h1>
+                <h1 style="font-size:15px;" class="el-icon-menu">用户管理</h1>
               </el-col>
             </el-row>
             <hr>
@@ -23,7 +23,7 @@
 
     <!-- 主体部分 -->
     <el-main>
-      <div class="app-container allData">
+      <div>
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -61,9 +61,9 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser">增加</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteUser">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateUser">修改</el-link>
+            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addUser">增加</el-link>
+            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteUser">删除</el-link>
+            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateUser">修改</el-link>
             <!-- 角色分配按钮 -->
             <el-link
               class="itemAction"
@@ -79,6 +79,9 @@
             :data="users"
             tooltip-effect="dark"
             stripe
+            size="mini"
+            fit
+            style="width: 100%; margin-top: 10px;"
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" align="center" />
@@ -293,7 +296,7 @@ export default {
      */
     distributeRole() {
       this.$router.push({
-        name: 'update'
+        name: 'DistributeRole'
       })
     }
   }

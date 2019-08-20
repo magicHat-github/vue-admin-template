@@ -16,6 +16,7 @@
         label-width="80px"
         size="mini"
         class="demo-ruleForm"
+        label-position="right"
         style="padding-left:30%;"
       >
         <el-form-item label="机构名称" prop="name">

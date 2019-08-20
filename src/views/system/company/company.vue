@@ -2,13 +2,13 @@
   <el-container>
     <el-card>
       <!-- 左侧边栏 -->
-      <el-aside width="160px">
+      <el-aside width="120px">
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:20px;" class="el-icon-menu">公司管理</h1>
+                <h1 style="font-size:15px;" class="el-icon-menu">公司管理</h1>
               </el-col>
             </el-row>
             <hr>
@@ -23,7 +23,7 @@
 
     <!-- 主体部分 -->
     <el-main>
-      <div class="app-container allData">
+      <div>
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -33,10 +33,13 @@
             </el-form-item>
 
             <!-- 组织机构下拉框 -->
-            <el-form-item label="组织机构:" size="mini">
-              <el-select v-model="formInline.organizationNames">
-                <el-option label="博思软件" value="shanghai" />
-                <el-option label="阿里巴巴" value="beijing" />
+            <el-form-item label="组织机构:">
+              <el-select v-model="formInline.organizationNames" placeholder="请选择" size="mini">
+                <el-option
+                  v-for="organizationName in organizationNames"
+                  :key="organizationName.level"
+                  :value="organizationName.level"
+                />
               </el-select>
             </el-form-item>
 
@@ -50,10 +53,53 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany">增加</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany">修改</el-link>
+            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addCompany">增加</el-link>
+            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
+            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateCompany">修改</el-link>
           </div>
+<<<<<<< HEAD
+
+          <div>
+            <!-- 数据显示表单 -->
+            <el-table
+              ref="multipleTable"
+              :data="companys"
+              tooltip-effect="dark"
+              stripe
+              style="width: 100%; margin-top: 10px;"
+              size="mini"
+              fit
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column type="selection" width="55" align="center" />
+              <el-table-column prop="name" label="公司名称" align="center" />
+              <el-table-column prop="code" label="公司编号" align="center" />
+              <el-table-column prop="mnemonicCode" label="助记码" align="center" />
+              <el-table-column prop="master" label="法人" align="center" />
+              <el-table-column prop="organizationName" label="所属机构" align="center" />
+              <el-table-column prop="tax" label="税号" show-overflow-tooltip align="center" />
+              <el-table-column prop="fax" label="传真" show-overflow-tooltip align="center" />
+              <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
+              <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
+              <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
+              <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
+              <el-table-column label="操作" width="110" align="center">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany" />
+              </el-table-column>
+            </el-table>
+            <!-- 分页部分 -->
+            <div class="block">
+              <pagination
+                v-show="total>0"
+                :total="total"
+                :page.sync="page.pageNumber"
+                :limit.sync="page.size"
+                @click="queryData"
+              />
+            </div>
+=======
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
@@ -90,6 +136,7 @@
               :limit.sync="page.size"
               @click="queryData"
             />
+>>>>>>> 1a9fbbff8c0fd8fd4c2c35fca12cd907f4ad3ed1
           </div>
         </el-card>
       </div>
