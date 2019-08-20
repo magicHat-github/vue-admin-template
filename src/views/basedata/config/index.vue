@@ -40,10 +40,12 @@
             <el-table-column prop="company" label="公司" />
             <el-table-column prop="remark" label="备注" />
             <el-table-column label="操作" width="140" fixed="right">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
-              <el-link class="itemAction" type="success" icon="el-icon-view" @click="table = true , formInline.findId=configId" />
+              <template slot-scope="scope">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+                <el-link class="itemAction" type="success" icon="el-icon-view" @click="findConfigDetail(scope.$index, scope.row)" />
+              </template>
             </el-table-column>
           </el-table>
 
@@ -59,7 +61,7 @@
         </el-card>
         <el-drawer
           title="组卷配置详情"
-          :visible.sync="table"
+          :visible.sync="tableView"
           direction="btt"
           size="75%"
         >
@@ -67,7 +69,7 @@
           <el-card class="tableData">
             <el-table
               ref="multipleTable"
-              :data="configs.detail"
+              :data="chooseDetails"
               tooltip-effect="dark"
               stripe
               height
@@ -109,65 +111,83 @@ export default {
         name: '',
         findId: ''
       },
-      table: false,
+      tableView: false,
       /**
          * 公司管理
          */
       configs: [
         {
-          configId: '',
+          configId: '1',
           name: '11',
           difficult: '简单',
           updatedBy: 'lynch',
           updatedTime: '2019/11/11',
           status: '启用',
           company: 'boss',
-          remark: 'null',
-          detail: [
-            {
-              type: 'taft',
-              subject: 'sand',
-              num: '',
-              difficult: '',
-              score: ''
-            },
-            {
-              type: '',
-              subject: '',
-              num: '',
-              difficult: '',
-              score: ''
-            }
-          ]
+          remark: 'null'
         },
         {
-          configId: '',
+          configId: '2',
           name: '22',
           difficult: '困难',
           updatedBy: 'lynch',
           updatedTime: '2019/11/11',
           status: '启用',
           company: 'boss',
-          remark: 'null',
-          detail: [
-            {
-              type: '',
-              subject: '',
-              num: '',
-              difficult: '',
-              score: ''
-            },
-            {
-              type: '',
-              subject: '',
-              num: '',
-              difficult: '',
-              score: ''
-            }
-          ]
+          remark: 'null'
         }
       ],
-
+      details: [
+        {
+          configId: '1',
+          category: 'Java基础题',
+          type: '选择题',
+          num: '10',
+          difficult: '中等',
+          score: '30'
+        },
+        {
+          configId: '1',
+          category: 'Java基础题',
+          type: '填空题',
+          num: '5',
+          difficult: '中等',
+          score: '20'
+        },
+        {
+          configId: '1',
+          category: 'Java基础题',
+          type: '编程题',
+          num: '3',
+          difficult: '中等',
+          score: '50'
+        },
+        {
+          configId: '2',
+          category: '编程题',
+          type: '第二',
+          num: 'sad',
+          difficult: '',
+          score: ''
+        },
+        {
+          configId: '3',
+          category: '1',
+          type: '',
+          num: '',
+          difficult: '',
+          score: ''
+        },
+        {
+          configId: '4',
+          category: '1',
+          type: '',
+          num: '',
+          difficult: '',
+          score: ''
+        }
+      ],
+      chooseDetails: [],
       /**
          * 待确认字段
          */
@@ -232,6 +252,13 @@ export default {
             message: '已取消删除'
           })
         })
+    },
+    findConfigDetail(index, row) {
+      this.tableView = true
+      // eslint-disable-next-line no-unused-vars
+      const configId = row.configId
+      // eslint-disable-next-line eqeqeq
+      this.chooseDetails = this.details.filter(p => p.configId.indexOf(configId) !== -1)
     }
   }
 }

@@ -8,7 +8,7 @@
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:15px;" class="el-icon-menu">公司管理</h1>
+                <h1 style="font-size: 15px;" class="el-icon-menu">公司管理</h1>
               </el-col>
             </el-row>
             <div class="horizon">
@@ -370,10 +370,10 @@ export default {
   margin-right: 10px;
 }
 .aside .el-card__body .el-main {
-  padding-left: 6px;
+  padding-left: 7px;
 }
 .aside .el-card__body .el-header {
-  padding: 6px;
+  padding: 5px;
 }
 .aside .el-card__body .el-header .el-row {
   padding: 0px 15px;
