@@ -7,7 +7,7 @@
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
             <el-form-item label="组卷配置项标题:">
-              <el-input v-model="formInline.companyName" clearable size="mini" />
+              <el-input v-model="formInline.name" clearable size="mini" />
             </el-form-item>
             <el-form-item>
               <el-button size="mini" type="primary">查询</el-button>
@@ -25,25 +25,25 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            border="true"
-            :data="companys"
+            :data="configs"
             tooltip-effect="dark"
             stripe
             height
             @selection-change="handleSelectionChange"
           >
-            <el-table-column type="selection" width="55" />
+            <el-table-column type="selection" width="55" fixed="left" />
             <el-table-column prop="name" label="配置项" />
-            <el-table-column prop="website" label="难度" />
-            <el-table-column prop="website" label="修改人" />
-            <el-table-column prop="website" label="修改时间" />
+            <el-table-column prop="difficult" label="难度" />
+            <el-table-column prop="updatedBy" label="修改人" />
+            <el-table-column prop="updatedTime" label="修改时间" />
             <el-table-column prop="status" label="启用标志" sortable="true" />
-            <el-table-column prop="website" label="公司" />
-            <el-table-column prop="website" label="备注" />
-            <el-table-column label="操作">
+            <el-table-column prop="company" label="公司" />
+            <el-table-column prop="remark" label="备注" />
+            <el-table-column label="操作" width="140" fixed="right">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
               <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
               <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+              <el-link class="itemAction" type="success" icon="el-icon-view" @click="table = true , formInline.findId=configId" />
             </el-table-column>
           </el-table>
 
@@ -57,31 +57,40 @@
             />
           </div>
         </el-card>
-        <hr>
-        <!-- 数据显示表单 -->
-        <el-card class="tableData">
-          <el-table
-            ref="multipleTable"
-            border="true"
-            :data="companys"
-            tooltip-effect="dark"
-            stripe
-            height
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column prop="name" label="序号" />
-            <el-table-column prop="name" label="题目类别" />
-            <el-table-column prop="website" label="题型" />
-            <el-table-column prop="website" label="题目数量" />
-            <el-table-column prop="website" label="题目难度" />
-            <el-table-column prop="status" label="题目分值" />
-            <el-table-column label="操作">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
-            </el-table-column>
-          </el-table>
-        </el-card>
+        <el-drawer
+          title="组卷配置详情"
+          :visible.sync="table"
+          direction="btt"
+          size="75%"
+        >
+          <!-- 数据显示表单 -->
+          <el-card class="tableData">
+            <el-table
+              ref="multipleTable"
+              :data="configs.detail"
+              tooltip-effect="dark"
+              stripe
+              height
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column
+                label="序号"
+                type="index"
+                width="50"
+              />
+              <el-table-column prop="category" label="题目类别" />
+              <el-table-column prop="type" label="题型" />
+              <el-table-column prop="num" label="题目数量" />
+              <el-table-column prop="difficult" label="题目难度" />
+              <el-table-column prop="score" label="题目分值" />
+              <el-table-column label="操作">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+              </el-table-column>
+            </el-table>
+          </el-card>
+        </el-drawer>
       </div>
     </el-main>
   </el-container>
@@ -97,19 +106,65 @@ export default {
          * 查询字段
          */
       formInline: {
-        companyName: '',
-        organizationNames: []
+        name: '',
+        findId: ''
       },
-
+      table: false,
       /**
          * 公司管理
          */
-      config: [
+      configs: [
         {
-          configName: '',
-          difficult: '',
-
-          status: '启用'
+          configId: '',
+          name: '11',
+          difficult: '简单',
+          updatedBy: 'lynch',
+          updatedTime: '2019/11/11',
+          status: '启用',
+          company: 'boss',
+          remark: 'null',
+          detail: [
+            {
+              type: 'taft',
+              subject: 'sand',
+              num: '',
+              difficult: '',
+              score: ''
+            },
+            {
+              type: '',
+              subject: '',
+              num: '',
+              difficult: '',
+              score: ''
+            }
+          ]
+        },
+        {
+          configId: '',
+          name: '22',
+          difficult: '困难',
+          updatedBy: 'lynch',
+          updatedTime: '2019/11/11',
+          status: '启用',
+          company: 'boss',
+          remark: 'null',
+          detail: [
+            {
+              type: '',
+              subject: '',
+              num: '',
+              difficult: '',
+              score: ''
+            },
+            {
+              type: '',
+              subject: '',
+              num: '',
+              difficult: '',
+              score: ''
+            }
+          ]
         }
       ],
 
@@ -148,15 +203,14 @@ export default {
        */
     goto() {
       this.$router.push({
-        name: 'AddCompany'
+        name: 'AddConfig'
       })
     },
     update1() {
       this.$router.push({
-        name: 'update'
+        name: 'UpdateConfig'
       })
     },
-
     /**
        * 删除信息
        */
