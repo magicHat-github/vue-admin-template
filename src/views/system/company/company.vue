@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
       <el-aside width="120px">
         <!-- 树上方的信息 -->
@@ -8,9 +8,9 @@
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:15px;" class="el-icon-menu">公司管理</h1>
+                <h1 style="font-size: 15px;" class="el-icon-menu">公司管理</h1>
               </el-col>
-            </el-row>
+            </el-row>     
             <hr>
           </el-header>
           <!-- 树 -->
@@ -330,4 +330,12 @@ export default {
 .itemAction {
   margin-right: 10px;
 }
+.aside .el-card__body .el-main {
+  padding-left: 5px;
+}
+
+.aside .el-card__body .el-header {
+  padding: 5px;
+}
+
 </style>
