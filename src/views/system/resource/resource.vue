@@ -69,14 +69,13 @@
           <!-- 增删改按钮框 -->
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addResource">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteResource">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateResource">修改</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteResource">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateResource">修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :border="true"
             :data="resources"
             tooltip-effect="dark"
             stripe
@@ -93,8 +92,8 @@
             <el-table-column prop="leaf" label="是否叶节点" sortable="true" width="120" align="center" />
             <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addResource" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteResource" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateResource" />
+              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteResource" />
+              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateResource" />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->

@@ -31,67 +31,72 @@
             <el-form-item label="公司名称:">
               <el-input v-model="formInline.companyName" clearable size="mini" />
             </el-form-item>
+
             <!-- 组织机构下拉框 -->
-            <el-form-item label="组织机构:">
+            <el-form-item label="组织机构:" size="mini">
               <el-select v-model="formInline.organizationNames">
                 <el-option label="博思软件" value="shanghai" />
                 <el-option label="阿里巴巴" value="beijing" />
               </el-select>
             </el-form-item>
+
             <el-form-item>
               <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
+
         </div>
 
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateCompany">修改</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany">修改</el-link>
           </div>
 
-          
-          <!-- 数据显示表单 -->
-          <el-table
-            ref="multipleTable"
-            :border="true"
-            :data="companys"
-            tooltip-effect="dark"
-            stripe
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column type="selection" width="55" align="center" />
-            <el-table-column prop="name" label="公司名称" align="center" />
-            <el-table-column prop="code" label="公司编号" align="center" />
-            <el-table-column prop="mnemonicCode" label="助记码" align="center" />
-            <el-table-column prop="master" label="法人" align="center" />
-            <el-table-column prop="organizationName" label="所属机构" align="center" />
-            <el-table-column prop="tax" label="税号" show-overflow-tooltip align="center" />
-            <el-table-column prop="fax" label="传真" show-overflow-tooltip align="center" />
-            <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
-            <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
-            <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
-            <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
-            <el-table-column label="操作" width="110" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteCompany" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateCompany" />
-            </el-table-column>
-          </el-table>
-          <!-- 分页部分 -->
-          <div class="block">
-            <pagination
-              v-show="total>0"
-              :total="total"
-              :page.sync="page.pageNumber"
-              :limit.sync="page.size"
-              @click="queryData"
-            />
+          <div class="app-container allData">
+            <!-- 数据显示表单 -->
+            <el-table
+              ref="multipleTable"
+              :data="companys"
+              tooltip-effect="dark"
+              stripe
+              fit
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column type="selection" width="55" align="center" />
+              <el-table-column prop="name" label="公司名称" align="center" />
+              <el-table-column prop="code" label="公司编号" align="center" />
+              <el-table-column prop="mnemonicCode" label="助记码" align="center" />
+              <el-table-column prop="master" label="法人" align="center" />
+              <el-table-column prop="organizationName" label="所属机构" align="center" />
+              <el-table-column prop="tax" label="税号" show-overflow-tooltip align="center" />
+              <el-table-column prop="fax" label="传真" show-overflow-tooltip align="center" />
+              <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
+              <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
+              <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
+              <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
+              <el-table-column label="操作" width="110" align="center">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany" />
+              </el-table-column>
+            </el-table>
+            <!-- 分页部分 -->
+            <div class="block">
+              <pagination
+                v-show="total>0"
+                :total="total"
+                :page.sync="page.pageNumber"
+                :limit.sync="page.size"
+                @click="queryData"
+              />
+            </div>
           </div>
         </el-card>
       </div>
+
     </el-main>
   </el-container>
 </template>

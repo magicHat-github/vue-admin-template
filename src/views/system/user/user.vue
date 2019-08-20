@@ -62,8 +62,8 @@
           <!-- 增删改按钮框 -->
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteUser">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateUser">修改</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteUser">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateUser">修改</el-link>
             <!-- 角色分配按钮 -->
             <el-link
               class="itemAction"
@@ -76,7 +76,6 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :border="true"
             :data="users"
             tooltip-effect="dark"
             stripe
@@ -96,8 +95,8 @@
             <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
             <el-table-column label="操作" width="130" align="center">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteUser" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateUser" />
+              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteUser" />
+              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateUser" />
               <el-link
                 class="itemAction"
                 type="primary"
