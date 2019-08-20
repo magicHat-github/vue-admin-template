@@ -162,14 +162,14 @@ export const constantRoutes = [
         path: 'addConfig',
         name: 'AddConfig',
         hidden: true,
-        component: () => import('@/views/basedata/subject/addConfig'),
+        component: () => import('@/views/basedata/config/addConfig'),
         meta: { title: '添加配置' }
       },
       {
         path: 'updateConfig',
         name: 'UpdateConfig',
         hidden: true,
-        component: () => import('@/views/basedata/subject/updateConfig'),
+        component: () => import('@/views/basedata/config/updateConfig'),
         meta: { title: '修改配置' }
       }
     ]
