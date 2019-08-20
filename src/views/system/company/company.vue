@@ -260,12 +260,6 @@ export default {
      * 查询数据
      */
     queryData() {
-      const params = {
-        size: this.page.size,
-        page: this.page.pageNumber,
-        companyName: this.formInline.companyName,
-        organizationName: this.formInline.organizationName
-      }
       this.total = this.companys.length
     },
     /**

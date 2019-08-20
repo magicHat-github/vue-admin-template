@@ -11,7 +11,7 @@
                 <h1 style="font-size:20px;" class="el-icon-menu">资源管理</h1>
               </el-col>
             </el-row>
-            <hr />
+            <hr>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -212,12 +212,6 @@ export default {
      * 查询数据
      */
     queryData() {
-      const params = {
-        size: this.page.size,
-        page: this.page.pageNumber,
-        resourceNames: this.formInline.resourceNames,
-        parentResources: this.formInline.parentResources
-      }
       this.total = this.resources.length
     },
     /**

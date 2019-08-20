@@ -11,6 +11,7 @@
                 <h1 style="font-size:20px;" class="el-icon-menu">用户管理</h1>
               </el-col>
             </el-row>
+            <hr>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -75,7 +76,7 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :border=true
+            :border="true"
             :data="users"
             tooltip-effect="dark"
             stripe
@@ -235,14 +236,6 @@ export default {
      * 查询数据
      */
     queryData() {
-      const params = {
-        size: this.page.size,
-        page: this.page.pageNumber,
-        userName: this.formInline.userName,
-        userCode: this.formInline.userCode,
-        tel: this.formInline.tel,
-        roles: this.formInline.roles
-      }
       this.total = this.users.length
     },
     /**

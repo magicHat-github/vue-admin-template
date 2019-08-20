@@ -282,11 +282,6 @@ export default {
      * 查询数据
      */
     queryData() {
-      const params = {
-        size: this.page.size,
-        page: this.page.pageNumber,
-        roleName: this.formInline.roleName
-      }
       this.total = this.roles.length
     },
     /**
