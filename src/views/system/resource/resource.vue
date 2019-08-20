@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
       <el-aside width="120px">
         <!-- 树上方的信息 -->
@@ -11,7 +11,9 @@
                 <h1 style="font-size:15px;" class="el-icon-menu">资源管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -68,9 +70,27 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addResource">增加</el-link>
-            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteResource">删除</el-link>
-            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateResource">修改</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="addResource"
+            >增加</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deleteResource"
+            >删除</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updateResource"
+            >修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
@@ -95,9 +115,24 @@
             <el-table-column prop="leaf" label="是否叶节点" sortable="true" width="120" align="center" />
             <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
               <template slot-scope="scope">
-                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addResource" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteResource" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateResource(scope.row)" />
+                <el-link
+                  class="itemAction"
+                  type="primary"
+                  icon="el-icon-plus"
+                  @click="addResource"
+                />
+                <el-link
+                  class="itemAction"
+                  type="danger"
+                  icon="el-icon-delete"
+                  @click="deleteResource"
+                />
+                <el-link
+                  class="itemAction"
+                  type="warning"
+                  icon="el-icon-edit"
+                  @click="updateResource(scope.row)"
+                />
               </template>
             </el-table-column>
           </el-table>
@@ -244,7 +279,7 @@ export default {
       this.$router.push({
         name: 'UpdateResource',
         params: {
-          'row': row
+          row: row
         }
       })
     },
@@ -278,5 +313,14 @@ export default {
 <style>
 .itemAction {
   margin-right: 10px;
+}
+.aside .el-card__body .el-main {
+  padding-left: 6px;
+}
+.aside .el-card__body .el-header {
+  padding: 6px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>
