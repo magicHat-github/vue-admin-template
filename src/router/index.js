@@ -422,7 +422,47 @@ export const constantRoutes = [
       }
     ]
   },
-
+  /**
+   * 考试管理
+   */
+  {
+    path: '/exam',
+    component: Layout,
+    name: 'Exam',
+    meta: { title: '考试管理', icon: 'example' },
+    children: [
+      {
+        path: 'examPublic',
+        name: 'examPublic',
+        component: () => import('@/views/exam/index'),
+        meta: { title: '发布试卷管理', icon: 'example' }
+      },
+      {
+        path: 'phoneanswer',
+        name: 'phoneanswer',
+        component: () => import('@/views/exam/phoneanswer/index'),
+        meta: { title: '手机答卷', icon: 'example' }
+      },
+      {
+        path: 'queryanswer',
+        name: 'queryanswer',
+        component: () => import('@/views/exam/queryanswer/index'),
+        meta: { title: '答案查询', icon: 'example' }
+      },
+      {
+        path: 'marking',
+        name: 'marking',
+        component: () => import('@/views/exam/markingmanagement/index'),
+        meta: { title: '评卷管理', icon: 'example' }
+      },
+      {
+        path: 'report',
+        name: 'report',
+        component: () => import('@/views/exam/exam-report/index'),
+        meta: { title: '考试报表', icon: 'example' }
+      }
+    ]
+  },
   // 404 页面必须放在最后 !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
