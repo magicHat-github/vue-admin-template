@@ -157,8 +157,21 @@ export const constantRoutes = [
         hidden: true,
         component: () => import('@/views/basedata/subject/updateSubject'),
         meta: { title: '修改题目' }
+      },
+      {
+        path: 'addConfig',
+        name: 'AddConfig',
+        hidden: true,
+        component: () => import('@/views/basedata/subject/addConfig'),
+        meta: { title: '添加配置' }
+      },
+      {
+        path: 'updateConfig',
+        name: 'UpdateConfig',
+        hidden: true,
+        component: () => import('@/views/basedata/subject/updateConfig'),
+        meta: { title: '修改配置' }
       }
-
     ]
   },
 
