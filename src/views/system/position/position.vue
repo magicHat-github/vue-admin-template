@@ -22,18 +22,25 @@
       <!-- 数据显示表单 -->
       <el-table
         ref="multipleTable"
-        :data="tableData3"
+        :data="positions"
         tooltip-effect="dark"
         style="width: 100%"
+        :border="true"
         stripe
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="company" label="姓名" width="120" />
-        <el-table-column prop="name" label="姓名" width="120" />
-        <el-table-column prop="remark" label="备注" show-overflow-tooltip />
-        <el-table-column prop="status" label="是否启用" show-overflow-tooltip />
-        <el-table-column label="操作">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column prop="company" label="姓名" width="120" align="center" />
+        <el-table-column prop="name" label="姓名" width="120" align="center" />
+        <el-table-column prop="remark" label="备注" show-overflow-tooltip align="center" />
+        <el-table-column
+          prop="status"
+          label="是否启用"
+          show-overflow-tooltip
+          width="110"
+          align="center"
+        />
+        <el-table-column label="操作" width="110" align="center">
           <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
           <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
           <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
@@ -41,11 +48,12 @@
       </el-table>
       <!-- 分页部分 -->
       <div class="block">
-        <el-pagination
-          :current-page.sync="currentPage1"
-          :page-size="70"
-          layout="prev, pager, next, jumper"
-          :total="1000"
+        <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="page.pageNumber"
+          :limit.sync="page.size"
+          @click="queryData"
         />
       </div>
     </el-card>
@@ -53,9 +61,12 @@
 </template>
 
 <script>
+// 引入分页组件
+import Pagination from '@/components/Pagination'
 // import { log } from 'util'
 export default {
   name: 'App',
+  components: { Pagination },
   data() {
     return {
       /**
@@ -68,7 +79,7 @@ export default {
       /**
        * 职位管理
        */
-      tableData3: [
+      positions: [
         {
           company: '腾讯',
           name: 'CEO',
@@ -118,24 +129,33 @@ export default {
        */
       multipleSelection: [],
       /**
-       * 初始显示的页数
+       * 默认的分页的页面数据
        */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // 试卷总数
+      total: 0
     }
   },
-
+  created() {
+    this.queryData()
+  },
   methods: {
+    /**
+     * 查询数据
+     */
+    queryData() {
+      this.total = this.positions.length
+    },
+
     /**
      * 勾选事件触发的函数
      */
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-
     /**
      * 跳转到增加界面
      */
