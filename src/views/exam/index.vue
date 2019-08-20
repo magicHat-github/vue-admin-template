@@ -41,7 +41,7 @@
               <el-input v-model="dialogForm.paperName" />
             </el-col>
             <el-col :span="4">
-              <el-button>选择试卷</el-button>
+              <el-button @click="openChoicePaperDialog">选择试卷</el-button>
             </el-col>
           </el-form-item>
           <el-form-item label="考试场次">
@@ -100,7 +100,7 @@
               </el-tag>
             </el-col>
             <el-col :span="4">
-              <el-button class="el-icon-plus">增加评卷官</el-button>
+              <el-button class="el-icon-plus" @click="openJudgesDialog">增加评卷官</el-button>
             </el-col>
           </el-form-item>
           <el-form-item label="评卷方式:">
@@ -141,7 +141,36 @@
         </el-form>
       </div>
     </el-dialog>
-    <!-- 编辑弹窗 -->
+    <!-- 选择试卷的弹窗 -->
+    <el-dialog title="选择试卷" :visible.sync="choicePaperDialog.dialogFormVisible">
+      <div class="choice-paper">
+        <el-table :data="choicePaperDialog.paperList">
+          <el-table-column type="index" />
+          <el-table-column prop="name" label="试卷名" />
+          <el-table-column label="操作">
+            <template slot-scope="{row}">
+              <el-button type="text" @click="choicePaper(row)">选择</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-dialog>
+    <!-- 选择阅卷官的弹窗 -->
+    <el-dialog title="选择阅卷官" :visible.sync="choiceJudgesDialog.dialogFormVisible">
+      <div class="choice-judges">
+        <h3>选择阅卷官</h3>
+        <el-table :data="choiceJudgesDialog.judgeList">
+          <el-table-column type="index" />
+          <el-table-column prop="name" label="阅卷官" />
+          <el-table-column label="操作">
+            <template slot-scope="{row}">
+              <el-button type="text" class="el-icon-plus" @click="addJudge(row)">增加</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-dialog>
+    <!-- 编辑块 -->
     <div id="editDiv">
       <span>
         <el-link :underline="false" class="el-icon-edit" @click="edit">修改</el-link>
@@ -183,24 +212,22 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 分页框 -->
-      <el-pagination
-        background
-        :layout="layout"
-        :total="total"
-        :page-size="pageSize"
-        :page-sizes="pageSizes"
-        :current-page="currentPage"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-      <h2>选择的时间</h2>
-      {{ queryForm.examTimeRange }}
     </div>
+    <!-- 分页框 -->
+    <el-pagination
+      background
+      :layout="layout"
+      :total="total"
+      :page-size="pageSize"
+      :page-sizes="pageSizes"
+      :current-page="currentPage"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
   </div>
 </template>
 <script>
-import { pageSizes, pageSize, mockData, markOptions } from './common'
+import { layout, pageSizes, pageSize, mockData, markOptions } from './common'
 import { rules } from './common'
 
 export default {
@@ -214,8 +241,13 @@ export default {
         publishTimeRange: '', // 发布的时间段
         examTimeRange: '' // 考试时间段
       },
+      /**
+       * 表格数据
+       */
       tableData: [],
-      // 编辑和发布弹窗的数据
+      /**
+       * 编辑和发布弹窗的数据
+       */
       dialogForm: {
         // 弹窗的显示标题 编辑or发布
         dialogTitle: '编辑',
@@ -245,14 +277,48 @@ export default {
         // 备注
         description: ''
       },
-      // 表格单选和复选框
+      /**
+       * 表格单选和多选
+       */
       tableForm: {
         select: ''
+      },
+      /**
+       * 选择试卷的弹窗
+       */
+      choicePaperDialog: {
+        dialogFormVisible: false,
+        paperList: [
+          {
+            name: 'java基础',
+            id: 1234
+          },
+          {
+            name: 'java进阶',
+            id: 2433
+          }
+        ]
+      },
+      /**
+       * 选择阅卷官弹窗相关
+       */
+      choiceJudgesDialog: {
+        dialogFormVisible: false,
+        judgeList: [
+          {
+            name: '王工',
+            id: 12345
+          },
+          {
+            name: '李工',
+            id: 2345
+          }
+        ]
       },
       markOptions: markOptions,
       rules: rules,
       total: 100,
-      layout: 'total,sizes,prev,pager,next,jumper',
+      layout: layout,
       pageSizes: pageSizes,
       pageSize: pageSize,
       currentPage: 1
@@ -281,13 +347,20 @@ export default {
      * 编辑记录函数
      */
     edit(row) {
-      const id = row.recordId
-      // alert(`id=${id}`)
-      // 1.获得这条记录的数据
-      // 2.填充数据
-      this.dialogForm.dialogTitle = '编辑'
-      this.dialogForm.dialogFormVisible = true
-      console.log(id)
+      if (row === null || row === undefined) {
+        this.$message({
+          type: 'warn',
+          message: '没有行'
+        })
+      } else {
+        const id = row.recordId
+        // alert(`id=${id}`)
+        // 1.获得这条记录的数据
+        // 2.填充数据
+        this.dialogForm.dialogTitle = '编辑'
+        this.dialogForm.dialogFormVisible = true
+        console.log(id)
+      }
     },
     /**
      * 发布新纪录弹窗
@@ -451,6 +524,50 @@ export default {
       this.currentPage = val
     },
     /**
+     * 打开选择试卷弹窗
+     */
+    openChoicePaperDialog() {
+      this.choicePaperDialog.dialogFormVisible = true
+    },
+    /**
+     * 关闭选择试卷弹窗
+     */
+    closeChoicePaperDialog() {
+      this.choicePaperDialog.dialogFormVisible = false
+    },
+    /**
+     * 选择试卷
+     */
+    choicePaper(row) {
+      this.dialogForm.paperName = row.name
+      this.dialogForm.paperId = row.id
+      this.closeChoicePaperDialog()
+    },
+    /**
+     * 打开增加阅卷官的弹窗
+     */
+    openJudgesDialog() {
+      this.choiceJudgesDialog.dialogFormVisible = true
+    },
+    /**
+     * 关闭阅卷官的弹窗
+     */
+    closeJudgesDialog() {
+      this.choiceJudgesDialog.dialogFormVisible = false
+    },
+    /**
+     * 添加阅卷官
+     */
+    addJudge(row) {
+      console.log(row)
+      const newJudge = {
+        name: row.name,
+        id: row.id
+      }
+      this.dialogForm.judges.push(newJudge)
+      this.closeJudgesDialog()
+    },
+    /**
      * 关闭试卷官标签的处理事件
      */
     handleCloseTag(tag) {
@@ -474,8 +591,8 @@ export default {
   margin-left: 15px;
 }
 .table {
-  /* margin: 20px; */
   margin: 15px;
+  /* margin-bottom: 15px; */
 }
 .judges {
   padding:0%;
