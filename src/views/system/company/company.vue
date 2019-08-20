@@ -34,13 +34,7 @@
 
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.organizationNames" placeholder="请选择" size="mini">
-                <el-option
-                  v-for="organizationName in organizationNames"
-                  :key="organizationName.level"
-                  :value="organizationName.level"
-                />
-              </el-select>
+              <el-select v-model="formInline.organizationNames" placeholder="请选择" size="mini" />
             </el-form-item>
 
             <el-form-item>
@@ -82,9 +76,11 @@
               <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
               <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
               <el-table-column label="操作" width="110" align="center">
-                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany" />
+                <template slot-scope="scope">
+                  <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
+                  <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany" />
+                  <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany(scope.row)" />
+                </template>
               </el-table-column>
             </el-table>
             <!-- 分页部分 -->
@@ -289,14 +285,18 @@ export default {
     /**
      * 跳转到增加界面
      */
-    addCompany() {
+    addCompany(row) {
       this.$router.push({
         name: 'AddCompany'
       })
     },
-    updateCompany() {
+
+    updateCompany(row) {
       this.$router.push({
-        name: 'UpdateCompany'
+        name: 'UpdateCompany',
+        params: {
+          'row': row
+        }
       })
     },
 

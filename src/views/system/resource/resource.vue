@@ -94,9 +94,11 @@
             <el-table-column prop="closeImg" label="关闭图标" align="center" />
             <el-table-column prop="leaf" label="是否叶节点" sortable="true" width="120" align="center" />
             <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addResource" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteResource" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateResource" />
+              <template slot-scope="scope">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addResource" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteResource" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateResource(scope.row)" />
+              </template>
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
@@ -238,9 +240,12 @@ export default {
         name: 'AddResource'
       })
     },
-    updateResource() {
+    updateResource(row) {
       this.$router.push({
-        name: 'updateResource'
+        name: 'UpdateResource',
+        params: {
+          'row': row
+        }
       })
     },
 

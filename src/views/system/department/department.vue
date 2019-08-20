@@ -80,9 +80,11 @@
                 </template>
               </el-table-column>
               <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
-                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDepartment" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDepartment" />
+                <template slot-scope="scope">
+                  <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment" />
+                  <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDepartment" />
+                  <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDepartment(scope.row)" />
+                </template>
               </el-table-column>
             </el-table>
           </div>
@@ -256,12 +258,15 @@ export default {
      */
     addDepartment() {
       this.$router.push({
-        name: 'addDepartment'
+        name: 'AddDepartment'
       })
     },
-    updateDepartment() {
+    updateDepartment(row) {
       this.$router.push({
-        name: 'updateDepartment'
+        name: 'UpdateDepartment',
+        params: {
+          'row': row
+        }
       })
     },
 

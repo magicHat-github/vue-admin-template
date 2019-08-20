@@ -121,6 +121,11 @@ export default {
       }
     }
   },
+  created() {
+    var x = this
+    x.form = this.$route.params.row
+    console.log(x.form)
+  },
   methods: {
     /**
 		 * 路由跳转
@@ -129,7 +134,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.$router.push({
-            name: 'org'
+            name: 'Org'
           })
           this.$message('操作成功')
           console.log(this.form)
@@ -142,13 +147,13 @@ export default {
 
     save() {
       this.$router.push({
-        name: 'org'
+        name: 'Org'
       })
       this.$message('操作成功')
     },
     close() {
       this.$router.push({
-        name: 'org'
+        name: 'Org'
       })
     }
   }

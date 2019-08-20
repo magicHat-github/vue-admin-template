@@ -96,9 +96,11 @@
             <el-table-column prop="organizationName" label="所属机构" align="center" />
             <el-table-column prop="status" label="是否启用" sortable="true" align="center" />
             <el-table-column label="操作" width="160" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addRole" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteRole" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateRole" />
+              <template slot-scope="scope">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addRole" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteRole" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateRole(scope.row)" />
+              </template>
               <el-link
                 class="itemAction"
                 type="primary"
@@ -308,9 +310,12 @@ export default {
         name: 'AddCompany'
       })
     },
-    updateRole() {
+    updateRole(row) {
       this.$router.push({
-        name: 'update'
+        name: 'update',
+        params: {
+          'row': row
+        }
       })
     },
 

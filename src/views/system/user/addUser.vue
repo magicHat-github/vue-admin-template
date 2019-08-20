@@ -18,15 +18,15 @@
         label-position="left"
       >
         <!-- 第一行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 工号输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="用户工号:" prop="code">
               <el-input v-model="userForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 密码输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="初始密码:" prop="password">
               <el-input v-model="userForm.password" placeholder="请输入内容" clearable />
             </el-form-item>
@@ -34,15 +34,15 @@
         </el-row>
 
         <!-- 第二行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 姓名输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="用户名:" prop="name">
               <el-input v-model="userForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 职位下拉框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="职位:" prop="position">
               <el-select v-model="userForm.position" placeholder="请选择">
                 <el-option
@@ -57,31 +57,38 @@
         </el-row>
 
         <!-- 第三行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 性别输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="性别:" prop="sex">
               <el-input v-model="userForm.sex" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 生日输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="生日:" prop="birthday">
-              <el-input v-model="userForm.birthday" placeholder="请输入内容" clearable />
+
+              <div class="block">
+                <el-date-picker
+                  v-model="userForm.birthday"
+                  type="date"
+                  placeholder="选择日期"
+                />
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 第四行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 电话输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="电话:" prop="tel">
               <el-input v-model="userForm.tel" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 邮箱输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="邮箱:" prop="email">
               <el-input v-model="userForm.email" placeholder="请输入内容" clearable />
             </el-form-item>
@@ -90,13 +97,13 @@
 
         <!-- 第五行 -->
         <!-- 其它/微信输入框 -->
-        <el-row type="flex" justify="space-around">
-          <el-col :span="10">
+        <el-row>
+          <el-col :span="7" :offset="3">
             <el-form-item label="其它/微信:">
               <el-input v-model="userForm.other" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="拥有角色:">
               <el-select v-model="userForm.roles" filterable multiple placeholder="请选择">
                 <el-option v-for="role in roles" :key="role.name" :value="role.name" />
@@ -108,7 +115,7 @@
         <!-- 第六行 -->
         <!-- 备注栏 -->
         <el-row>
-          <el-col :span="10" :offset="1">
+          <el-col :span="7" :offset="3">
             <el-form-item label="备注:">
               <el-input v-model="userForm.remark" type="textarea" :rows="2" placeholder="请输入内容" />
             </el-form-item>
@@ -118,7 +125,7 @@
         <!-- 第七行 -->
         <!--复选按钮 -->
         <el-row>
-          <el-col :span="8" :offset="1">
+          <el-col :span="7" :offset="3">
             <el-form-item label="是否启用:">
               <el-radio v-model="userForm.status" label="1">是</el-radio>
               <el-radio v-model="userForm.status" label="2">否</el-radio>
@@ -130,10 +137,10 @@
         <!-- 按钮组件 -->
         <el-row :gutter="0">
           <el-form-item>
-            <el-col :span="4" :offset="8">
+            <el-col :span="3" :offset="8">
               <el-button type="primary" @click="submitForm('userForm')">保存</el-button>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="3">
               <el-button @click="close">关闭</el-button>
             </el-col>
           </el-form-item>
@@ -146,6 +153,38 @@
 <script>
 export default {
   data() {
+    /**
+       * 手机验证
+       */
+    var checkPhone = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('手机号不能为空'))
+      } else {
+        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
+        console.log(reg.test(value))
+        if (reg.test(value)) {
+          callback()
+        } else {
+          return callback(new Error('请输入正确的手机号'))
+        }
+      }
+    }
+    /**
+       * 邮箱验证
+       */
+    var validateEmail = (rule, value, callback) => {
+      if (value === '') {
+        return callback(new Error('请正确填写邮箱'))
+      } else {
+        if (value !== '') {
+          var reg = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+          if (!reg.test(value)) {
+            callback(new Error('请输入有效的邮箱'))
+          }
+        }
+        callback()
+      }
+    }
     return {
       /**
        * 表单数据
@@ -192,11 +231,11 @@ export default {
         ],
         tel: [
           { required: true, message: '请输入电话', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { validator: checkPhone, trigger: 'blur' }
         ],
         email: [
           { required: true, message: '请输入邮箱', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { validator: validateEmail, trigger: 'blur' }
         ]
       },
       /**
@@ -238,6 +277,7 @@ export default {
         name: 'User'
       })
     }
+
   }
 }
 </script>

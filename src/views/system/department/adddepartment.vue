@@ -18,15 +18,15 @@
         label-position="left"
       >
         <!-- 第一行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 部门名称输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="部门名称:" prop="name">
               <el-input v-model="departmentForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 部门编号输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="部门编号:" prop="code">
               <el-input v-model="departmentForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
@@ -34,15 +34,15 @@
         </el-row>
 
         <!-- 第二行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 注记码输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="助记码:" prop="mnemonic_code">
               <el-input v-model="departmentForm.mnemonic_code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 部门等级下拉框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="部门等级:" prop="level">
               <el-select v-model="departmentForm.level" placeholder="请选择">
                 <el-option
@@ -57,10 +57,10 @@
         </el-row>
 
         <!-- 第三行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
 
           <!-- 上级部门下拉框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="上级部门:" prop="parent_id">
               <el-select v-model="departmentForm.parent_id" placeholder="请选择">
                 <el-option
@@ -74,7 +74,7 @@
           </el-col>
 
           <!-- 负责人输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="负责人:" prop="master">
               <el-input v-model="departmentForm.master" placeholder="请输入内容" clearable />
             </el-form-item>
@@ -84,7 +84,7 @@
         <!-- 第四行 -->
         <!--复选按钮 -->
         <el-row>
-          <el-col :span="8" :offset="1">
+          <el-col :span="7" :offset="3">
             <el-form-item label="是否启用:">
               <el-radio v-model="departmentForm.status" label="1">是</el-radio>
               <el-radio v-model="departmentForm.status" label="2">否</el-radio>
@@ -96,10 +96,10 @@
         <!-- 按钮组件 -->
         <el-row :gutter="0">
           <el-form-item>
-            <el-col :span="4" :offset="8">
+            <el-col :span="3" :offset="8">
               <el-button type="primary" @click="submitForm('departmentForm')">保存</el-button>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="3">
               <el-button @click="close">关闭</el-button>
             </el-col>
           </el-form-item>

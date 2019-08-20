@@ -18,15 +18,15 @@
         label-position="left"
       >
         <!-- 第一行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 公司名输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="公司名:" prop="name">
               <el-input v-model="companyForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 公司编号输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="公司编号:" prop="code">
               <el-input v-model="companyForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
@@ -34,15 +34,15 @@
         </el-row>
 
         <!-- 第二行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 助记码输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="助记码:" prop="mnemonic_code">
               <el-input v-model="companyForm.mnemonic_code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 法人下拉框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="法人:" prop="master">
               <el-select v-model="companyForm.master" placeholder="请选择">
                 <el-option
@@ -57,15 +57,15 @@
         </el-row>
 
         <!-- 第三行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 税号输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="税号:" prop="tax">
               <el-input v-model="companyForm.tax" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 传真输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="传真:" prop="fax">
               <el-input v-model="companyForm.fax" placeholder="请输入内容" clearable />
             </el-form-item>
@@ -73,15 +73,15 @@
         </el-row>
 
         <!-- 第四行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 电话输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="3">
             <el-form-item label="电话:">
               <el-input v-model="companyForm.tel" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 地址输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="地址:">
               <el-input v-model="companyForm.address" placeholder="请输入内容" clearable />
             </el-form-item>
@@ -90,14 +90,14 @@
 
         <!-- 第五行 -->
         <!-- 所属机构输入框 -->
-        <el-row type="flex" justify="space-around">
-          <el-col :span="10">
+        <el-row>
+          <el-col :span="7" :offset="3">
             <el-form-item label="所属机构:" prop="org_name">
               <el-input v-model="companyForm.org_name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 邮箱输入框 -->
-          <el-col :span="10">
+          <el-col :span="7" :offset="2">
             <el-form-item label="邮箱:" prop="email">
               <el-input v-model="companyForm.email" placeholder="请输入内容" clearable />
             </el-form-item>
@@ -107,7 +107,7 @@
         <!-- 第七行 -->
         <!--复选按钮 -->
         <el-row>
-          <el-col :span="8" :offset="1">
+          <el-col :span="7" :offset="3">
             <el-form-item label="是否启用:">
               <el-radio v-model="companyForm.status" label="1">是</el-radio>
               <el-radio v-model="companyForm.status" label="2">否</el-radio>
@@ -119,10 +119,10 @@
         <!-- 按钮组件 -->
         <el-row :gutter="0">
           <el-form-item>
-            <el-col :span="4" :offset="8">
+            <el-col :span="3" :offset="8">
               <el-button type="primary" @click="submitForm('companyForm')">保存</el-button>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="3">
               <el-button @click="close">关闭</el-button>
             </el-col>
           </el-form-item>
@@ -198,6 +198,7 @@ export default {
       roles: [{ name: '鼓励师' }, { name: '搬砖人' }]
     }
   },
+
   methods: {
     /**
      * 保存按钮
