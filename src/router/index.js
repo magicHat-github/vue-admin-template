@@ -198,14 +198,14 @@ export const constantRoutes = [
         path: 'addorg',
         name: 'AddOrg',
         hidden: true,
-        component: () => import('@/views/system/organization/addOrg'),
+        component: () => import('@/views/system/organization/addorg'),
         meta: { title: '新增组织机构' }
       },
       {
         path: 'updateorg',
         name: 'UpdateOrg',
         hidden: true,
-        component: () => import('@/views/system/organization/updateOrg'),
+        component: () => import('@/views/system/organization/updateorg'),
         meta: { title: '修改组织机构' }
       },
       /**
@@ -228,7 +228,7 @@ export const constantRoutes = [
         path: 'updateCompany',
         name: 'UpdateCompany',
         hidden: true,
-        component: () => import('@/views/system/company/updateCompany'),
+        component: () => import('@/views/system/company/updatecompany'),
         meta: { title: '修改公司信息' }
       },
       /**
@@ -244,14 +244,14 @@ export const constantRoutes = [
         path: 'addDepartment',
         name: 'AddDepartment',
         hidden: true,
-        component: () => import('@/views/system/department/addDepartment'),
+        component: () => import('@/views/system/department/adddepartment'),
         meta: { title: '新增部门', icon: 'tree' }
       },
       {
         path: 'updateDepartment',
         name: 'UpdateDepartment',
         hidden: true,
-        component: () => import('@/views/system/department/updateDepartment'),
+        component: () => import('@/views/system/department/updatedepartment'),
         meta: { title: '修改部门信息', icon: 'tree' }
       },
       {
@@ -314,14 +314,14 @@ export const constantRoutes = [
         path: 'addposition',
         name: 'AddPosition',
         hidden: true,
-        component: () => import('@/views/system/position/addPosition'),
+        component: () => import('@/views/system/position/addposition'),
         meta: { title: '职位增加' }
       },
       {
         path: 'updateposition',
         name: 'UpdatePosition',
         hidden: true,
-        component: () => import('@/views/system/position/updatePosition'),
+        component: () => import('@/views/system/position/updateposition'),
         meta: { title: '职位修改' }
       },
       {
