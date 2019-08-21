@@ -71,7 +71,7 @@
               size="mini"
               type="warning"
               icon="el-icon-edit"
-              @click="updateDepartment"
+              @click="updateDepartment1"
             >修改</el-link>
           </div>
 
@@ -303,6 +303,31 @@ export default {
           row: row
         }
       })
+    },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateDepartment1() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length == 1) {
+        this.$router.push({
+          name: 'UpdateDepartment',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
     },
 
     /**

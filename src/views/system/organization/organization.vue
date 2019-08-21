@@ -17,7 +17,7 @@
       <div>
         <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addOrg">增加</el-link>
         <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteOrg">删除</el-link>
-        <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateOrg">修改</el-link>
+        <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateOrg1">修改</el-link>
       </div>
       <!-- 数据显示表单 -->
       <div>
@@ -104,7 +104,7 @@ export default {
           status: '1'
         },
         {
-          orgname: '腾讯',
+          orgname: '豆瓣',
           code: 'CEO',
           master: 'xly是懒猪',
           tel: '0',
@@ -112,7 +112,7 @@ export default {
           status: '1'
         },
         {
-          orgname: '腾讯',
+          orgname: '滴滴',
           code: 'CEO',
           master: 'xly是懒猪',
           tel: '0',
@@ -120,7 +120,7 @@ export default {
           status: '1'
         },
         {
-          orgname: '腾讯',
+          orgname: '字节',
           code: 'CEO',
           master: 'xly是懒猪',
           tel: '0',
@@ -128,7 +128,7 @@ export default {
           status: '1'
         },
         {
-          orgname: '腾讯',
+          orgname: '百度',
           code: 'CEO',
           master: 'xly是懒猪',
           tel: '0',
@@ -136,7 +136,7 @@ export default {
           status: '1'
         },
         {
-          orgname: '腾讯',
+          orgname: '阿里巴巴',
           code: 'CEO',
           master: 'xly是懒猪',
           tel: '0',
@@ -192,6 +192,31 @@ export default {
           'row': row
         }
       })
+    },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateOrg1() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length == 1) {
+        this.$router.push({
+          name: 'UpdateOrg',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
     },
 
     /**

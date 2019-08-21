@@ -65,7 +65,7 @@
           <div>
             <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addUser">增加</el-link>
             <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteUser">删除</el-link>
-            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateUser">修改</el-link>
+            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateUser1">修改</el-link>
             <!-- 角色分配按钮 -->
             <el-link
               class="itemAction"
@@ -274,6 +274,32 @@ export default {
           'row': row
         }
       })
+    },
+
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateUser1() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length == 1) {
+        this.$router.push({
+          name: 'UpdateUser',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
     },
 
     /**

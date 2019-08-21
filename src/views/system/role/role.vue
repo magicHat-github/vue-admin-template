@@ -62,7 +62,7 @@
               size="mini"
               type="warning"
               icon="el-icon-edit"
-              @click="updateRole"
+              @click="updateRole1"
             >修改</el-link>
             <!-- 资源分配按钮 -->
             <el-link
@@ -344,9 +344,34 @@ export default {
       this.$router.push({
         name: 'update',
         params: {
-          row: row
+          'row': row
         }
       })
+    },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateRole1() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length == 1) {
+        this.$router.push({
+          name: 'UpdateOrg',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
     },
 
     /**
