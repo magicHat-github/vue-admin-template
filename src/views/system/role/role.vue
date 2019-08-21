@@ -12,7 +12,7 @@
               </el-col>
             </el-row>
             <div class="horizon">
-              <hr />
+              <hr>
             </div>
           </el-header>
           <!-- 树 -->
@@ -74,15 +74,15 @@
             <el-dialog title="为角色分配资源" :visible.sync="distributeResource">
               <!-- 角色的资源树 -->
               <el-tree
+                ref="resourceTree"
                 :data="resourceTreeVO"
                 show-checkbox
                 default-expand-all
-                ref="resourceTree"
                 node-key="id"
                 highlight-current
                 :default-checked-keys="[5]"
                 :props="defaultProps"
-              ></el-tree>
+              />
               <div slot="footer" class="dialog-footer">
                 <el-button @click="distributeResource = false">取 消</el-button>
                 <el-button type="primary" @click="distributeResource = false">确 定</el-button>
