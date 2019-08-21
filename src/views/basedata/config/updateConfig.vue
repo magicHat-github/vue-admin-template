@@ -91,13 +91,13 @@ export default {
     },
     save() {
       this.$router.push({
-        name: 'Category'
+        name: 'Config'
       })
       this.$message('操作成功')
     },
     close() {
       this.$router.push({
-        name: 'Category'
+        name: 'Config'
       })
     }
   }

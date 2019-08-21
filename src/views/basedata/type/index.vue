@@ -46,11 +46,12 @@
           </el-table>
           <!-- 分页部分 -->
           <div class="block">
-            <el-pagination
-              :current-page.sync="currentPage1"
-              :page-size="70"
-              layout="prev, pager, next, jumper"
-              :total="1000"
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="page.pageNumber"
+              :limit.sync="page.size"
+              @click="queryData"
             />
           </div>
         </el-card>
@@ -61,8 +62,11 @@
 
 <script>
 // import { log } from 'util'
+import Pagination from '@/components/Pagination'
 export default {
   name: 'App',
+  // eslint-disable-next-line vue/no-unused-components
+  components: { Pagination },
   data() {
     return {
       /**
@@ -71,7 +75,12 @@ export default {
       formInline: {
         typeName: ''
       },
-
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // 试卷总数
+      total: 0,
       /**
          * 公司管理
          */
@@ -127,8 +136,13 @@ export default {
       dynamicTags: ['标签一', '标签二', '标签三']
     }
   },
-
+  created() {
+    this.queryData()
+  },
   methods: {
+    queryData() {
+      this.total = this.types.length
+    },
     /**
        * 树结构的点击事件
        */
