@@ -116,7 +116,9 @@
             <el-table-column prop="organizationName" label="所属机构" align="center" />
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
-                <el-tag>{{ scope.row.leaf == 1 ? "是" : "否" }}</el-tag>
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="操作" width="160" align="center">

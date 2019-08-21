@@ -112,9 +112,11 @@
             <el-table-column prop="resourceType" label="资源类型" sortable="true" align="center" />
             <el-table-column prop="openImg" label="打开图标" align="center" />
             <el-table-column prop="closeImg" label="关闭图标" align="center" />
-            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+            <el-table-column class-name="status-col" label="是否叶节点" width="110" align="center">
               <template slot-scope="scope">
-                <el-tag>{{ scope.row.leaf == 1 ? "是" : "否" }}</el-tag>
+                <el-tag
+                  :type="scope.row.leaf === '1' ? 'primary' : 'info'"
+                >{{ scope.row.leaf == 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
@@ -283,7 +285,7 @@ export default {
       this.$router.push({
         name: 'UpdateResource',
         params: {
-          'row': row
+          row: row
         }
       })
     },
@@ -307,7 +309,7 @@ export default {
         this.$router.push({
           name: 'UpdateResource',
           params: {
-            'row': this.multipleSelection[0]
+            row: this.multipleSelection[0]
           }
         })
       }

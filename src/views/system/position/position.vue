@@ -15,9 +15,27 @@
     <el-card>
       <!-- 增删改按钮框 -->
       <div>
-        <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addPosition">增加</el-link>
-        <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deletePosition">删除</el-link>
-        <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateSelectedPosition">修改</el-link>
+        <el-link
+          class="itemAction"
+          size="mini"
+          type="primary"
+          icon="el-icon-plus"
+          @click="addPosition"
+        >增加</el-link>
+        <el-link
+          class="itemAction"
+          size="mini"
+          type="danger"
+          icon="el-icon-delete"
+          @click="deletePosition"
+        >删除</el-link>
+        <el-link
+          class="itemAction"
+          size="mini"
+          type="warning"
+          icon="el-icon-edit"
+          @click="updateSelectedPosition"
+        >修改</el-link>
       </div>
       <!-- 数据显示表单 -->
       <el-table
@@ -36,14 +54,26 @@
         <el-table-column prop="remark" label="备注" show-overflow-tooltip align="center" />
         <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
           <template slot-scope="scope">
-            <el-tag>{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+            <el-tag
+              :type="scope.row.status === '1' ? 'primary' : 'info'"
+            >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="110" align="center">
           <template slot-scope="scope">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addPosition" />
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deletePosition" />
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updatePosition(scope.row)" />
+            <el-link
+              class="itemAction"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deletePosition"
+            />
+            <el-link
+              class="itemAction"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updatePosition(scope.row)"
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -169,7 +199,7 @@ export default {
       this.$router.push({
         name: 'UpdatePosition',
         params: {
-          'row': row
+          row: row
         }
       })
     },
@@ -193,7 +223,7 @@ export default {
         this.$router.push({
           name: 'UpdatePosition',
           params: {
-            'row': this.multipleSelection[0]
+            row: this.multipleSelection[0]
           }
         })
       }

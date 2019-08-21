@@ -17,7 +17,11 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="organizationTreeVO" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              :data="organizationTreeVO"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -95,11 +99,18 @@
             <el-table-column prop="other" label="其它/微信" width="105" align="center" />
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
-                <el-tag>{{ scope.row.leaf == 1 ? "是" : "否" }}</el-tag>
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="操作" width="130" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeToUser" />
+              <el-link
+                class="itemAction"
+                type="primary"
+                icon="el-icon-user"
+                @click="distributeToUser"
+              />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
