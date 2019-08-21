@@ -11,7 +11,9 @@
                 <h1 style="font-size:15px;" class="el-icon-menu">用户管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -314,10 +316,12 @@ export default {
   margin-right: 10px;
 }
 .aside .el-card__body .el-main {
-  padding-left: 5px;
+  padding-left: 7px;
 }
-
 .aside .el-card__body .el-header {
   padding: 5px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>

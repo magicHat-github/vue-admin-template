@@ -15,19 +15,19 @@
         :rules="companyRules"
         label-width="100px"
         class="user-add-Form"
-        label-position="left"
+        label-position="right"
       >
         <!-- 第一行 -->
         <el-row>
           <!-- 公司名输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="公司名:" prop="name">
+            <el-form-item label="公司名" prop="name">
               <el-input v-model="companyForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 公司编号输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="公司编号:" prop="code">
+            <el-form-item label="公司编号" prop="code">
               <el-input v-model="companyForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -37,13 +37,13 @@
         <el-row>
           <!-- 助记码输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="助记码:" prop="mnemonic_code">
+            <el-form-item label="助记码" prop="mnemonic_code">
               <el-input v-model="companyForm.mnemonic_code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 法人下拉框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="法人:" prop="master">
+            <el-form-item label="法人" prop="master">
               <el-select v-model="companyForm.master" placeholder="请选择">
                 <el-option
                   v-for="position in positions"
@@ -60,13 +60,13 @@
         <el-row>
           <!-- 税号输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="税号:" prop="tax">
+            <el-form-item label="税号" prop="tax">
               <el-input v-model="companyForm.tax" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 传真输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="传真:" prop="fax">
+            <el-form-item label="传真" prop="fax">
               <el-input v-model="companyForm.fax" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -76,13 +76,13 @@
         <el-row>
           <!-- 电话输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="电话:">
+            <el-form-item label="电话">
               <el-input v-model="companyForm.tel" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 地址输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="地址:">
+            <el-form-item label="地址">
               <el-input v-model="companyForm.address" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -92,13 +92,13 @@
         <!-- 所属机构输入框 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="所属机构:" prop="org_name">
+            <el-form-item label="所属机构" prop="org_name">
               <el-input v-model="companyForm.org_name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 邮箱输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="邮箱:" prop="email">
+            <el-form-item label="邮箱" prop="email">
               <el-input v-model="companyForm.email" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -108,7 +108,7 @@
         <!--复选按钮 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="是否启用:">
+            <el-form-item label="是否启用">
               <el-radio v-model="companyForm.status" label="1">是</el-radio>
               <el-radio v-model="companyForm.status" label="2">否</el-radio>
             </el-form-item>
