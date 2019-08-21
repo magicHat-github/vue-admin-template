@@ -37,13 +37,11 @@
           <el-table-column prop="master" label="负责人" show-overflow-tooltip align="center" />
           <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
           <el-table-column prop="address" label="地址" show-overflow-tooltip align="center" />
-          <el-table-column
-            prop="status"
-            label="是否启用"
-            show-overflow-tooltip
-            width="110"
-            align="center"
-          />
+          <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+            <template slot-scope="scope">
+              <el-tag>{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" width="110" align="center">
             <template slot-scope="scope">
               <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addOrg" />
@@ -117,7 +115,7 @@ export default {
           master: 'xly是懒猪',
           tel: '0',
           address: '博思大厦',
-          status: '1'
+          status: '0'
         },
         {
           orgname: '字节',

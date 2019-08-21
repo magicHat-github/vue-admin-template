@@ -93,7 +93,11 @@
             <el-table-column prop="tel" label="电话" align="center" />
             <el-table-column prop="email" label="邮箱" align="center" />
             <el-table-column prop="other" label="其它/微信" width="105" align="center" />
-            <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag>{{ scope.row.leaf == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" width="130" align="center">
               <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeToUser" />
             </el-table-column>
@@ -201,7 +205,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           other: '无',
-          status: '启用'
+          status: '1'
         }
       ],
 

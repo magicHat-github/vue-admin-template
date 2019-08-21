@@ -87,7 +87,7 @@
           <el-col :span="7" :offset="3">
             <el-form-item label="是否启用">
               <el-radio v-model="departmentForm.status" label="1">是</el-radio>
-              <el-radio v-model="departmentForm.status" label="2">否</el-radio>
+              <el-radio v-model="departmentForm.status" label="0">否</el-radio>
             </el-form-item>
           </el-col>
         </el-row>

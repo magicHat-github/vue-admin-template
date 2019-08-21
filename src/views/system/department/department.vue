@@ -96,7 +96,7 @@
               <el-table-column prop="master" label="负责人" align="center" />
               <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
                 <template slot-scope="scope">
-                  <el-tag>{{ scope.row.status }}</el-tag>
+                  <el-tag>{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
                 </template>
               </el-table-column>
               <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
@@ -198,7 +198,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '1',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -207,7 +207,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '5',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -216,7 +216,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '2',
-          status: '否',
+          status: '0',
           companyName: 'boss'
         },
         {
@@ -225,7 +225,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '4',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -234,7 +234,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '3',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -243,7 +243,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '0',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         }
       ],

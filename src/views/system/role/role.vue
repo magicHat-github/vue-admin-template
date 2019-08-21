@@ -114,7 +114,11 @@
             <el-table-column prop="remark" label="角色备注" show-overflow-tooltip align="center" />
             <el-table-column prop="companyName" label="所属公司" align="center" />
             <el-table-column prop="organizationName" label="所属机构" align="center" />
-            <el-table-column prop="status" label="是否启用" sortable="true" align="center" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag>{{ scope.row.leaf == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" width="160" align="center">
               <template slot-scope="scope">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addRole" />
@@ -264,7 +268,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '1'
         },
         {
           name: 'name1',
@@ -272,7 +276,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '1'
         },
         {
           name: 'name1',
@@ -280,7 +284,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '1'
         },
         {
           name: 'name1',
@@ -288,7 +292,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '0'
         },
         {
           name: 'name1',
@@ -296,7 +300,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '0'
         }
       ],
 

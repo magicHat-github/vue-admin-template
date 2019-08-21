@@ -34,13 +34,11 @@
         <el-table-column prop="company" label="姓名" width="120" align="center" />
         <el-table-column prop="name" label="姓名" width="120" align="center" />
         <el-table-column prop="remark" label="备注" show-overflow-tooltip align="center" />
-        <el-table-column
-          prop="status"
-          label="是否启用"
-          show-overflow-tooltip
-          width="110"
-          align="center"
-        />
+        <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+          <template slot-scope="scope">
+            <el-tag>{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="110" align="center">
           <template slot-scope="scope">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addPosition" />
