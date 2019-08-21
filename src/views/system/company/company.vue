@@ -10,8 +10,10 @@
               <el-col>
                 <h1 style="font-size: 15px;" class="el-icon-menu">公司管理</h1>
               </el-col>
-            </el-row>     
-            <hr>
+            </el-row>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -41,15 +43,32 @@
               <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
-
         </div>
 
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addCompany">增加</el-link>
-            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
-            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateCompany">修改</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="addCompany"
+            >增加</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deleteCompany"
+            >删除</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updateCompany"
+            >修改</el-link>
           </div>
           <div>
             <!-- 数据显示表单 -->
@@ -74,12 +93,33 @@
               <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
               <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
               <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
-              <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
+              <el-table-column
+                prop="status"
+                label="是否启用"
+                sortable="true"
+                width="110"
+                align="center"
+              />
               <el-table-column label="操作" width="110" align="center">
                 <template slot-scope="scope">
-                  <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
-                  <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany" />
-                  <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany(scope.row)" />
+                  <el-link
+                    class="itemAction"
+                    type="primary"
+                    icon="el-icon-plus"
+                    @click="addCompany"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="danger"
+                    icon="el-icon-delete"
+                    @click="deleteCompany"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="warning"
+                    icon="el-icon-edit"
+                    @click="updateCompany(scope.row)"
+                  />
                 </template>
               </el-table-column>
             </el-table>
@@ -96,7 +136,6 @@
           </div>
         </el-card>
       </div>
-
     </el-main>
   </el-container>
 </template>
@@ -162,7 +201,6 @@ export default {
         children: 'children',
         label: 'label'
       },
-
       /**
        * 查询字段
        */
@@ -170,7 +208,6 @@ export default {
         companyName: '',
         organizationNames: []
       },
-
       /**
        * 公司的表单数据
        */
@@ -241,12 +278,10 @@ export default {
           status: ' 启用'
         }
       ],
-
       /**
        * 多选事件中的数据
        */
       multipleSelection: [],
-
       /**
        * 默认的分页的页面数据
        */
@@ -274,14 +309,12 @@ export default {
     handleNodeClick(data) {
       console.log(data)
     },
-
     /**
      * 勾选事件触发的函数
      */
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-
     /**
      * 跳转到增加界面
      */
@@ -290,16 +323,14 @@ export default {
         name: 'AddCompany'
       })
     },
-
     updateCompany(row) {
       this.$router.push({
         name: 'UpdateCompany',
         params: {
-          'row': row
+          row: row
         }
       })
     },
-
     /**
      * 删除信息
      */
@@ -331,11 +362,12 @@ export default {
   margin-right: 10px;
 }
 .aside .el-card__body .el-main {
-  padding-left: 5px;
+  padding-left: 7px;
 }
-
 .aside .el-card__body .el-header {
   padding: 5px;
 }
-
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
+}
 </style>
