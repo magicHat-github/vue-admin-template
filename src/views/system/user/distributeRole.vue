@@ -8,7 +8,7 @@
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:15px;" class="el-icon-menu">分配用户</h1>
+                <h1 style="font-size:15px;" class="el-icon-menu">分配角色</h1>
               </el-col>
             </el-row>
             <div class="horizon">
@@ -29,39 +29,19 @@
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <!-- 用户名称输入框 -->
-            <el-form-item label="用户名称:">
+            <!-- 角色名称输入框 -->
+            <el-form-item label="角色名称:">
               <el-input v-model="formInline.userName" clearable size="mini" />
-            </el-form-item>
-            <!-- 用户工号输入框 -->
-            <el-form-item label="工号:">
-              <el-input v-model="formInline.userCode" clearable size="mini" />
-            </el-form-item>
-            <!-- 用户手机号输入框 -->
-            <el-form-item label="手机号:">
-              <el-input v-model="formInline.tel" clearable size="mini" />
-            </el-form-item>
-            <!-- 角色下拉框 -->
-            <el-form-item label="角色:">
-              <el-select
-                v-model="formInline.roles"
-                filterable
-                multiple
-                placeholder="请选择"
-                size="mini"
-              >
-                <el-option v-for="user in users" :key="user.role" :value="user.role" />
-              </el-select>
             </el-form-item>
             <!-- 查询按钮 -->
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
 
         <el-card>
-          <!-- 角色分配按钮 -->
+          <!-- 分配用户按钮 -->
           <div>
             <el-link
               class="itemAction"
@@ -69,42 +49,44 @@
               icon="el-icon-user"
               size="mini"
               @click="distributeRole"
-            >分配角色给选定用户</el-link>
+            >将选定角色分配给用户</el-link>
           </div>
 
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :data="users"
+            :data="roles"
             tooltip-effect="dark"
-            style="width: 100%; margin-top: 10px;"
             stripe
+            style="width: 100%; margin-top: 10px;"
             size="mini"
+            fit
             @selection-change="handleSelectionChange"
           >
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="code" label="用户工号" />
-            <el-table-column prop="password" label="初始密码" />
-            <el-table-column prop="name" label="用户名" />
-            <el-table-column prop="role" label="角色" />
-            <el-table-column prop="sex" label="性别" />
-            <el-table-column prop="birthday" label="生日" />
-            <el-table-column prop="position" label="职位" />
-            <el-table-column prop="tel" label="电话" />
-            <el-table-column prop="email" label="邮箱" />
-            <el-table-column prop="other" label="其它/微信" />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
-            <el-table-column label="操作">
-              <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeRole" />
+            <el-table-column type="selection" width="55" align="center" />
+            <el-table-column prop="name" label="角色" align="center" />
+            <el-table-column prop="code" label="角色代号" align="center" />
+            <el-table-column prop="remark" label="角色备注" show-overflow-tooltip align="center" />
+            <el-table-column prop="companyName" label="所属公司" align="center" />
+            <el-table-column prop="organizationName" label="所属机构" align="center" />
+            <el-table-column prop="status" label="是否启用" sortable="true" align="center" />
+            <el-table-column label="操作" width="160" align="center">
+              <el-link
+                class="itemAction"
+                type="primary"
+                icon="el-icon-user"
+                @click="distributeRole"
+              />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
           <div class="block">
-            <el-pagination
-              :current-page.sync="currentPage1"
-              :page-size="70"
-              layout="prev, pager, next, jumper"
-              :total="1000"
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="page.pageNumber"
+              :limit.sync="page.size"
+              @click="queryData"
             />
           </div>
         </el-card>
@@ -114,9 +96,12 @@
 </template>
 
 <script>
+// 引入分页组件
+import Pagination from '@/components/Pagination'
 // import { log } from 'util'
 export default {
   name: 'App',
+  components: { Pagination },
   data() {
     return {
       /**
@@ -176,27 +161,19 @@ export default {
        * 查询字段
        */
       formInline: {
-        userName: '',
-        userCode: '',
-        tel: '',
-        roles: []
+        roleName: ''
       },
 
       /**
        * 用户管理
        */
-      users: [
+      roles: [
         {
           code: '9527',
-          password: '123456',
           name: '傻瓜许林瑜',
-          role: '鼓励师',
-          sex: '男',
-          birthday: '1949-10-01',
-          position: '码农',
-          tel: '13000000000',
-          email: 'test@test.com',
-          other: '无',
+          remark: '备注',
+          companyName: '公司',
+          organizationName: '组织机构',
           status: '启用'
         }
       ],
@@ -206,18 +183,26 @@ export default {
        */
       multipleSelection: [],
       /**
-       * 初始显示的页数
+       * 默认的分页的页面数据
        */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
-
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // 试卷总数
+      total: 0
     }
   },
-
+  created() {
+    this.queryData()
+  },
   methods: {
+    /**
+     * 查询数据
+     */
+    queryData() {
+      this.total = this.roles.length
+    },
     /**
      * 树结构的点击事件
      */
@@ -270,10 +255,10 @@ export default {
     },
 
     /**
-     * 分配角色
+     * 为用户分配角色
      */
     distributeRole() {
-      this.$confirm('将角色分配给选定用户？', '提示', {
+      this.$confirm('为选定用户分配角色？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
