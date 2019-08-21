@@ -10,7 +10,7 @@ import request from '@/utils/request'
  * @param {*} params 参数
 */
 export function select(params) {
-  return baseDataRequestApi('/basedata/dictionary', 'get', params)
+  return baseDataRequestApi('/dictionary', 'get', params)
 }
 
 /**

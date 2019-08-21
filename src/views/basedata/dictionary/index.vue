@@ -74,7 +74,7 @@
 <script>
 // import { log } from 'util'
 import Pagination from '@/components/Pagination'
-import { select } from '@/api/basedata/dictionary.js'
+import { select } from '@/api/basedata/dictionary'
 export default {
   name: 'Dictionary',
   components: { Pagination },
@@ -118,8 +118,9 @@ export default {
         type: this.searchData.type
       }
       select(params).then(result => {
-        this.list = result.data.list
-        this.total = result.data.total
+        const body = result.body
+        this.list = body.data.list
+        this.total = body.data.total
         this.listLoading = false
       })
     },
