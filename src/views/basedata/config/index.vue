@@ -18,8 +18,8 @@
           <!-- 增删改按钮框 -->
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1">修改</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="updateCheck">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="deleteCheck">修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
@@ -42,8 +42,8 @@
             <el-table-column label="操作" width="140" fixed="right">
               <template slot-scope="scope">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />
                 <el-link class="itemAction" type="success" icon="el-icon-view" @click="findConfigDetail(scope.$index, scope.row)" />
               </template>
             </el-table-column>
@@ -86,11 +86,11 @@
               <el-table-column prop="num" label="题目数量" />
               <el-table-column prop="difficult" label="题目难度" />
               <el-table-column prop="score" label="题目分值" />
-              <el-table-column label="操作">
-                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
-              </el-table-column>
+              <!--              <el-table-column label="操作">-->
+              <!--                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />-->
+              <!--                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />-->
+              <!--                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />-->
+              <!--              </el-table-column>-->
             </el-table>
           </el-card>
         </el-drawer>
@@ -215,6 +215,52 @@ export default {
     this.queryData()
   },
   methods: {
+    /**
+     * 对表格多选项进行判定，成则跳转至修改页面
+     */
+    updateCheck() {
+      // eslint-disable-next-line eqeqeq
+      if (this.multipleSelection.length !== 1) {
+        this.$message({
+          type: 'warning',
+          message: '请选择单个修改选项'
+        })
+      } else {
+        this.$router.push({
+          name: 'UpdateCategory'
+        })
+      }
+    },
+    /**
+     * 对表格多选项进行判定，成功则删除
+     */
+    deleteCheck() {
+      // eslint-disable-next-line eqeqeq
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: '请选择删除选项'
+        })
+      } else {
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
+      }
+    },
     queryData() {
       this.total = this.configs.length
     },
@@ -240,7 +286,7 @@ export default {
         name: 'AddConfig'
       })
     },
-    update1() {
+    updateItem() {
       this.$router.push({
         name: 'UpdateConfig'
       })
@@ -248,7 +294,7 @@ export default {
     /**
        * 删除信息
        */
-    delete1() {
+    deleteItem() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

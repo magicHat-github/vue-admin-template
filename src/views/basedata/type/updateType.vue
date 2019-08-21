@@ -1,6 +1,6 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">修改题目类型</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">增加题目类型</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
@@ -55,10 +55,7 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '请输入题目类别', trigger: 'blur' }
-        ],
-        status: [
-          { required: true, message: '请选择是否启用', trigger: 'blur' }
+          { required: true, message: '请输入题目类型', trigger: 'blur' }
         ]
       }
     }

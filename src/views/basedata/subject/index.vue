@@ -37,16 +37,15 @@
           <!-- 增删改按钮框 -->
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1">修改</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="update1">导入</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="update1">导出</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCheck">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCheck">修改</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="updateItem">导入</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="updateItem">导出</el-link>
           </div>
 
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            border="true"
             :data="subjects"
             tooltip-effect="dark"
             stripe
@@ -61,8 +60,8 @@
             <el-table-column prop="status" label="是否启用" sortable="true" />
             <el-table-column label="操作">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
+              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
@@ -185,6 +184,52 @@ export default {
   },
   methods: {
     /**
+     * 对表格多选项进行判定，成则跳转至修改页面
+     */
+    updateCheck() {
+      // eslint-disable-next-line eqeqeq
+      if (this.multipleSelection.length !== 1) {
+        this.$message({
+          type: 'warning',
+          message: '请选择单个修改选项'
+        })
+      } else {
+        this.$router.push({
+          name: 'UpdateCategory'
+        })
+      }
+    },
+    /**
+     * 对表格多选项进行判定，成功则删除
+     */
+    deleteCheck() {
+      // eslint-disable-next-line eqeqeq
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: '请选择删除选项'
+        })
+      } else {
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
+      }
+    },
+    /**
        * 勾选事件触发的函数
        */
     handleSelectionChange(val) {
@@ -201,7 +246,7 @@ export default {
         name: 'AddSubject'
       })
     },
-    update1() {
+    updateItem() {
       this.$router.push({
         name: 'UpdateSubject'
       })
@@ -210,7 +255,7 @@ export default {
     /**
        * 删除信息
        */
-    delete1() {
+    deleteItem() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
