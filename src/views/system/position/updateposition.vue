@@ -1,6 +1,6 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">增加职位</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">修改职位</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
