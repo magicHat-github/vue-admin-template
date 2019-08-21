@@ -48,7 +48,7 @@
               type="primary"
               icon="el-icon-user"
               size="mini"
-              @click="distributeRole"
+              @click="distributeFromSelectedRole"
             >将选定角色分配给用户</el-link>
           </div>
 
@@ -75,7 +75,7 @@
                 class="itemAction"
                 type="primary"
                 icon="el-icon-user"
-                @click="distributeRole"
+                @click="distributeFromRole"
               />
             </el-table-column>
           </el-table>
@@ -216,48 +216,10 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-
-    /**
-     * 跳转到增加界面
-     */
-    addUser() {
-      this.$router.push({
-        name: 'AddUser'
-      })
-    },
-    updateUser() {
-      this.$router.push({
-        name: 'UpdateUser'
-      })
-    },
-
-    /**
-     * 删除信息
-     */
-    deleteUser() {
-      this.$confirm('是否要删除选定信息', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-    },
-
     /**
      * 为用户分配角色
      */
-    distributeRole() {
+    distributeFromRole() {
       this.$confirm('为选定用户分配角色？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -275,6 +237,26 @@ export default {
             message: '已取消分配'
           })
         })
+    },
+    /**
+     * 顶层的菜单栏的分配事件函数
+     */
+    distributeFromSelectedRole() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择待分配角色!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个角色!'
+        })
+      }
+      if (this.multipleSelection.length == 1) {
+        this.distributeFromRole()
+      }
     }
   }
 }

@@ -68,7 +68,7 @@
               type="primary"
               icon="el-icon-user"
               size="mini"
-              @click="distributeRole"
+              @click="distributeToSelectedUser"
             >分配角色给选定用户</el-link>
           </div>
 
@@ -95,7 +95,7 @@
             <el-table-column prop="other" label="其它/微信" width="105" align="center" />
             <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
             <el-table-column label="操作" width="130" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeRole" />
+              <el-link class="itemAction" type="primary" icon="el-icon-user" @click="distributeToUser" />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
@@ -236,48 +236,16 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-
     /**
-     * 跳转到增加界面
+     * 树结构的点击事件
      */
-    addUser() {
-      this.$router.push({
-        name: 'AddUser'
-      })
+    handleNodeClick(data) {
+      console.log(data)
     },
-    updateUser() {
-      this.$router.push({
-        name: 'UpdateUser'
-      })
-    },
-
-    /**
-     * 删除信息
-     */
-    deleteUser() {
-      this.$confirm('是否要删除选定信息', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-        })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
-    },
-
     /**
      * 分配角色
      */
-    distributeRole() {
+    distributeToUser() {
       this.$confirm('将角色分配给选定用户？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -295,6 +263,26 @@ export default {
             message: '已取消分配'
           })
         })
+    },
+    /**
+     * 顶层的菜单栏的分配事件函数
+     */
+    distributeToSelectedUser() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择待分配用户!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个用户!'
+        })
+      }
+      if (this.multipleSelection.length == 1) {
+        this.distributeToUser()
+      }
     }
   }
 }
