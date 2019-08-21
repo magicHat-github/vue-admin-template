@@ -55,14 +55,14 @@
               size="mini"
               type="danger"
               icon="el-icon-delete"
-              @click="deleteRole"
+              @click="deleteSelectedRole"
             >删除</el-link>
             <el-link
               class="itemAction"
               size="mini"
               type="warning"
               icon="el-icon-edit"
-              @click="updateRole1"
+              @click="updateSelectedRole"
             >修改</el-link>
             <!-- 资源分配按钮 -->
             <el-link
@@ -351,7 +351,7 @@ export default {
     /**
      * 顶层的菜单栏事件函数
      */
-    updateRole1() {
+    updateSelectedRole() {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: 'info',
@@ -371,6 +371,18 @@ export default {
             'row': this.multipleSelection[0]
           }
         })
+      }
+    },
+
+    deleteSelectedRole() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteRole()
       }
     },
 

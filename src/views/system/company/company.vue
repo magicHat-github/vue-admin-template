@@ -60,14 +60,14 @@
               size="mini"
               type="danger"
               icon="el-icon-delete"
-              @click="deleteCompany"
+              @click="deleteSelectedCompany"
             >删除</el-link>
             <el-link
               class="itemAction"
               size="mini"
               type="warning"
               icon="el-icon-edit"
-              @click="updateCompany1"
+              @click="updateSelectedCompany"
             >修改</el-link>
           </div>
           <div>
@@ -335,7 +335,7 @@ export default {
     /**
      * 顶层的菜单栏事件函数
      */
-    updateCompany1() {
+    updateSelectedCompany() {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: 'info',
@@ -357,6 +357,19 @@ export default {
         })
       }
     },
+
+    deleteSelectedCompany() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteCompany()
+      }
+    },
+
     /**
      * 删除信息
      */

@@ -82,14 +82,14 @@
               size="mini"
               type="danger"
               icon="el-icon-delete"
-              @click="deleteResource"
+              @click="deleteSelectedResource"
             >删除</el-link>
             <el-link
               class="itemAction"
               size="mini"
               type="warning"
               icon="el-icon-edit"
-              @click="updateResource1"
+              @click="updateSelectedResource"
             >修改</el-link>
           </div>
 
@@ -286,7 +286,7 @@ export default {
     /**
      * 顶层的菜单栏事件函数
      */
-    updateResource1() {
+    updateSelectedResource() {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: 'info',
@@ -306,6 +306,18 @@ export default {
             'row': this.multipleSelection[0]
           }
         })
+      }
+    },
+
+    deleteSelectedResource() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteResource()
       }
     },
 

@@ -64,14 +64,14 @@
               size="mini"
               type="danger"
               icon="el-icon-delete"
-              @click="deleteDepartment"
+              @click="deleteSelectedDepartment"
             >删除</el-link>
             <el-link
               class="itemAction"
               size="mini"
               type="warning"
               icon="el-icon-edit"
-              @click="updateDepartment1"
+              @click="updateSelectedDepartment"
             >修改</el-link>
           </div>
 
@@ -307,7 +307,7 @@ export default {
     /**
      * 顶层的菜单栏事件函数
      */
-    updateDepartment1() {
+    updateSelectedDepartment() {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: 'info',
@@ -327,6 +327,18 @@ export default {
             'row': this.multipleSelection[0]
           }
         })
+      }
+    },
+
+    deleteSelectedDepartment() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteDepartment()
       }
     },
 

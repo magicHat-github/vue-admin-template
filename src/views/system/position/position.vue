@@ -17,7 +17,7 @@
       <div>
         <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addPosition">增加</el-link>
         <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deletePosition">删除</el-link>
-        <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updatePosition1">修改</el-link>
+        <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateSelectedPosition">修改</el-link>
       </div>
       <!-- 数据显示表单 -->
       <el-table
@@ -178,7 +178,7 @@ export default {
     /**
      * 顶层的菜单栏事件函数
      */
-    updatePosition1() {
+    updateSelectedPosition() {
       if (this.multipleSelection.length == 0) {
         this.$message({
           type: 'info',
@@ -198,6 +198,17 @@ export default {
             'row': this.multipleSelection[0]
           }
         })
+      }
+    },
+    deleteSelectedPosition() {
+      if (this.multipleSelection.length == 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deletePosition()
       }
     },
 
