@@ -26,8 +26,8 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
+      login({ username: username.trim(), password: password }).then(result => {
+        const { data } = result.body
         commit('SET_TOKEN', data.token)
         setToken(data.token)
         saveHead('version', 'businessType', 'deviceId', 0, 0)
@@ -42,7 +42,7 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response
+        const { data } = response.body
 
         if (!data) {
           reject('Verification failed, please Login again.')
@@ -63,7 +63,7 @@ const actions = {
   getMenu({ commit, state }) {
     return new Promise((resolve, reject) => {
       getMenu(state.token).then(response => {
-        const { data } = response
+        const { data } = response.body
 
         if (!data) {
           reject('Verification failed, please Login again.')

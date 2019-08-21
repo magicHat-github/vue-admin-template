@@ -18,72 +18,49 @@ const service = axios.create({
 
 // 请求拦截器
 service.interceptors.request.use(
+  // 在发送请求之前做一些事情
   config => {
-    // 在发送请求之前做一些事情
-    // console.log('show request:')
-    // console.log(config)
-    // if (store.getters.token) {
-    //   // 让每个请求携带令牌
-    //   // ['X-Token'] 是一个自定义的头部键值对
-    //   // 请根据实际情况进行修改
-    //   config.headers['X-Token'] = getToken()
-    // }
     return config
   },
+  // 在请求失败的时候做一些事情
   error => {
-    // 在请求失败的时候做一些事情
-    console.log(error) // 打印错误日志
+    // 打印错误日志
+    console.log(error)
     return Promise.reject(error)
   }
 )
+// 需要重新登录的异常码集合
+const toLoginCode = [code.TOKEN_ILLEGAL, code.OTHER_LOGIN, code.TOKEN_TIMEOUT]
 
 // 响应拦截器
 service.interceptors.response.use(
-  /**
-   * 如果您想获取诸如标题或状态之类的http信息
-   * 请返回  response => response
-  */
-
-  /**
-   * 通过自定义代码确定请求状态
-   * 这只是一个例子
-   * 您还可以通过HTTP状态代码判断状态
-   */
+  // 拦截全部的响应
   response => {
-    const res = response.data
+    const head = response.data.head
 
-    // 如果自定义代码不是20000，则判断为错误。
-    if (res.code !== code.SUCCESS) {
+    if (head.code !== code.SUCCESS) {
       Message({
-        message: res.message || 'Error',
+        message: head.message || '错误',
         type: 'error',
         duration: 5 * 1000
       })
-
-      // 50008：非法令牌; 50012：其他客户登录; 50014：令牌已过期;
-      if (res.code === code.TOKEN_ILLEGAL || res.code === code.OTHER_LOGIN || res.code === code.TOKEN_TIMEOUT) {
-        // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
+      if (toLoginCode.indexOf(head.code)) {
+        MessageBox.confirm('您的账号已经注销，您可以点击取消继续留在当前页面，或者重新登录', '点击注销', {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
-        })
+        }).then(() => { store.dispatch('user/resetToken').then(() => { location.reload() }) })
       }
-      return Promise.reject(new Error(res.message || 'Error'))
+      return Promise.reject(new Error(head.message || '错误'))
     } else {
-      return res
+      return response.data
     }
   },
 
-  /**
-   * 请求发生错误时响应的方法
-   */
+  // 请求发生错误时响应的方法
   error => {
-    console.log('err' + error) // 打印错误日志
+    // 打印错误日志
+    console.log('err' + error)
     Message({
       message: error.message,
       type: 'error',

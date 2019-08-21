@@ -352,8 +352,9 @@ export default {
         comTime: this.searchData.comTime
       }
       select(params).then(result => {
-        this.list = result.data.list
-        this.total = result.data.total
+        const body = result.body
+        this.list = body.data.list
+        this.total = body.data.total
         this.listLoading = false
       })
     },
@@ -369,8 +370,9 @@ export default {
         difficult: this.searchConfigData.difficult
       }
       selectConfigList(params).then(result => {
-        this.configList = result.data.list
-        this.configTotal = result.data.total
+        const body = result.body
+        this.configList = body.data.list
+        this.configTotal = body.data.total
         this.configListLoading = false
       })
     },
@@ -435,7 +437,8 @@ export default {
         configId: row.id
       }
       selectConfigItemById(params).then(result => {
-        this.configItemList = result.data.list
+        const body = result.body
+        this.configItemList = body.data.list
         this.configItemListLoading = false
       })
     },
