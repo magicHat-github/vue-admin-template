@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
       <el-aside width="120px">
         <!-- 树上方的信息 -->
@@ -11,7 +11,9 @@
                 <h1 style="font-size:15px;" class="el-icon-menu">用户管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -63,7 +65,7 @@
           <div>
             <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addUser">增加</el-link>
             <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteUser">删除</el-link>
-            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateUser">修改</el-link>
+            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateSelectedUser">修改</el-link>
             <!-- 角色分配按钮 -->
             <el-link
               class="itemAction"
@@ -214,6 +216,71 @@ export default {
           email: 'test@test.com',
           other: '无',
           status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
         }
       ],
 
@@ -275,6 +342,44 @@ export default {
     },
 
     /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedUser() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateUser',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedUser() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteUser()
+      }
+    },
+
+    /**
      * 删除信息
      */
     deleteUser() {
@@ -312,5 +417,14 @@ export default {
 <style>
 .itemAction {
   margin-right: 10px;
+}
+.aside .el-card__body .el-main {
+  padding-left: 7px;
+}
+.aside .el-card__body .el-header {
+  padding: 5px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>

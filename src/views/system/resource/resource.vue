@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
       <el-aside width="120px">
         <!-- 树上方的信息 -->
@@ -11,11 +11,13 @@
                 <h1 style="font-size:15px;" class="el-icon-menu">资源管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree :data="resourceTreeVO" :props="defaultProps" @node-click="handleNodeClick" />
           </el-main>
         </el-container>
       </el-aside>
@@ -68,9 +70,27 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addResource">增加</el-link>
-            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteResource">删除</el-link>
-            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateResource">修改</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="addResource"
+            >增加</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deleteSelectedResource"
+            >删除</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updateSelectedResource"
+            >修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
@@ -95,9 +115,24 @@
             <el-table-column prop="leaf" label="是否叶节点" sortable="true" width="120" align="center" />
             <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
               <template slot-scope="scope">
-                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addResource" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteResource" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateResource(scope.row)" />
+                <el-link
+                  class="itemAction"
+                  type="primary"
+                  icon="el-icon-plus"
+                  @click="addResource"
+                />
+                <el-link
+                  class="itemAction"
+                  type="danger"
+                  icon="el-icon-delete"
+                  @click="deleteResource"
+                />
+                <el-link
+                  class="itemAction"
+                  type="warning"
+                  icon="el-icon-edit"
+                  @click="updateResource(scope.row)"
+                />
               </template>
             </el-table-column>
           </el-table>
@@ -129,7 +164,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
+      resourceTreeVO: [
         {
           label: '资源树 1',
           children: [
@@ -248,6 +283,43 @@ export default {
         }
       })
     },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedResource() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateResource',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedResource() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteResource()
+      }
+    },
 
     /**
      * 删除信息
@@ -278,5 +350,14 @@ export default {
 <style>
 .itemAction {
   margin-right: 10px;
+}
+.aside .el-card__body .el-main {
+  padding-left: 7px;
+}
+.aside .el-card__body .el-header {
+  padding: 5px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>

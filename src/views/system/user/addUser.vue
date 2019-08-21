@@ -15,19 +15,19 @@
         :rules="userRules"
         label-width="100px"
         class="user-add-Form"
-        label-position="left"
+        label-position="right"
       >
         <!-- 第一行 -->
         <el-row>
           <!-- 工号输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="用户工号:" prop="code">
+            <el-form-item label="用户工号" prop="code">
               <el-input v-model="userForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 密码输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="初始密码:" prop="password">
+            <el-form-item label="初始密码" prop="password">
               <el-input v-model="userForm.password" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -37,13 +37,13 @@
         <el-row>
           <!-- 姓名输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="用户名:" prop="name">
+            <el-form-item label="用户名" prop="name">
               <el-input v-model="userForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 职位下拉框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="职位:" prop="position">
+            <el-form-item label="职位" prop="position">
               <el-select v-model="userForm.position" placeholder="请选择">
                 <el-option
                   v-for="position in positions"
@@ -60,13 +60,13 @@
         <el-row>
           <!-- 性别输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="性别:" prop="sex">
+            <el-form-item label="性别" prop="sex">
               <el-input v-model="userForm.sex" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 生日输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="生日:" prop="birthday">
+            <el-form-item label="生日" prop="birthday">
 
               <div class="block">
                 <el-date-picker
@@ -83,13 +83,13 @@
         <el-row>
           <!-- 电话输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="电话:" prop="tel">
+            <el-form-item label="电话" prop="tel">
               <el-input v-model="userForm.tel" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 邮箱输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="邮箱:" prop="email">
+            <el-form-item label="邮箱" prop="email">
               <el-input v-model="userForm.email" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -99,12 +99,12 @@
         <!-- 其它/微信输入框 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="其它/微信:">
+            <el-form-item label="其它/微信">
               <el-input v-model="userForm.other" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="7" :offset="2">
-            <el-form-item label="拥有角色:">
+            <el-form-item label="拥有角色">
               <el-select v-model="userForm.roles" filterable multiple placeholder="请选择">
                 <el-option v-for="role in roles" :key="role.name" :value="role.name" />
               </el-select>
@@ -116,7 +116,7 @@
         <!-- 备注栏 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="备注:">
+            <el-form-item label="备注">
               <el-input v-model="userForm.remark" type="textarea" :rows="2" placeholder="请输入内容" />
             </el-form-item>
           </el-col>
@@ -126,7 +126,7 @@
         <!--复选按钮 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="是否启用:">
+            <el-form-item label="是否启用">
               <el-radio v-model="userForm.status" label="1">是</el-radio>
               <el-radio v-model="userForm.status" label="2">否</el-radio>
             </el-form-item>

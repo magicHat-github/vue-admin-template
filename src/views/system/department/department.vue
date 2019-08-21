@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
       <el-aside width="120px">
         <!-- 树上方的信息 -->
@@ -11,7 +11,9 @@
                 <h1 style="font-size:15px;" class="el-icon-menu">部门管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -50,9 +52,27 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addDepartment">增加</el-link>
-            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteDepartment">删除</el-link>
-            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateDepartment">修改</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="addDepartment"
+            >增加</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deleteSelectedDepartment"
+            >删除</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updateSelectedDepartment"
+            >修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
@@ -81,9 +101,24 @@
               </el-table-column>
               <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
                 <template slot-scope="scope">
-                  <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment" />
-                  <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDepartment" />
-                  <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDepartment(scope.row)" />
+                  <el-link
+                    class="itemAction"
+                    type="primary"
+                    icon="el-icon-plus"
+                    @click="addDepartment"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="danger"
+                    icon="el-icon-delete"
+                    @click="deleteDepartment"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="warning"
+                    icon="el-icon-edit"
+                    @click="updateDepartment(scope.row)"
+                  />
                 </template>
               </el-table-column>
             </el-table>
@@ -265,9 +300,46 @@ export default {
       this.$router.push({
         name: 'UpdateDepartment',
         params: {
-          'row': row
+          row: row
         }
       })
+    },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedDepartment() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateDepartment',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedDepartment() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteDepartment()
+      }
     },
 
     /**
@@ -299,5 +371,14 @@ export default {
 <style>
 .itemAction {
   margin-right: 10px;
+}
+.aside .el-card__body .el-main {
+  padding-left: 7px;
+}
+.aside .el-card__body .el-header {
+  padding: 5px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>
