@@ -268,7 +268,7 @@ export default {
      * 顶层的菜单栏的分配事件函数
      */
     distributeToSelectedUser() {
-      if (this.multipleSelection.length == 0) {
+      if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'info',
           message: '请选择待分配用户!'
@@ -280,7 +280,7 @@ export default {
           message: '请选择单个用户!'
         })
       }
-      if (this.multipleSelection.length == 1) {
+      if (this.multipleSelection.length === 1) {
         this.distributeToUser()
       }
     }

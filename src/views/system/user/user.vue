@@ -216,6 +216,71 @@ export default {
           email: 'test@test.com',
           other: '无',
           status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '启用'
         }
       ],
 
@@ -280,7 +345,7 @@ export default {
      * 顶层的菜单栏事件函数
      */
     updateSelectedUser() {
-      if (this.multipleSelection.length == 0) {
+      if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'info',
           message: '请选择要操作对象!'
@@ -292,7 +357,7 @@ export default {
           message: '请选择单个对象!'
         })
       }
-      if (this.multipleSelection.length == 1) {
+      if (this.multipleSelection.length === 1) {
         this.$router.push({
           name: 'UpdateUser',
           params: {
@@ -303,7 +368,7 @@ export default {
     },
 
     deleteSelectedUser() {
-      if (this.multipleSelection.length == 0) {
+      if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'info',
           message: '请选择要操作对象!'

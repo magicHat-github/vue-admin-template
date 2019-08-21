@@ -287,7 +287,7 @@ export default {
      * 顶层的菜单栏事件函数
      */
     updateSelectedResource() {
-      if (this.multipleSelection.length == 0) {
+      if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'info',
           message: '请选择要操作对象!'
@@ -299,7 +299,7 @@ export default {
           message: '请选择单个对象!'
         })
       }
-      if (this.multipleSelection.length == 1) {
+      if (this.multipleSelection.length === 1) {
         this.$router.push({
           name: 'UpdateResource',
           params: {
@@ -310,7 +310,7 @@ export default {
     },
 
     deleteSelectedResource() {
-      if (this.multipleSelection.length == 0) {
+      if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'info',
           message: '请选择要操作对象!'
