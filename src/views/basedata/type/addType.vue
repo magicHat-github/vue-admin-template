@@ -55,10 +55,7 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '请输入题目类别', trigger: 'blur' }
-        ],
-        status: [
-          { required: true, message: '请选择是否启用', trigger: 'blur' }
+          { required: true, message: '请输入题目类型', trigger: 'blur' }
         ]
       }
     }

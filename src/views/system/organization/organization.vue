@@ -16,7 +16,12 @@
     <el-card>
       <div>
         <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addOrg">增加</el-link>
-        <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteSelectedOrg">删除</el-link>
+        <el-link
+          class="itemAction"
+          type="danger"
+          icon="el-icon-delete"
+          @click="deleteSelectedOrg"
+        >删除</el-link>
         <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateSelectedOrg">修改</el-link>
       </div>
       <!-- 数据显示表单 -->
@@ -37,18 +42,36 @@
           <el-table-column prop="master" label="负责人" show-overflow-tooltip align="center" />
           <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
           <el-table-column prop="address" label="地址" show-overflow-tooltip align="center" />
-          <el-table-column
-            prop="status"
-            label="是否启用"
-            show-overflow-tooltip
-            width="110"
-            align="center"
-          />
+          <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.status === '1' ? 'primary' : 'info'"
+              >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="操作" width="110" align="center">
             <template slot-scope="scope">
-              <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addOrg" />
-              <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteOrg" />
-              <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateOrg(scope.row)" />
+              <el-link
+                class="itemAction"
+                size="mini"
+                type="primary"
+                icon="el-icon-plus"
+                @click="addOrg"
+              />
+              <el-link
+                class="itemAction"
+                size="mini"
+                type="danger"
+                icon="el-icon-delete"
+                @click="deleteOrg"
+              />
+              <el-link
+                class="itemAction"
+                size="mini"
+                type="warning"
+                icon="el-icon-edit"
+                @click="updateOrg(scope.row)"
+              />
             </template>
           </el-table-column>
         </el-table>
@@ -117,7 +140,7 @@ export default {
           master: 'xly是懒猪',
           tel: '0',
           address: '博思大厦',
-          status: '1'
+          status: '0'
         },
         {
           orgname: '字节',
@@ -189,7 +212,7 @@ export default {
       this.$router.push({
         name: 'UpdateOrg',
         params: {
-          'row': row
+          row: row
         }
       })
     },
@@ -213,7 +236,7 @@ export default {
         this.$router.push({
           name: 'UpdateOrg',
           params: {
-            'row': this.multipleSelection[0]
+            row: this.multipleSelection[0]
           }
         })
       }

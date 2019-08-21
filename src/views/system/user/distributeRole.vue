@@ -69,7 +69,13 @@
             <el-table-column prop="remark" label="角色备注" show-overflow-tooltip align="center" />
             <el-table-column prop="companyName" label="所属公司" align="center" />
             <el-table-column prop="organizationName" label="所属机构" align="center" />
-            <el-table-column prop="status" label="是否启用" sortable="true" align="center" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" width="160" align="center">
               <el-link
                 class="itemAction"
@@ -174,7 +180,7 @@ export default {
           remark: '备注',
           companyName: '公司',
           organizationName: '组织机构',
-          status: '启用'
+          status: '0'
         }
       ],
 

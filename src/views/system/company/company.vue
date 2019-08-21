@@ -93,13 +93,13 @@
               <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
               <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
               <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
-              <el-table-column
-                prop="status"
-                label="是否启用"
-                sortable="true"
-                width="110"
-                align="center"
-              />
+              <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    :type="scope.row.status === '1' ? 'primary' : 'info'"
+                  >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+                </template>
+              </el-table-column>
               <el-table-column label="操作" width="110" align="center">
                 <template slot-scope="scope">
                   <el-link
@@ -223,7 +223,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: '启用'
+          status: '1'
         },
         {
           name: '阿里',
@@ -236,7 +236,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: '不启用'
+          status: '0'
         },
         {
           name: '百度',
@@ -249,7 +249,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -262,7 +262,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -275,7 +275,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: ' 启用'
+          status: '1'
         }
       ],
       /**
@@ -352,7 +352,7 @@ export default {
         this.$router.push({
           name: 'UpdateCompany',
           params: {
-            'row': this.multipleSelection[0]
+            row: this.multipleSelection[0]
           }
         })
       }
