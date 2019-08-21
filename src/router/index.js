@@ -321,14 +321,14 @@ export const constantRoutes = [
         name: 'AddPosition',
         hidden: true,
         component: () => import('@/views/system/position/addposition'),
-        meta: { title: '职位增加' }
+        meta: { title: '增加职位' }
       },
       {
         path: 'updateposition',
         name: 'UpdatePosition',
         hidden: true,
         component: () => import('@/views/system/position/updateposition'),
-        meta: { title: '职位修改' }
+        meta: { title: '修改职位' }
       },
       /**
       * yonghui管理界面

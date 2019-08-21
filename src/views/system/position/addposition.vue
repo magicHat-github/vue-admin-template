@@ -17,7 +17,7 @@
         size="mini"
         class="demo-ruleForm"
         style="padding-left:30%;"
-        label-position="left"
+        label-position="right"
       >
         <el-form-item label="公司" prop="company">
           <el-col :span="8">
