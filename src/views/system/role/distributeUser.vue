@@ -17,7 +17,7 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree :data="organizationTreeVO" :props="defaultProps" @node-click="handleNodeClick" />
           </el-main>
         </el-container>
       </el-aside>
@@ -126,7 +126,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
+      organizationTreeVO: [
         {
           label: '组织机构 1',
           children: [

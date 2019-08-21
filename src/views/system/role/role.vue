@@ -12,12 +12,12 @@
               </el-col>
             </el-row>
             <div class="horizon">
-              <hr>
+              <hr />
             </div>
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree :data="organizationTreeVO" :props="defaultProps" @node-click="handleNodeClick" />
           </el-main>
         </el-container>
       </el-aside>
@@ -72,17 +72,17 @@
               @click="distributeResource = true"
             >资源分配</el-link>
             <el-dialog title="为角色分配资源" :visible.sync="distributeResource">
-              <el-form :model="resourceDestribution">
-                <el-form-item label="活动名称" :label-width="formLabelWidth">
-                  <el-input v-model="resourceDestribution.name" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="活动区域" :label-width="formLabelWidth">
-                  <el-select v-model="resourceDestribution.region" placeholder="请选择活动区域">
-                    <el-option label="区域一" value="shanghai" />
-                    <el-option label="区域二" value="beijing" />
-                  </el-select>
-                </el-form-item>
-              </el-form>
+              <!-- 角色的资源树 -->
+              <el-tree
+                :data="resourceTreeVO"
+                show-checkbox
+                default-expand-all
+                ref="resourceTree"
+                node-key="id"
+                highlight-current
+                :default-checked-keys="[5]"
+                :props="defaultProps"
+              ></el-tree>
               <div slot="footer" class="dialog-footer">
                 <el-button @click="distributeResource = false">取 消</el-button>
                 <el-button type="primary" @click="distributeResource = false">确 定</el-button>
@@ -130,19 +130,19 @@
                   icon="el-icon-edit"
                   @click="updateRole(scope.row)"
                 />
+                <el-link
+                  class="itemAction"
+                  type="primary"
+                  icon="el-icon-circle-plus-outline"
+                  @click="distributeResource = true"
+                />
+                <el-link
+                  class="itemAction"
+                  type="primary"
+                  icon="el-icon-user"
+                  @click="distributeUser"
+                />
               </template>
-              <el-link
-                class="itemAction"
-                type="primary"
-                icon="el-icon-circle-plus-outline"
-                @click="distributeResource = true"
-              />
-              <el-link
-                class="itemAction"
-                type="primary"
-                icon="el-icon-user"
-                @click="distributeUser"
-              />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
@@ -173,7 +173,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
+      organizationTreeVO: [
         {
           label: '组织机构 1',
           children: [
@@ -222,6 +222,30 @@ export default {
         children: 'children',
         label: 'label'
       },
+      /**
+       * 资源树数据（为角色分配资源时弹出）
+       */
+      resourceTreeVO: [
+        {
+          label: '资源树 1',
+          children: [
+            {
+              label: '资源 1-1'
+            }
+          ]
+        },
+        {
+          label: '资源树 2',
+          children: [
+            {
+              label: '资源 2-1'
+            },
+            {
+              label: '资源 2-2'
+            }
+          ]
+        }
+      ],
 
       /**
        * 查询字段
@@ -344,7 +368,7 @@ export default {
       this.$router.push({
         name: 'update',
         params: {
-          'row': row
+          row: row
         }
       })
     },
@@ -368,7 +392,7 @@ export default {
         this.$router.push({
           name: 'UpdateOrg',
           params: {
-            'row': this.multipleSelection[0]
+            row: this.multipleSelection[0]
           }
         })
       }
