@@ -60,14 +60,14 @@
               size="mini"
               type="danger"
               icon="el-icon-delete"
-              @click="deleteCompany"
+              @click="deleteSelectedCompany"
             >删除</el-link>
             <el-link
               class="itemAction"
               size="mini"
               type="warning"
               icon="el-icon-edit"
-              @click="updateCompany"
+              @click="updateSelectedCompany"
             >修改</el-link>
           </div>
           <div>
@@ -93,13 +93,11 @@
               <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
               <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
               <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
-              <el-table-column
-                prop="status"
-                label="是否启用"
-                sortable="true"
-                width="110"
-                align="center"
-              />
+              <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+                <template slot-scope="scope">
+                  <el-tag>{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+                </template>
+              </el-table-column>
               <el-table-column label="操作" width="110" align="center">
                 <template slot-scope="scope">
                   <el-link
@@ -201,7 +199,6 @@ export default {
         children: 'children',
         label: 'label'
       },
-
       /**
        * 查询字段
        */
@@ -209,7 +206,6 @@ export default {
         companyName: '',
         organizationNames: []
       },
-
       /**
        * 公司的表单数据
        */
@@ -225,7 +221,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: '启用'
+          status: '1'
         },
         {
           name: '阿里',
@@ -238,7 +234,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: '不启用'
+          status: '0'
         },
         {
           name: '百度',
@@ -251,7 +247,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -264,7 +260,7 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -277,15 +273,13 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: ' 启用'
+          status: '1'
         }
       ],
-
       /**
        * 多选事件中的数据
        */
       multipleSelection: [],
-
       /**
        * 默认的分页的页面数据
        */
@@ -313,14 +307,12 @@ export default {
     handleNodeClick(data) {
       console.log(data)
     },
-
     /**
      * 勾选事件触发的函数
      */
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-
     /**
      * 跳转到增加界面
      */
@@ -329,7 +321,6 @@ export default {
         name: 'AddCompany'
       })
     },
-
     updateCompany(row) {
       this.$router.push({
         name: 'UpdateCompany',
@@ -337,6 +328,44 @@ export default {
           row: row
         }
       })
+    },
+
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedCompany() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateCompany',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedCompany() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteCompany()
+      }
     },
 
     /**

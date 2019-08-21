@@ -64,14 +64,14 @@
               size="mini"
               type="danger"
               icon="el-icon-delete"
-              @click="deleteDepartment"
+              @click="deleteSelectedDepartment"
             >删除</el-link>
             <el-link
               class="itemAction"
               size="mini"
               type="warning"
               icon="el-icon-edit"
-              @click="updateDepartment"
+              @click="updateSelectedDepartment"
             >修改</el-link>
           </div>
 
@@ -96,7 +96,7 @@
               <el-table-column prop="master" label="负责人" align="center" />
               <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
                 <template slot-scope="scope">
-                  <el-tag>{{ scope.row.status }}</el-tag>
+                  <el-tag>{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
                 </template>
               </el-table-column>
               <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
@@ -198,7 +198,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '1',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -207,7 +207,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '5',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -216,7 +216,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '2',
-          status: '否',
+          status: '0',
           companyName: 'boss'
         },
         {
@@ -225,7 +225,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '4',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -234,7 +234,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '3',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -243,7 +243,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '0',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         }
       ],
@@ -303,6 +303,43 @@ export default {
           row: row
         }
       })
+    },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedDepartment() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateDepartment',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedDepartment() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteDepartment()
+      }
     },
 
     /**

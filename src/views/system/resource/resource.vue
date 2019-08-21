@@ -17,7 +17,7 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree :data="resourceTreeVO" :props="defaultProps" @node-click="handleNodeClick" />
           </el-main>
         </el-container>
       </el-aside>
@@ -82,14 +82,14 @@
               size="mini"
               type="danger"
               icon="el-icon-delete"
-              @click="deleteResource"
+              @click="deleteSelectedResource"
             >删除</el-link>
             <el-link
               class="itemAction"
               size="mini"
               type="warning"
               icon="el-icon-edit"
-              @click="updateResource"
+              @click="updateSelectedResource"
             >修改</el-link>
           </div>
 
@@ -112,7 +112,11 @@
             <el-table-column prop="resourceType" label="资源类型" sortable="true" align="center" />
             <el-table-column prop="openImg" label="打开图标" align="center" />
             <el-table-column prop="closeImg" label="关闭图标" align="center" />
-            <el-table-column prop="leaf" label="是否叶节点" sortable="true" width="120" align="center" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag>{{ scope.row.leaf == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
               <template slot-scope="scope">
                 <el-link
@@ -164,7 +168,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
+      resourceTreeVO: [
         {
           label: '资源树 1',
           children: [
@@ -213,7 +217,7 @@ export default {
           resourceType: '菜单栏',
           openImg: '我是打开图标',
           closeImg: '我是关闭图标',
-          leaf: '否'
+          leaf: '0'
         },
         {
           name: '节点 2',
@@ -223,7 +227,7 @@ export default {
           resourceType: '菜单栏',
           openImg: '我是打开图标',
           closeImg: '我是关闭图标',
-          leaf: '是'
+          leaf: '1'
         }
       ],
 
@@ -279,9 +283,46 @@ export default {
       this.$router.push({
         name: 'UpdateResource',
         params: {
-          row: row
+          'row': row
         }
       })
+    },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedResource() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateResource',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedResource() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteResource()
+      }
     },
 
     /**

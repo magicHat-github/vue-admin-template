@@ -1,6 +1,6 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">新增组织机构</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">修改机构</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
@@ -17,11 +17,11 @@
         size="mini"
         class="demo-ruleForm"
         style="padding-left:30%;"
-        label-position="left"
+        label-position="right"
       >
-        <el-form-item label="机构名称" prop="name">
+        <el-form-item label="机构名称" prop="orgname">
           <el-col :span="8">
-            <el-input v-model="form.name" />
+            <el-input v-model="form.orgname" />
           </el-col>
         </el-form-item>
 
@@ -76,7 +76,7 @@ export default {
   data() {
     return {
       form: {
-        name: '',
+        orgname: '',
         code: '',
         master: '',
         tel: '',
@@ -84,7 +84,7 @@ export default {
         status: '1'
       },
       rules: {
-        name: [
+        orgname: [
           {
             required: true,
             message: '请输入组织机构名称',
@@ -122,9 +122,8 @@ export default {
     }
   },
   created() {
-    var x = this
-    x.form = this.$route.params.row
-    console.log(x.form)
+    this.form = this.$route.params.row
+    console.log(this.form)
   },
   methods: {
     /**

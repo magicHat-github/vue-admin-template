@@ -65,7 +65,7 @@
           <div>
             <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addUser">增加</el-link>
             <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteUser">删除</el-link>
-            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateUser">修改</el-link>
+            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateSelectedUser">修改</el-link>
             <!-- 角色分配按钮 -->
             <el-link
               class="itemAction"
@@ -97,7 +97,11 @@
             <el-table-column prop="tel" label="电话" align="center" />
             <el-table-column prop="email" label="邮箱" align="center" />
             <el-table-column prop="other" label="其它/微信" width="105" align="center" />
-            <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag>{{ scope.row.leaf == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" width="130" align="center">
               <template slot-scope="scope">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser" />
@@ -215,7 +219,72 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           other: '无',
-          status: '启用'
+          status: '1'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '0'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '0'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '1'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '1'
+        },
+        {
+          code: '9527',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '0'
         }
       ],
 
@@ -274,6 +343,44 @@ export default {
           'row': row
         }
       })
+    },
+
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedUser() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateUser',
+          params: {
+            'row': this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedUser() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteUser()
+      }
     },
 
     /**
