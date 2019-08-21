@@ -10,37 +10,37 @@
     <!--表单输入 -->
     <div class="app-container allData">
       <hr>
-      <el-form ref="form" :model="form" label-width="80px" size="mini" style="padding-left:30%;">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left" size="mini" style="padding-left:30%;">
 
-        <el-form-item label="父参数类型">
+        <el-form-item label="父参数类型" prop="parentType">
           <el-col :span="8">
             <el-input v-model="form.parentType" />
           </el-col>
         </el-form-item>
 
-        <el-form-item label="子参数类型">
+        <el-form-item label="子参数类型" prop="childType">
           <el-col :span="8">
             <el-input v-model="form.childType" />
           </el-col>
         </el-form-item>
 
-        <el-form-item label="参数值">
+        <el-form-item label="参数值" prop="value">
           <el-col :span="8">
             <el-input v-model="form.value" />
           </el-col>
         </el-form-item>
 
-        <el-form-item label="备注">
+        <el-form-item label="备注信息">
           <el-col :span="8">
             <el-input v-model="form.remark" type="textarea" :rows="3" />
           </el-col>
         </el-form-item>
 
         <!--复选按钮 -->
-        <el-form-item label="是否启用">
+        <el-form-item label="是否启用" prop="status">
           <el-col :offset="1" :span="8">
-            <el-radio v-model="radio" label="1">是</el-radio>
-            <el-radio v-model="radio" label="2">否</el-radio>
+            <el-radio v-model="status" label="1">是</el-radio>
+            <el-radio v-model="stats" label="2">否</el-radio>
           </el-col>
         </el-form-item>
 
@@ -65,9 +65,23 @@ export default {
         parentType: '',
         childType: '',
         value: '',
-        remark: ''
+        remark: '',
+        status: '1'
       },
-      radio: '1'
+      rules: {
+        parentType: [
+          { required: true, message: '请输入父参数类型', trigger: 'blur' }
+        ],
+        childType: [
+          { required: true, message: '请输入子参数类型', trigger: 'blur' }
+        ],
+        value: [
+          { required: true, message: '请输入参数值', trigger: 'blur' }
+        ],
+        status: [
+          { required: true, message: '请选择是否启用', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {

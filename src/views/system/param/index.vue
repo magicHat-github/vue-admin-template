@@ -50,45 +50,48 @@
         </div>
 
         <!-- 增删改按钮框 -->
-        <div>
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="update1">导入</el-link>
-          <el-link class="itemAction" type="primary" icon="el-icon-download" @click="update1">导出</el-link>
-        </div>
+        <el-card class="tableData">
+          <div>
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="update1">导入</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="update1">导出</el-link>
+          </div>
 
-        <!-- 数据显示表单 -->
-        <el-table
-          ref="multipleTable"
-          border="true"
-          :data="companys"
-          tooltip-effect="dark"
-          stripe
-          height
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" label="选择参数类型" sortable="true" />
-          <el-table-column prop="website" label="输入参数类型" />
-          <el-table-column prop="website" label="参数值" />
-          <el-table-column prop="status" label="启用标记" sortable="true" />
-          <el-table-column label="操作">
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-            <el-link class="itemAction" type="primary" icon="el-icon-switch-button" @click="delete1" />
-          </el-table-column>
-        </el-table>
-        <!-- 分页部分 -->
-        <div class="block">
-          <el-pagination
-            :current-page.sync="currentPage1"
-            :page-size="70"
-            layout="prev, pager, next, jumper"
-            :total="1000"
-          />
-        </div>
+          <!-- 数据显示表单 -->
+
+          <el-table
+            ref="multipleTable"
+            border="true"
+            :data="companys"
+            tooltip-effect="dark"
+            stripe
+            height
+            @selection-change="handleSelectionChange"
+          >
+            <el-table-column type="selection" width="55" />
+            <el-table-column prop="name" label="选择参数类型" sortable="true" />
+            <el-table-column prop="website" label="输入参数类型" />
+            <el-table-column prop="website" label="参数值" />
+            <el-table-column prop="status" label="启用标记" sortable="true" />
+            <el-table-column label="操作">
+              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
+              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
+              <el-link class="itemAction" type="primary" icon="el-icon-switch-button" @click="delete1" />
+            </el-table-column>
+          </el-table>
+          <!-- 分页部分 -->
+          <div class="block">
+            <el-pagination
+              :current-page.sync="currentPage1"
+              :page-size="70"
+              layout="prev, pager, next, jumper"
+              :total="1000"
+            />
+          </div>
+        </el-card>
       </div>
     </el-main>
   </el-container>
