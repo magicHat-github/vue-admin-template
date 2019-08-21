@@ -1,10 +1,10 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">新增部门基本信息</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">修改部门</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
-      <font style="font-size:15px;" color="blue">公司部门的基本信息</font>
+      <font style="font-size:15px;" color="blue">部门基本信息</font>
     </el-col>
     <div class="app-container allData">
       <hr>
@@ -15,19 +15,19 @@
         :rules="departmentRules"
         label-width="100px"
         class="user-add-Form"
-        label-position="left"
+        label-position="right"
       >
         <!-- 第一行 -->
         <el-row>
           <!-- 部门名称输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="部门名称:" prop="name">
+            <el-form-item label="部门名称" prop="name">
               <el-input v-model="departmentForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 部门编号输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="部门编号:" prop="code">
+            <el-form-item label="部门编号" prop="code">
               <el-input v-model="departmentForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -37,13 +37,13 @@
         <el-row>
           <!-- 注记码输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="助记码:" prop="mnemonic_code">
+            <el-form-item label="助记码" prop="mnemonic_code">
               <el-input v-model="departmentForm.mnemonic_code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 部门等级下拉框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="部门等级:" prop="level">
+            <el-form-item label="部门等级" prop="level">
               <el-select v-model="departmentForm.level" placeholder="请选择">
                 <el-option
                   v-for="position in positions"
@@ -61,8 +61,8 @@
 
           <!-- 上级部门下拉框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="上级部门:" prop="parent_id">
-              <el-select v-model="departmentForm.parent_id" placeholder="请选择">
+            <el-form-item label="上级部门" prop="parentName">
+              <el-select v-model="departmentForm.parentName" placeholder="请选择">
                 <el-option
                   v-for="role in roles"
                   :key="role.name"
@@ -75,7 +75,7 @@
 
           <!-- 负责人输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="负责人:" prop="master">
+            <el-form-item label="负责人" prop="master">
               <el-input v-model="departmentForm.master" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -85,7 +85,7 @@
         <!--复选按钮 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="是否启用:">
+            <el-form-item label="是否启用">
               <el-radio v-model="departmentForm.status" label="1">是</el-radio>
               <el-radio v-model="departmentForm.status" label="2">否</el-radio>
             </el-form-item>
@@ -121,7 +121,7 @@ export default {
         code: '',
         mnemonic_code: '',
         level: '',
-        parent_id: '',
+        parentName: '',
         master: '',
         status: '1'
       },
@@ -130,26 +130,26 @@ export default {
        */
       departmentRules: {
         name: [
-          { required: true, message: '请输入工号', trigger: 'blur' },
+          { required: true, message: '请输入部门名称', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         code: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
+          { required: true, message: '请输入编号', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         mnemonic_code: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
+          { required: true, message: '请输入助记码', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         level: [
-          { required: true, message: '请输入职位', trigger: 'change' }
+          { required: true, message: '请选择部门等级', trigger: 'change' }
         ],
-        parent_id: [
-          { required: true, message: '请输入性别', trigger: 'blur' },
+        parentName: [
+          { required: true, message: '请选择上级部门', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         master: [
-          { required: true, message: '请输入生日', trigger: 'blur' },
+          { required: true, message: '请输入部门负责人', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ]
       },

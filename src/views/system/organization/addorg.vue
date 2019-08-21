@@ -100,7 +100,7 @@ export default {
         code: [
           {
             required: true,
-            message: '请输入组织机构名',
+            message: '请输入组织机构编码',
             trigger: 'change'
           },
           {

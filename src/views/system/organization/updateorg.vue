@@ -1,6 +1,6 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">新增组织机构</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">修改机构</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
@@ -17,7 +17,7 @@
         size="mini"
         class="demo-ruleForm"
         style="padding-left:30%;"
-        label-position="left"
+        label-position="right"
       >
         <el-form-item label="机构名称" prop="orgname">
           <el-col :span="8">
