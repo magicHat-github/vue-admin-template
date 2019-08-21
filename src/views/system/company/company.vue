@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
       <el-aside width="120px">
         <!-- 树上方的信息 -->
@@ -8,10 +8,12 @@
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:15px;" class="el-icon-menu">公司管理</h1>
+                <h1 style="font-size: 15px;" class="el-icon-menu">公司管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -41,15 +43,32 @@
               <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
-
         </div>
 
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addCompany">增加</el-link>
-            <el-link class="itemAction" size="mini" type="danger" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
-            <el-link class="itemAction" size="mini" type="warning" icon="el-icon-edit" @click="updateCompany">修改</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="addCompany"
+            >增加</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deleteCompany"
+            >删除</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updateCompany"
+            >修改</el-link>
           </div>
           <div>
             <!-- 数据显示表单 -->
@@ -74,12 +93,33 @@
               <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
               <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
               <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
-              <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
+              <el-table-column
+                prop="status"
+                label="是否启用"
+                sortable="true"
+                width="110"
+                align="center"
+              />
               <el-table-column label="操作" width="110" align="center">
                 <template slot-scope="scope">
-                  <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
-                  <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCompany" />
-                  <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCompany(scope.row)" />
+                  <el-link
+                    class="itemAction"
+                    type="primary"
+                    icon="el-icon-plus"
+                    @click="addCompany"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="danger"
+                    icon="el-icon-delete"
+                    @click="deleteCompany"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="warning"
+                    icon="el-icon-edit"
+                    @click="updateCompany(scope.row)"
+                  />
                 </template>
               </el-table-column>
             </el-table>
@@ -96,7 +136,6 @@
           </div>
         </el-card>
       </div>
-
     </el-main>
   </el-container>
 </template>
@@ -295,7 +334,7 @@ export default {
       this.$router.push({
         name: 'UpdateCompany',
         params: {
-          'row': row
+          row: row
         }
       })
     },
@@ -329,5 +368,14 @@ export default {
 <style>
 .itemAction {
   margin-right: 10px;
+}
+.aside .el-card__body .el-main {
+  padding-left: 7px;
+}
+.aside .el-card__body .el-header {
+  padding: 5px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>
