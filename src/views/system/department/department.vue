@@ -17,7 +17,14 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              :data="treeData"
+              :props="defaultProps"
+              node-key="id"
+              default-expanded-keys="1"
+              accordion
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -155,20 +162,25 @@ export default {
        */
       treeData: [
         {
+          id: 1,
           label: '公司 1',
           children: [
             {
+              id: 11,
               label: '部门 1-1'
             }
           ]
         },
         {
+          id: 2,
           label: '公司 2',
           children: [
             {
+              id: 21,
               label: '部门 2-1'
             },
             {
+              id: 22,
               label: '部门 2-2'
             }
           ]
@@ -326,7 +338,7 @@ export default {
         this.$router.push({
           name: 'UpdateDepartment',
           params: {
-            'row': this.multipleSelection[0]
+            row: this.multipleSelection[0]
           }
         })
       }
