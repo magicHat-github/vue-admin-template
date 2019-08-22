@@ -38,7 +38,7 @@
           <!-- 父亲节点下拉框 -->
           <el-col :span="7" :offset="3">
             <el-form-item label="父亲节点">
-              <el-select v-model="resourceForm.parentName" placeholder="请选择">
+              <el-select v-model="resourceForm.parentName" filterable placeholder="请选择">
                 <el-option
                   v-for="parent in parents"
                   :key="parent.name"
@@ -61,7 +61,7 @@
           <!-- 打开图标下拉框 -->
           <el-col :span="7" :offset="3">
             <el-form-item label="打开图标" prop="openImg">
-              <el-select v-model="resourceForm.openImg" placeholder="请选择">
+              <el-select v-model="resourceForm.openImg" filterable placeholder="请选择">
                 <el-option
                   v-for="resource in resources"
                   :key="resource.openImg"
@@ -74,7 +74,7 @@
           <!-- 关闭图标下拉框 -->
           <el-col :span="7" :offset="2">
             <el-form-item label="关闭图标" prop="closeImg">
-              <el-select v-model="resourceForm.closeImg" placeholder="请选择">
+              <el-select v-model="resourceForm.closeImg" filterable placeholder="请选择">
                 <el-option
                   v-for="resource in resources"
                   :key="resource.closeImg"
@@ -91,7 +91,7 @@
           <!-- 资源类型下拉框 -->
           <el-col :span="7" :offset="3">
             <el-form-item label="资源类型" prop="resourceType">
-              <el-select v-model="resourceForm.resourceType" placeholder="请选择">
+              <el-select v-model="resourceForm.resourceType" filterable placeholder="请选择">
                 <el-option
                   v-for="resource in resources"
                   :key="resource.type"

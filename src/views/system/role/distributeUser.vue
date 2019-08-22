@@ -2,7 +2,7 @@
   <el-container>
     <el-card class="aside">
       <!-- 左侧边栏 -->
-      <el-aside width="120px">
+      <el-aside width="140px">
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>

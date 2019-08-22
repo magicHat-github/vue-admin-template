@@ -2,7 +2,7 @@
   <el-container>
     <el-card class="aside">
       <!-- 左侧边栏 -->
-      <el-aside width="120px">
+      <el-aside width="140px">
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>
@@ -106,6 +106,8 @@
           >
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column prop="code" label="用户工号" align="center" />
+            <el-table-column prop="departmentName" label="所属部门" align="center" />
+            <el-table-column prop="companyName" label="所属公司" align="center" />
             <el-table-column prop="password" label="初始密码" align="center" />
             <el-table-column prop="name" label="用户名" align="center" />
             <el-table-column prop="role" label="角色" align="center" />
@@ -176,42 +178,32 @@ export default {
        */
       treeData: [
         {
-          label: '组织机构 1',
+          label: '公司 1',
           children: [
             {
-              label: '公司 1-1'
+              label: '部门 1-1'
             }
           ]
         },
         {
-          label: '组织机构 2',
+          label: '公司 2',
           children: [
             {
-              label: '公司 2-1'
+              label: '部门 2-1'
             },
             {
-              label: '公司 2-2'
+              label: '部门 2-2'
             }
           ]
         },
         {
-          label: '组织机构 3',
+          label: '公司 3',
           children: [
             {
-              label: '公司 3-1',
-              children: [
-                {
-                  label: '这是假数据 3-1-1'
-                }
-              ]
+              label: '部门 3-1'
             },
             {
-              label: '公司 3-2',
-              children: [
-                {
-                  label: '这是假数据 3-2-1'
-                }
-              ]
+              label: '部门 3-2'
             }
           ]
         }
@@ -240,6 +232,8 @@ export default {
       users: [
         {
           code: '9527',
+          departmentName: 'hr',
+          companyName: 'boss',
           password: '123456',
           name: '傻瓜许林瑜',
           role: '鼓励师',
@@ -253,6 +247,8 @@ export default {
         },
         {
           code: '9527',
+          departmentName: 'hr',
+          companyName: 'boss',
           password: '123456',
           name: '傻瓜许林瑜',
           role: '鼓励师',
@@ -266,6 +262,8 @@ export default {
         },
         {
           code: '9527',
+          departmentName: 'hr',
+          companyName: 'boss',
           password: '123456',
           name: '傻瓜许林瑜',
           role: '鼓励师',
@@ -279,32 +277,8 @@ export default {
         },
         {
           code: '9527',
-          password: '123456',
-          name: '傻瓜许林瑜',
-          role: '鼓励师',
-          sex: '男',
-          birthday: '1949-10-01',
-          position: '码农',
-          tel: '13000000000',
-          email: 'test@test.com',
-          other: '无',
-          status: '1'
-        },
-        {
-          code: '9527',
-          password: '123456',
-          name: '傻瓜许林瑜',
-          role: '鼓励师',
-          sex: '男',
-          birthday: '1949-10-01',
-          position: '码农',
-          tel: '13000000000',
-          email: 'test@test.com',
-          other: '无',
-          status: '1'
-        },
-        {
-          code: '9527',
+          departmentName: 'hr',
+          companyName: 'boss',
           password: '123456',
           name: '傻瓜许林瑜',
           role: '鼓励师',

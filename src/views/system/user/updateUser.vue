@@ -44,7 +44,7 @@
           <!-- 职位下拉框 -->
           <el-col :span="7" :offset="2">
             <el-form-item label="职位" prop="position">
-              <el-select v-model="userForm.position" placeholder="请选择">
+              <el-select v-model="userForm.position" filterable placeholder="请选择">
                 <el-option
                   v-for="position in positions"
                   :key="position.name"
@@ -113,6 +113,25 @@
         </el-row>
 
         <!-- 第六行 -->
+        <!-- 其它/微信输入框 -->
+        <el-row>
+          <el-col :span="7" :offset="3">
+            <el-form-item label="所属部门">
+              <el-select v-model="userForm.departmentName" filterable placeholder="请选择">
+                <el-option v-for="department in departments" :key="department.name" :value="department.name" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="7" :offset="2">
+            <el-form-item label="所属公司">
+              <el-select v-model="userForm.companyName" filterable placeholder="请选择">
+                <el-option v-for="company in companys" :key="company.name" :value="company.name" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- 第七行 -->
         <!-- 备注栏 -->
         <el-row>
           <el-col :span="7" :offset="3">
@@ -122,18 +141,18 @@
           </el-col>
         </el-row>
 
-        <!-- 第七行 -->
+        <!-- 第八行 -->
         <!--复选按钮 -->
         <el-row>
           <el-col :span="7" :offset="3">
             <el-form-item label="是否启用">
               <el-radio v-model="userForm.status" label="1">是</el-radio>
-              <el-radio v-model="userForm.status" label="2">否</el-radio>
+              <el-radio v-model="userForm.status" label="0">否</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
 
-        <!-- 第八行 -->
+        <!-- 第九行 -->
         <!-- 按钮组件 -->
         <el-row :gutter="0">
           <el-form-item>
@@ -200,6 +219,9 @@ export default {
         email: '',
         other: '',
         remark: '',
+        departmentName: '',
+        companyName: '',
+        roles: [],
         status: '1'
       },
       /**
@@ -219,7 +241,13 @@ export default {
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         position: [
-          { required: true, message: '请输入职位', trigger: 'change' }
+          { required: true, message: '请选择职位', trigger: 'change' }
+        ],
+        companyName: [
+          { required: true, message: '请选择公司', trigger: 'change' }
+        ],
+        departmentName: [
+          { required: true, message: '请选择部门', trigger: 'change' }
         ],
         sex: [
           { required: true, message: '请输入性别', trigger: 'blur' },
@@ -242,6 +270,14 @@ export default {
        * 职位下拉框选项
        */
       positions: [{ name: '鼓励师' }, { name: '搬砖人' }],
+      /**
+       * 公司下拉框选项
+       */
+      companys: [{ name: 'boss' }, { name: 'school' }],
+      /**
+       * 部门下拉框选项
+       */
+      departments: [{ name: 'hr' }, { name: 'test' }],
       /**
        * 角色下拉框选项
        */

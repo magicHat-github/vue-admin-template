@@ -44,7 +44,7 @@
           <!-- 法人下拉框 -->
           <el-col :span="7" :offset="2">
             <el-form-item label="法人:" prop="master">
-              <el-select v-model="companyForm.master" placeholder="请选择">
+              <el-select v-model="companyForm.master" filterable placeholder="请选择">
                 <el-option
                   v-for="position in positions"
                   :key="position.name"
