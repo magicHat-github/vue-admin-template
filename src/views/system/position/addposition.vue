@@ -21,7 +21,7 @@
       >
         <el-form-item label="公司" prop="company">
           <el-col :span="8">
-            <el-select v-model="form.company">
+            <el-select v-model="form.company" filterable placeholder="请选择">
               <el-option label="博思软件" value="shanghai" />
               <el-option label="阿里巴巴" value="beijing" />
             </el-select>

@@ -57,7 +57,13 @@
             <el-table-column prop="category" label="题目类型" sortable="true" />
             <el-table-column prop="type" label="题目分类" />
             <el-table-column prop="updatedTime" label="更新时间" />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
               <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
@@ -114,7 +120,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: '启用'
+          status: '1'
         },
         {
           name: '阿里',
@@ -122,7 +128,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: '不启用'
+          status: '0'
         },
         {
           name: '百度',
@@ -130,7 +136,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -138,7 +144,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -146,7 +152,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -154,14 +160,14 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '0'
         }
       ],
 

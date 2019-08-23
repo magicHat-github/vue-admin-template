@@ -44,7 +44,7 @@
           <!-- 部门等级下拉框 -->
           <el-col :span="7" :offset="2">
             <el-form-item label="部门等级" prop="level">
-              <el-select v-model="departmentForm.level" placeholder="请选择">
+              <el-select v-model="departmentForm.level" filterable placeholder="请选择">
                 <el-option
                   v-for="position in positions"
                   :key="position.name"
@@ -62,7 +62,7 @@
           <!-- 上级部门下拉框 -->
           <el-col :span="7" :offset="3">
             <el-form-item label="上级部门" prop="parent_id">
-              <el-select v-model="departmentForm.parent_id" placeholder="请选择">
+              <el-select v-model="departmentForm.parent_id" filterable placeholder="请选择">
                 <el-option
                   v-for="role in roles"
                   :key="role.name"

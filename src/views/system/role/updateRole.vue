@@ -46,7 +46,7 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="所属机构" prop="org">
-              <el-select v-model="form.org" placeholder="请选择">
+              <el-select v-model="form.org" filterable placeholder="请选择">
                 <el-option v-for="org in orgs" :key="org.name" :label="org.name" :value="org.name" />
               </el-select>
             </el-form-item>
@@ -56,7 +56,7 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="所属公司" prop="company">
-              <el-select v-model="form.company" placeholder="请选择">
+              <el-select v-model="form.company" filterable placeholder="请选择">
                 <el-option
                   v-for="company in companys"
                   :key="company.name"
