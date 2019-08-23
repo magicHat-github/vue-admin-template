@@ -59,17 +59,36 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :data="categories"
+            v-loading="listLoading"
+            :data="list"
             tooltip-effect="dark"
             stripe
             height
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" />
-            <el-table-column prop="name" label="题目类别" />
-            <el-table-column prop="remark" label="备注" show-overflow-tooltip />
-            <el-table-column prop="updatedTime" label="更新时间" />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
+            <el-table-column prop="name" label="题目类别">
+              <template slot-scope="scope">
+                {{ scope.row.name }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="remark" label="备注" show-overflow-tooltip>
+              <template slot-scope="scope">
+                {{ scope.row.remark }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="updatedTime" label="更新时间">
+              <template slot-scope="scope">
+                {{ scope.row.updatedTime }}
+              </template>
+            </el-table-column>
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
               <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
@@ -83,7 +102,7 @@
               :total="total"
               :page.sync="page.pageNumber"
               :limit.sync="page.size"
-              @click="queryData"
+              @click="fetchData"
             />
           </div>
         </el-card>
@@ -95,12 +114,14 @@
 <script>
 // import { log } from 'util'
 import Pagination from '@/components/Pagination'
+import { select } from '@/api/basedata/catetory'
 export default {
   name: 'App',
   // eslint-disable-next-line vue/no-unused-components
   components: { Pagination },
   data() {
     return {
+      list: null,
       /**
          * 树结构数据
          */
@@ -149,20 +170,35 @@ export default {
           categoryId: '001',
           remark: '腾讯',
           updatedTime: '2019/8/19',
-          status: '启用'
+          status: '1'
         },
         {
           name: '阿里',
           categoryId: '002',
           remark: '腾讯',
           updatedTime: '2019/8/19',
-          status: '不启用'
+          status: '0'
+        },
+        {
+          name: '阿里',
+          categoryId: '002',
+          remark: '腾讯',
+          updatedTime: '2019/8/19',
+          status: '0'
+        },
+        {
+          name: '阿里',
+          categoryId: '002',
+          remark: '腾讯',
+          updatedTime: '2019/8/19',
+          status: '0'
         }
       ],
       page: {
         size: 5,
         pageNumber: 1
       },
+      listLoading: false,
       // 试卷总数
       total: 0,
       /**
@@ -180,10 +216,27 @@ export default {
     }
   },
   created() {
-    this.queryData()
+    this.fetchData()
   },
 
   methods: {
+    /**
+     * 分页查询数据字典数据
+     */
+    fetchData() {
+      this.listLoading = true
+      const params = {
+        size: this.page.size,
+        page: this.page.pageNumber
+      }
+      console.log(params)
+      select(params).then(result => {
+        const body = result.body
+        this.list = body.data.list
+        this.total = body.data.total
+        this.listLoading = false
+      })
+    },
     queryData() {
       this.total = this.categories.length
     },

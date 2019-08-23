@@ -36,7 +36,13 @@
             <el-table-column prop="difficult" label="难度" />
             <el-table-column prop="updatedBy" label="修改人" />
             <el-table-column prop="updatedTime" label="修改时间" />
-            <el-table-column prop="status" label="启用标志" sortable="true" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column prop="company" label="公司" />
             <el-table-column prop="remark" label="备注" />
             <el-table-column label="操作" width="140" fixed="right">
@@ -131,7 +137,7 @@ export default {
           difficult: '简单',
           updatedBy: 'lynch',
           updatedTime: '2019/11/11',
-          status: '启用',
+          status: '1',
           company: 'boss',
           remark: 'null'
         },
@@ -141,7 +147,7 @@ export default {
           difficult: '困难',
           updatedBy: 'lynch',
           updatedTime: '2019/11/11',
-          status: '启用',
+          status: '1',
           company: 'boss',
           remark: 'null'
         }

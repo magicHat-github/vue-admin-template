@@ -36,7 +36,13 @@
             <el-table-column prop="name" label="题目类型" sortable="true" />
             <el-table-column prop="remark" label="备注" show-overflow-tooltip />
             <el-table-column prop="updatedTime" label="更新时间" />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
               <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
@@ -89,35 +95,35 @@ export default {
           typeId: '001',
           updatedTime: '2019/9/1',
           remark: 'qweqw',
-          status: '启用'
+          status: '1'
         },
         {
           name: '阿里',
           typeId: '002',
           updatedTime: '2019/9/1',
           remark: 'qwe',
-          status: '不启用'
+          status: '0'
         },
         {
           name: '百度',
           typeId: '003',
           updatedTime: '2019/9/1',
           remark: 'asqwe',
-          status: ' 启用'
+          status: ' 1'
         },
         {
           name: '腾讯',
           typeId: '001',
           updatedTime: '2019/9/1',
           remark: 'sdad',
-          status: ' 启用'
+          status: ' 1'
         },
         {
           name: '腾讯',
           typeId: '001',
           updatedTime: '2019/9/1',
           remark: 'tx',
-          status: ' 启用'
+          status: ' 1'
         }
       ],
 
