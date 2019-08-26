@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { getToken, getCookies, setCookies } from '@/utils/auth'
+import { getCookies, setCookies } from '@/utils/auth'
 
 /**
  * 请求封装的工具类
@@ -24,7 +24,6 @@ export function commonRequestUtil(params) {
   return {
     head: {
       version: head.version,
-      token: getToken(),
       businessType: head.businessType,
       deviceId: head.deviceId,
       deviceType: head.deviceType,

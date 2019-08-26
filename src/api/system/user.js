@@ -18,7 +18,7 @@ export function selectTable(params) {
  * @returns {AxiosPromise}
  */
 export function selectConfigItemById(params) {
-  return paperRequestApi('/paper/config/item', 'get', params)
+  return systemRequestApi('/paper/config/item', 'get', params)
 }
 
 /**

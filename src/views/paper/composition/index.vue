@@ -13,8 +13,8 @@
           <el-date-picker v-model="searchData.comTime" type="daterange" size="small" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
         </el-form-item>
         <el-form-item label="试卷难度">
-          <el-select v-model="searchData.difficult" placeholder="请选择难度.." size="mini" style="width: 160px" class="filter-item" @change="handleFilter">
-            <el-option v-for="item in difficultList" :key="item" :label="item" :value="item" />
+          <el-select v-model="searchData.difficult" placeholder="请选择难度.." size="mini" style="width: 160px" class="filter-item">
+            <el-option v-for="item in difficultList" :key="item.id" :label="item.value" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
@@ -47,33 +47,27 @@
         </el-table-column>
         <el-table-column label="组卷人" width="110" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.createdBy }}</span>
+            <span>{{ scope.row.combExamMan }}</span>
           </template>
         </el-table-column>
         <el-table-column label="卷子类型" align="center">
-          <template slot-scope="scope">{{ scope.row.paperType }}</template>
+          <template slot-scope="scope">{{ scope.row.paperType | paperTypeFiler(paperTypeList) }}</template>
         </el-table-column>
         <el-table-column label="卷子难度" align="center">
-          <template slot-scope="scope">{{ scope.row.difficult }}</template>
+          <template slot-scope="scope">{{ scope.row.difficult | paperDifficultFilter(difficultList) }}</template>
         </el-table-column>
         <el-table-column label="组卷时间" align="center">
-          <template slot-scope="scope">{{ scope.row.combExamTime }}</template>
+          <template slot-scope="scope">{{ scope.row.combExamTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
         </el-table-column>
         <el-table-column label="试卷总分" align="center">
           <template slot-scope="scope">{{ scope.row.score }}</template>
         </el-table-column>
         <el-table-column label="试卷描述" align="center">
-          <template slot-scope="scope">{{ scope.row.remark }}</template>
+          <template slot-scope="scope">{{ scope.row.descript }}</template>
         </el-table-column>
         <el-table-column class-name="status-col" label="状态" width="110" align="center">
           <template slot-scope="scope">
-            <el-tag>{{ scope.row.status }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column class-name="small-padding fixed-width" label="操作" width="230" align="center">
-          <template slot-scope="{row}">
-            <el-button type="primary" size="mini" @click="editPaper(row)">修改</el-button>
-            <el-button v-if="row.status" size="mini" type="danger" :disabled="row.status!=='启用'" @click="deletePaper(row)">删除</el-button>
+            <el-tag>{{ scope.row.status | statusFilter }}</el-tag>
           </template>
         </el-table-column>
       </el-table>
@@ -91,7 +85,7 @@
           </el-form-item>
           <el-form-item label="难度">
             <el-select :value="searchConfigData.difficult" placeholder="请选择难度.." size="mini" style="width: 200px" class="filter-item" @change="handleConfigFilter">
-              <el-option v-for="item in difficultList" :key="item" :label="item" :value="item" />
+              <el-option v-for="item in difficultList" :key="item.id" :label="item.id" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchConfigData">查询</el-button>
@@ -208,17 +202,17 @@
       <el-form :model="combConfigItem" size="medium" label-width="70px">
         <el-form-item label="题目类别">
           <el-select :value="combConfigItem.type" placeholder="请选择题目类别.." style="width: 250px" class="filter-item" @change="handleFilter">
-            <el-option v-for="item in paperTypeList" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in paperTypeList" :key="item.id" :label="item.id" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="题型">
           <el-select :value="combConfigItem.category" placeholder="请选择题型.." style="width: 250px" class="filter-item" @change="handleFilter">
-            <el-option v-for="item in paperTypeList" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in paperTypeList" :key="item.id" :label="item.id" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="题目难度">
           <el-select :value="combConfigItem.difficult" placeholder="请选择题目难度.." style="width: 250px" class="filter-item" @change="handleFilter">
-            <el-option v-for="item in difficultList" :key="item" :label="item" :value="item" />
+            <el-option v-for="item in difficultList" :key="item.id" :label="item.id" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="题目数量">
@@ -249,12 +243,39 @@
 
 <script>
 import { select, selectConfigList, selectConfigItemById } from '@/api/paper/composition.js'
+import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import PaperView from '@/components/PaperView'
 
 export default {
   name: 'Composition',
   components: { Pagination, PaperView },
+  filters: {
+    statusFilter(status) {
+      return status === '0' ? '启用' : '禁用'
+    },
+    parseUserTime(time, cFormat) {
+      return parseTime(time, cFormat)
+    },
+    paperTypeFiler(type, paperTypeList) {
+      let result = null
+      paperTypeList.forEach(item => {
+        if (item.id === type) {
+          result = item.value
+        }
+      })
+      return result
+    },
+    paperDifficultFilter(difficult, difficultList) {
+      let result = null
+      difficultList.forEach(item => {
+        if (item.id === difficult) {
+          result = item.value
+        }
+      })
+      return result
+    }
+  },
   data() {
     return {
       // 试卷集合
@@ -318,7 +339,7 @@ export default {
       // 正在组卷提示弹窗标志
       paperTipDialog: false,
       // 试卷详情弹窗标志
-      paperDetailDialog: true,
+      paperDetailDialog: false,
       // 添加组卷明细弹框标志
       addCombConfigItemDialog: false,
       // 修改组卷明细弹框标志
@@ -333,9 +354,9 @@ export default {
     }
   },
   created() {
-    this.fetchData()
     this.getDifficultList()
     this.getPaperTypeList()
+    this.fetchData()
   },
   methods: {
     /**
@@ -344,17 +365,18 @@ export default {
     fetchData() {
       this.listLoading = true
       const params = {
-        size: this.page.size,
-        page: this.page.pageNumber,
+        pageSize: this.page.size,
+        pageNum: this.page.pageNumber,
         name: this.searchData.name,
-        createdBy: this.searchData.createdBy,
+        combExamMan: this.searchData.createdBy,
         difficult: this.searchData.difficult,
-        comTime: this.searchData.comTime
+        combExamTimeStart: this.searchData.comTime[0],
+        combExamTimeEnd: this.searchData.comTime[1]
       }
       select(params).then(result => {
         const body = result.body
-        this.list = body.data.list
-        this.total = body.data.total
+        this.list = body.list
+        this.total = body.total
         this.listLoading = false
       })
     },
@@ -380,13 +402,39 @@ export default {
      * 初始获取全部试卷难度
      */
     getDifficultList() {
-      this.difficultList = ['困难', '一般', '简单']
+      this.difficultList = [
+        {
+          id: '1',
+          value: '困难'
+        },
+        {
+          id: '2',
+          value: '中等'
+        },
+        {
+          id: '3',
+          value: '简单'
+        }
+      ]
     },
     /**
      * 初始获取全部试卷类型
      */
     getPaperTypeList() {
-      this.paperTypeList = ['Java', 'C#', 'Python']
+      this.paperTypeList = [
+        {
+          id: '1',
+          value: 'Java'
+        },
+        {
+          id: '2',
+          value: 'Python'
+        },
+        {
+          id: '3',
+          value: 'C#'
+        }
+      ]
     },
     /**
      * 输入框响应enter查询
@@ -548,7 +596,7 @@ export default {
      * @param val
      */
     showChange(val) {
-      this.paperViewShow = val
+      this.paperDetailDialog = val
     }
   }
 }

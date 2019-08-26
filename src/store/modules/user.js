@@ -1,4 +1,4 @@
-import { login, logout, getInfo, getMenu } from '@/api/user'
+import { login, logout, getInfo, getMenu } from '@/api/permission/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { saveHead } from '@/utils/requestUtil'
 import { resetRouter } from '@/router'
@@ -27,7 +27,7 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(result => {
-        const { data } = result.body
+        const data = result.body
         commit('SET_TOKEN', data.token)
         setToken(data.token)
         saveHead('version', 'businessType', 'deviceId', 0, 0)
@@ -42,16 +42,9 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response.body
-
-        if (!data) {
-          reject('Verification failed, please Login again.')
-        }
-
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
+        const data = response.body
+        commit('SET_NAME', 'Super Admin')
+        commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -63,7 +56,7 @@ const actions = {
   getMenu({ commit, state }) {
     return new Promise((resolve, reject) => {
       getMenu(state.token).then(response => {
-        const { data } = response.body
+        const data = response.body
 
         if (!data) {
           reject('Verification failed, please Login again.')

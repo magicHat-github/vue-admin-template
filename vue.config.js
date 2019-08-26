@@ -53,16 +53,47 @@ module.exports = {
        * baseURL由 pathRewrite路径重写进行覆盖
        * 详情: https://cli.vuejs.org/config/#devserver-proxy
        */
-      [process.env.VUE_APP_BASE_API]: {
-        target: `http://127.0.0.1:${port}`,
+      '/boss/bes/permission': {
+        // target: `http://127.0.0.1:${port}`,
         // 设置IP和端口的代理
-        // target: `http://127.0.0.1:8090`,
-
+        target: `http://140.143.10.22:8061`,
         // 跨域
         changeOrigin: true,
         // 路径重写
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
+          '^/boss/bes/permission': ''
+        }
+      },
+      // 系统微服务路由配置
+      '/boss/bes/system': {
+        target: `http://140.143.10.22:8061`,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/boss/bes/system': ''
+        }
+      },
+      // 基础数据微服务路由配置
+      '/boss/bes/basedata': {
+        target: `http://140.143.10.22:8061`,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/boss/bes/basedata': ''
+        }
+      },
+      // 试卷微服务路由配置
+      '/boss/bes/paper': {
+        target: `http://localhost:8900`,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/boss/bes/paper': ''
+        }
+      },
+      // 考试微服务路由配置
+      '/boss/bes/exam': {
+        target: `http://140.143.10.22:8061`,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/boss/bes/exam': ''
         }
       }
     },

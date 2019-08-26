@@ -9,7 +9,7 @@ import { paperRequestApi } from '@/utils/requestUtil'
  * @param {*} params 参数
  */
 export function select(params) {
-  return paperRequestApi('/paper/composition', 'get', params)
+  return paperRequestApi('/paper/composition', 'post', params)
 }
 
 /**
