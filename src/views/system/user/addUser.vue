@@ -66,7 +66,7 @@
           </el-col>
           <!-- 生日输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="生日" prop="birthday">
+            <el-form-item label="生日">
 
               <div class="block">
                 <el-date-picker
@@ -104,7 +104,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="7" :offset="2">
-            <el-form-item label="拥有角色">
+            <el-form-item label="拥有角色" prop="roles">
               <el-select v-model="userForm.roles" filterable multiple placeholder="请选择">
                 <el-option v-for="role in roles" :key="role.name" :value="role.name" />
               </el-select>
@@ -116,14 +116,14 @@
         <!-- 其它/微信输入框 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="所属部门">
+            <el-form-item label="所属部门" prop="departmentName">
               <el-select v-model="userForm.departmentName" filterable placeholder="请选择">
                 <el-option v-for="department in departments" :key="department.name" :value="department.name" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="7" :offset="2">
-            <el-form-item label="所属公司">
+            <el-form-item label="所属公司" prop="companyName">
               <el-select v-model="userForm.companyName" filterable placeholder="请选择">
                 <el-option v-for="company in companys" :key="company.name" :value="company.name" />
               </el-select>
@@ -253,9 +253,8 @@ export default {
           { required: true, message: '请输入性别', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        birthday: [
-          { required: true, message: '请输入生日', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        roles: [
+          { required: true, message: '请选择角色', trigger: 'blur' }
         ],
         tel: [
           { required: true, message: '请输入电话', trigger: 'blur' },
