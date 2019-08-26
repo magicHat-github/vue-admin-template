@@ -19,8 +19,8 @@
       <!-- 增删改按钮框 -->
       <div>
         <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDictionary">增加</el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteDictionary">删除</el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateDictionary">修改</el-link>
+        <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDictionary">删除</el-link>
+        <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDictionary">修改</el-link>
         <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="importDictioanry">导入</el-link>
         <el-link class="itemAction" type="primary" icon="el-icon-download" @click="exportDictionary">导出</el-link>
       </div>

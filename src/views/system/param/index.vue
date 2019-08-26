@@ -23,28 +23,29 @@
       <div class="app-container allData">
         <!--查询框 -->
         <div>
-          <el-form :inline="true" :model="formInline" class="demo-form-inline">
+          <el-form :inline="true" :model="searchData" class="demo-form-inline">
             <!-- 组织机构下拉框 -->
-            <el-form-item label="题目类别:">
+            <el-form-item label="参数类型:">
               <el-select
-                v-model="formInline.organizationNames"
+                v-model="searchData.paramType"
                 filterable
-                multiple
                 placeholder="请选择"
                 size="mini"
               >
                 <el-option
-                  v-for="company in companys"
-                  :key="company.organizationName"
-                  :value="company.organizationName"
+                  v-for="item in paramTypes"
+                  :key="item"
+                  :lable="item"
+                  :value="item"
+                  @change="handleFilter"
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="输入参数项:">
-              <el-input v-model="formInline.companyName" clearable size="mini" />
+            <el-form-item label="参数项（名称）:">
+              <el-input v-model="searchData.paramName" clearable size="mini" @keyup.enter.native="handleFilter" />
             </el-form-item>
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button icon="el-icon-search" size="mini" type="primary">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -53,10 +54,10 @@
         <el-card class="tableData">
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="update1">导入</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="update1">导出</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1">修改</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="importParam">导入</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="exportParam">导出</el-link>
           </div>
 
           <!-- 数据显示表单 -->
@@ -64,22 +65,25 @@
           <el-table
             ref="multipleTable"
             border="true"
-            :data="companys"
+            :data="params"
             tooltip-effect="dark"
             stripe
             height
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" />
-            <el-table-column prop="name" label="选择参数类型" sortable="true" />
-            <el-table-column prop="website" label="输入参数类型" />
-            <el-table-column prop="website" label="参数值" />
-            <el-table-column prop="status" label="启用标记" sortable="true" />
-            <el-table-column label="操作">
+            <el-table-column prop="paramType" label="参数类型" sortable="true" align="center" />
+            <el-table-column prop="paramName" label="参数项" align="center" />
+            <el-table-column prop="paramValue" label="参数值" align="center" />
+            <el-table-column prop="status" label="启用标记" sortable="true" align="center">
+              <template slot-scope="scope"><el-tag>{{ scope.row.status }}</el-tag></template>
+            </el-table-column>
+            <el-table-column label="操作" align="center">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-              <el-link class="itemAction" type="primary" icon="el-icon-switch-button" @click="delete1" />
+              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
+              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+              <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="importParam" />
+              <el-link class="itemAction" type="primary" icon="el-icon-download" @click="exportParam" />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
@@ -100,7 +104,7 @@
 <script>
 // import { log } from 'util'
 export default {
-  name: 'App',
+  name: 'Param',
   data() {
     return {
       /**
@@ -128,6 +132,13 @@ export default {
         }
       ],
       /**
+       * 参数类型
+       */
+      paramTypes: [
+        '系统',
+        '业务'
+      ],
+      /**
          * 树结构的默认属性
          */
       defaultProps: {
@@ -138,118 +149,62 @@ export default {
       /**
          * 查询字段
          */
-      formInline: {
-        companyName: '',
-        organizationNames: []
+      searchData: {
+        paramType: '',
+        paramName: []
       },
 
       /**
          * 公司管理
          */
-      companys: [
+      params: [
         {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
+          paramType: '系统参数',
+          paramName: '最大访问数',
+          paramValue: 100000,
           status: '启用'
         },
         {
-          name: '阿里',
-          code: '002',
-          mnemonicCode: '亏钱的濒危企业',
-          master: '马云',
-          organizationName: '中国',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '不启用'
+          paramType: '系统参数',
+          paramName: '最大访问数',
+          paramValue: 100000,
+          status: '启用'
         },
         {
-          name: '百度',
-          code: '003',
-          mnemonicCode: '不接广告的搜索引擎',
-          master: '李红艳',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
+          paramType: '系统参数',
+          paramName: '最大访问数',
+          paramValue: 100000,
+          status: '启用'
         },
         {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
+          paramType: '系统参数',
+          paramName: '最大访问数',
+          paramValue: 100000,
+          status: '启用'
         },
         {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
+          paramType: '系统参数',
+          paramName: '最大访问数',
+          paramValue: 100000,
+          status: '启用'
         },
         {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
+          paramType: '系统参数',
+          paramName: '最大访问数',
+          paramValue: 100000,
+          status: '启用'
         },
         {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
+          paramType: '系统参数',
+          paramName: '最大访问数',
+          paramValue: 100000,
+          status: '启用'
         },
         {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          organizationName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: ' 启用'
+          paramType: '系统参数',
+          paramName: '最大访问数',
+          paramValue: 100000,
+          status: '启用'
         }
       ],
 

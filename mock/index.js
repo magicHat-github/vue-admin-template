@@ -5,14 +5,14 @@ import user from './user'
 import table from './table'
 import paper from './paper'
 import dictionary from './dictionary'
-import department from './department'
+import category from './category'
 
 const mocks = [
   ...user,
   ...table,
   ...paper,
   ...dictionary,
-  ...department
+  ...category
 ]
 
 // 前端的响应模拟 （ mock ）
