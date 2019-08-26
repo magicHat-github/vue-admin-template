@@ -1,9 +1,9 @@
 export default [
   {
-    url: '/system/company-department-tree',
-    type: 'get',
+    url: '/boss/bes/system/department',
+    type: 'GET',
     response: config => {
-      // console.log(config.body)
+      console.log(config.body)
       return {
         head: {
           version: '123',

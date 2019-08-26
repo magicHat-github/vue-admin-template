@@ -8,5 +8,5 @@ import { systemRequestApi } from '@/utils/requestUtil'
  * @param {*} params 参数
  */
 export function queryAsideTree(params) {
-  return systemRequestApi('/system/company-department-tree', 'GET', params)
+  return systemRequestApi('/department', 'GET', params)
 }

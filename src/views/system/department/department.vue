@@ -151,6 +151,8 @@
 <script>
 // 引入分页组件
 import Pagination from '@/components/Pagination'
+// 引入方法
+import { queryAsideTree } from '@/api/system/department'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -280,8 +282,21 @@ export default {
   },
   created() {
     this.queryData()
+    this.fetchAsideTree()
   },
   methods: {
+    /**
+     * 查询树结构数据
+     */
+    fetchAsideTree() {
+      const params = {
+        name: 'test'
+      }
+      queryAsideTree(params).then(result => {
+        const body = result.body
+        this.treeData = body.TreeVO
+      })
+    },
     /**
      * 查询数据
      */
