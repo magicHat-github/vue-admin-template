@@ -66,7 +66,7 @@ module.exports = {
       },
       // 系统微服务路由配置
       '/boss/bes/system': {
-        target: `http://140.143.10.22:8061`,
+        target: `http://localhost:8080`,
         changeOrigin: true,
         pathRewrite: {
           '^/boss/bes/system': ''

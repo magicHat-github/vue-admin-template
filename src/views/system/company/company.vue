@@ -36,7 +36,7 @@
 
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.organizationNames" placeholder="请选择" size="mini" />
+              <el-select v-model="formInline.orgNames" placeholder="请选择" size="mini" />
             </el-form-item>
 
             <el-form-item>
@@ -87,7 +87,7 @@
               <el-table-column prop="code" label="公司编号" align="center" />
               <el-table-column prop="mnemonicCode" label="助记码" align="center" />
               <el-table-column prop="master" label="法人" align="center" />
-              <el-table-column prop="organizationName" label="所属机构" align="center" />
+              <el-table-column prop="orgName" label="所属机构" align="center" />
               <el-table-column prop="tax" label="税号" show-overflow-tooltip align="center" />
               <el-table-column prop="fax" label="传真" show-overflow-tooltip align="center" />
               <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
@@ -206,7 +206,7 @@ export default {
        */
       formInline: {
         companyName: '',
-        organizationNames: []
+        orgNames: []
       },
       /**
        * 公司的表单数据
@@ -217,7 +217,7 @@ export default {
           code: '001',
           mnemonicCode: '公平的游戏公司',
           master: '马化腾',
-          organizationName: 'China',
+          orgName: 'China',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',
@@ -230,7 +230,7 @@ export default {
           code: '002',
           mnemonicCode: '亏钱的濒危企业',
           master: '马云',
-          organizationName: '中国',
+          orgName: '中国',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',
@@ -243,7 +243,7 @@ export default {
           code: '003',
           mnemonicCode: '不接广告的搜索引擎',
           master: '李红艳',
-          organizationName: 'China',
+          orgName: 'China',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',
@@ -256,7 +256,7 @@ export default {
           code: '001',
           mnemonicCode: '公平的游戏公司',
           master: '马化腾',
-          organizationName: 'China',
+          orgName: 'China',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',
@@ -269,7 +269,7 @@ export default {
           code: '001',
           mnemonicCode: '公平的游戏公司',
           master: '马化腾',
-          organizationName: 'China',
+          orgName: 'China',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',

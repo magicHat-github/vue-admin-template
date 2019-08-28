@@ -37,8 +37,8 @@
         <el-row>
           <!-- 助记码输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="助记码" prop="mnemonic_code">
-              <el-input v-model="companyForm.mnemonic_code" placeholder="请输入内容" clearable />
+            <el-form-item label="助记码" prop="mnemonicCode">
+              <el-input v-model="companyForm.mnemonicCode" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 法人下拉框 -->
@@ -83,7 +83,7 @@
           <!-- 地址输入框 -->
           <el-col :span="7" :offset="2">
             <el-form-item label="地址">
-              <el-input v-model="companyForm.address" placeholder="请输入内容" clearable />
+              <el-input v-model="companyForm.website" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -92,8 +92,8 @@
         <!-- 所属机构输入框 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="所属机构" prop="org_name">
-              <el-input v-model="companyForm.org_name" placeholder="请输入内容" clearable />
+            <el-form-item label="所属机构" prop="orgName">
+              <el-input v-model="companyForm.orgName" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 邮箱输入框 -->
@@ -133,6 +133,7 @@
 </template>
 
 <script>
+import { addCompany } from '@/api/system/company'
 export default {
   data() {
     return {
@@ -142,13 +143,13 @@ export default {
       companyForm: {
         name: '',
         code: '',
-        mnemonic_code: '',
+        mnemonicCode: '',
         master: '',
         tax: '',
         fax: '',
         tel: '',
-        address: '',
-        org_name: '',
+        website: '',
+        orgName: '',
         email: '',
         status: '1'
       },
@@ -164,7 +165,7 @@ export default {
           { required: true, message: '请输入姓名', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        mnemonic_code: [
+        mnemonicCode: [
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
@@ -179,7 +180,7 @@ export default {
           { required: true, message: '请输入生日', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        org_name: [
+        orgName: [
           { required: true, message: '请输入电话', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
@@ -215,10 +216,23 @@ export default {
       })
     },
     submit() {
-      this.$router.push({
-        name: 'Company'
-      })
-      this.$message('操作成功')
+      const params = {
+        name: this.companyForm.name,
+        code: this.companyForm.code,
+        mnemonicCode: this.companyForm.mnemonicCode,
+        master: this.companyForm.master,
+        tax: this.companyForm.tax,
+        fax: this.companyForm.fax,
+        tel: this.companyForm.tel,
+        website: this.companyForm.website,
+        orgName: this.companyForm.orgName,
+        email: this.companyForm.email,
+        status: this.companyForm.status
+      }
+      addCompany(params).then(
+        this.close(),
+        this.$message('操作成功')
+      )
     },
     /**
      * 关闭按钮

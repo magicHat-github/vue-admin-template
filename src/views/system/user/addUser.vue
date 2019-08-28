@@ -299,9 +299,7 @@ export default {
       })
     },
     submit() {
-      this.$router.push({
-        name: 'User'
-      })
+      this.close()
       this.$message('操作成功')
     },
     /**
