@@ -9,7 +9,13 @@ import { baseDataRequestApi } from '@/utils/requestUtil'
  * @param {*} params 参数
  */
 export function select(params) {
-  console.log(123)
-  return baseDataRequestApi('/category', 'get', params)
+  return baseDataRequestApi('/categories', 'post', params)
 }
 
+export function selectByName(params) {
+  return baseDataRequestApi('/category/searchByName', 'post', params)
+}
+
+export function deleteList(params) {
+  return baseDataRequestApi('/category', 'delete', params)
+}
