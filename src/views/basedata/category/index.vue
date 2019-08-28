@@ -325,16 +325,25 @@ export default {
         this.multipleSelection.forEach(item => {
           idList.idList.push(item.id)
         })
-        console.log(idList)
         this.$confirm('是否要删除选定信息', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
           .then(() => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
+            deleteList(idList).then(result => {
+              console.log(idList)
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.fetchData()
+            }).catch(result => {
+              console.log(idList)
+              this.$message({
+                type: 'success',
+                message: '删除失败!'
+              })
             })
           })
           .catch(() => {
