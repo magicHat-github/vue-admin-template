@@ -202,6 +202,7 @@
 <script>
 import { pageSizes, pageSize, mockData, markOptions } from './common'
 import { rules } from './common'
+// import { getRecordById } from '@/api/exam'
 
 export default {
   name: 'Exam',
@@ -279,15 +280,39 @@ export default {
     },
     /**
      * 编辑记录函数
+     * 可能是从菜单栏来的,
+     * 也可能是从一行中的操作栏来的
      */
-    edit(row) {
-      const id = row.recordId
+    handleEditEvent(row) {
+      if (!row.id) {
+        // 菜单栏编辑
+        const selectNum = this.tableForm.select.length
+        if (selectNum > 1) {
+          this.$message({
+            type: 'info',
+            message: '选择太多选项了'
+          })
+        } else if (selectNum === 1) {
+          // 根据id编辑
+          const seleteId = this.tableForm.select[0].id
+          this.editByRecordId(seleteId)
+        } else {
+          this.$message({
+            type: 'info',
+            message: '你没有选择一个选项'
+          })
+        }
+      } else {
+        // 侧边栏编辑
+        const rowId = row.id
+        this.editByRecordId(rowId)
+      }
       // alert(`id=${id}`)
       // 1.获得这条记录的数据
       // 2.填充数据
-      this.dialogForm.dialogTitle = '编辑'
-      this.dialogForm.dialogFormVisible = true
-      console.log(id)
+      // this.dialogForm.dialogTitle = '编辑'
+      // this.dialogForm.dialogFormVisible = true
+      // console.log(id)
     },
     /**
      * 发布新纪录弹窗
@@ -321,8 +346,7 @@ export default {
      */
     publishRecord(row) {
       // 1.获得id
-      // 2.向后台请求发布记录
-      // 3.显示相关消息
+      // 2.向后台请求发布记      // 3.显示相关消息
       console.log(row)
     },
     /**
