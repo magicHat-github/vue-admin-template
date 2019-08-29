@@ -41,7 +41,7 @@
               <el-input v-model="dialogForm.paperName" />
             </el-col>
             <el-col :span="4">
-              <el-button>选择试卷</el-button>
+              <el-button @click="handleSelectPaper">选择试卷</el-button>
             </el-col>
           </el-form-item>
           <el-form-item label="考试场次">
@@ -141,10 +141,10 @@
         </el-form>
       </div>
     </el-dialog>
-    <!-- 编辑弹窗 -->
+    <!-- 菜单栏 -->
     <div id="editDiv">
       <span>
-        <el-link :underline="false" class="el-icon-edit" @click="edit">修改</el-link>
+        <el-link :underline="false" class="el-icon-edit" @click="handleEditEvent">修改</el-link>
       </span>
       <span>
         <el-link :underline="false" class="el-icon-delete" @click="deleteRows">删除</el-link>
@@ -176,7 +176,7 @@
         <el-table-column prop="publishTimes" label="发布次数" />
         <el-table-column label="操作列">
           <template slot-scope="{ row }">
-            <el-button class="el-icon-edit" type="text" @click="edit(row)" />
+            <el-button class="el-icon-edit" type="text" @click="handleEditEvent(row)" />
             <el-button class="el-icon-delete" type="text" @click="deleteRow(row)" />
             <el-button class="el-icon-right" type="text" @click="publishRecord(row)" />
             <el-button class="el-icon-picture" type="text" @click="showQrCode(row)" />
@@ -202,6 +202,7 @@
 <script>
 import { pageSizes, pageSize, mockData, markOptions } from './common'
 import { rules } from './common'
+import { getExamRecordById } from '@/api/exam'
 
 export default {
   name: 'Exam',
@@ -279,15 +280,40 @@ export default {
     },
     /**
      * 编辑记录函数
+     * 可能是从菜单栏来的,
+     * 也可能是从一行中的操作栏来的
      */
-    edit(row) {
+    handleEditEvent(row) {
       const id = row.recordId
-      // alert(`id=${id}`)
-      // 1.获得这条记录的数据
-      // 2.填充数据
-      this.dialogForm.dialogTitle = '编辑'
-      this.dialogForm.dialogFormVisible = true
-      console.log(id)
+      if (!id) {
+        // 菜单栏编辑
+        const selectNum = this.tableForm.select.length
+        if (selectNum > 1) {
+          this.$message({
+            type: 'info',
+            message: '选择太多选项了'
+          })
+        } else if (selectNum === 1) {
+          // 根据id编辑
+          const seleteId = this.tableForm.select[0].id
+          this.editRecord(seleteId)
+        } else {
+          this.$message({
+            type: 'info',
+            message: '你没有选择一个选项'
+          })
+        }
+      } else {
+        // 侧边栏编辑
+        const rowId = row.id
+        this.editRecord(rowId)
+      }
+    },
+    /**
+     * 选择试卷处理事件
+     */
+    handleSelectPaper() {
+
     },
     /**
      * 发布新纪录弹窗
@@ -295,6 +321,22 @@ export default {
     newPublishRecord() {
       this.dialogForm.dialogTitle = '新增发布记录'
       this.dialogForm.dialogFormVisible = true
+    },
+    editRecord(id) {
+      getExamRecordById(id).then(rsp => {
+        console.log(`后台数据`)
+        // console.log(rsp)
+        const body = rsp.body
+        console.log(body)
+        // 将得到的数据 给弹窗赋值
+        // 显示弹窗
+        this.dialogForm.dialogFormVisible = true
+      }).catch(err => {
+        this.$message({
+          type: 'error',
+          message: `请求错误${err}`
+        })
+      })
     },
     /**
      * 保存考试的记录
@@ -321,8 +363,7 @@ export default {
      */
     publishRecord(row) {
       // 1.获得id
-      // 2.向后台请求发布记录
-      // 3.显示相关消息
+      // 2.向后台请求发布记      // 3.显示相关消息
       console.log(row)
     },
     /**

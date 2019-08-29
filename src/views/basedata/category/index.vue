@@ -25,24 +25,11 @@
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <!-- 组织机构下拉框 -->
             <el-form-item label="题目类别:">
-              <el-select
-                v-model="formInline.categoryNames"
-                filterable
-                multiple
-                placeholder="请选择"
-                size="mini"
-              >
-                <el-option
-                  v-for="category in categories"
-                  :key="category.name"
-                  :value="category.name"
-                />
-              </el-select>
+              <el-input v-model="formInline.name" clearable size="mini" />
             </el-form-item>
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" @click="fetch">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -60,7 +47,7 @@
           <el-table
             ref="multipleTable"
             v-loading="listLoading"
-            :data="list"
+            :data="dataList"
             tooltip-effect="dark"
             stripe
             height
@@ -86,23 +73,32 @@
               <template slot-scope="scope">
                 <el-tag
                   :type="scope.row.status === '1' ? 'primary' : 'info'"
-                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+                >{{ scope.row.status === 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="操作">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />
+              <template slot-scope="scope">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem(scope.row.id)" />
+              </template>
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
-          <div class="block">
+          <div>
             <pagination
-              v-show="total>0"
-              :total="total"
-              :page.sync="page.pageNumber"
-              :limit.sync="page.size"
-              @click="fetchData"
+              v-show="dataCount>0 && formInline.name === ''"
+              :total="dataCount"
+              :page.sync="page.pageNum"
+              :limit.sync="page.pageSize"
+              @pagination="fetchData"
+            />
+            <pagination
+              v-show="dataCount>0 && formInline.name !== ''"
+              :total="dataCount"
+              :page.sync="page.pageNumSearch"
+              :limit.sync="page.pageSize"
+              @pagination="fetchByName"
             />
           </div>
         </el-card>
@@ -114,14 +110,15 @@
 <script>
 // import { log } from 'util'
 import Pagination from '@/components/Pagination'
-import { select } from '@/api/basedata/catetory'
+// eslint-disable-next-line no-unused-vars
+import { select, selectByName, deleteList } from '@/api/basedata/catetory'
 export default {
   name: 'App',
   // eslint-disable-next-line vue/no-unused-components
   components: { Pagination },
   data() {
     return {
-      list: null,
+      dataList: null,
       /**
          * 树结构数据
          */
@@ -158,49 +155,16 @@ export default {
          * 查询字段
          */
       formInline: {
-        categoryNames: []
+        name: ''
       },
-
-      /**
-         * 公司管理
-         */
-      categories: [
-        {
-          name: '腾讯',
-          categoryId: '001',
-          remark: '腾讯',
-          updatedTime: '2019/8/19',
-          status: '1'
-        },
-        {
-          name: '阿里',
-          categoryId: '002',
-          remark: '腾讯',
-          updatedTime: '2019/8/19',
-          status: '0'
-        },
-        {
-          name: '阿里',
-          categoryId: '002',
-          remark: '腾讯',
-          updatedTime: '2019/8/19',
-          status: '0'
-        },
-        {
-          name: '阿里',
-          categoryId: '002',
-          remark: '腾讯',
-          updatedTime: '2019/8/19',
-          status: '0'
-        }
-      ],
       page: {
-        size: 5,
-        pageNumber: 1
+        pageSize: 5,
+        pageNum: 1,
+        pageNumSearch: 1
       },
       listLoading: false,
       // 试卷总数
-      total: 0,
+      dataCount: 0,
       /**
          * 待确认字段
          */
@@ -220,25 +184,51 @@ export default {
   },
 
   methods: {
+
+    handleSizeChange(val) {
+      this.page.pageSize = val
+      this.fetchData()
+    },
+    handleCurrentChange(val) {
+      this.page.pageNum = val
+      this.fetchData()
+    },
     /**
      * 分页查询数据字典数据
      */
     fetchData() {
       this.listLoading = true
       const params = {
-        size: this.page.size,
-        page: this.page.pageNumber
+        pageSize: this.page.pageSize,
+        pageNum: this.page.pageNum
       }
-      console.log(params)
       select(params).then(result => {
         const body = result.body
-        this.list = body.data.list
-        this.total = body.data.total
+        this.dataList = body.categories.dataList
+        this.dataCount = body.categories.dataCount
+        this.listLoading = false
+      })
+    },
+    fetch() {
+      this.page.pageNumSearch = 1
+      this.fetchByName()
+    },
+    fetchByName() {
+      this.listLoading = true
+      const params = {
+        name: this.formInline.name,
+        pageSize: this.page.pageSize,
+        pageNum: this.page.pageNumSearch
+      }
+      selectByName(params).then(result => {
+        const body = result.body
+        this.dataList = body.categories.dataList
+        this.dataCount = body.categories.dataCount
         this.listLoading = false
       })
     },
     queryData() {
-      this.total = this.categories.length
+      this.dataCount = this.categories.length
     },
     /**
        * 树结构的点击事件
@@ -290,16 +280,26 @@ export default {
     /**
        * 删除信息
        */
-    deleteItem() {
+    deleteItem(id) {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+          // eslint-disable-next-line no-unused-vars
+          const idList = { idList: [id] }
+          deleteList(idList).then(result => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.fetchByName()
+          }).catch(result => {
+            this.$message({
+              type: 'success',
+              message: '删除失败!'
+            })
           })
         })
         .catch(() => {
@@ -320,15 +320,30 @@ export default {
           message: '请选择删除选项'
         })
       } else {
+        // eslint-disable-next-line no-unused-vars
+        const idList = { idList: [] }
+        this.multipleSelection.forEach(item => {
+          idList.idList.push(item.id)
+        })
         this.$confirm('是否要删除选定信息', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
           .then(() => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
+            deleteList(idList).then(result => {
+              console.log(idList)
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.fetchData()
+            }).catch(result => {
+              console.log(idList)
+              this.$message({
+                type: 'success',
+                message: '删除失败!'
+              })
             })
           })
           .catch(() => {
