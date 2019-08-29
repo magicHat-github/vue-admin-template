@@ -227,9 +227,10 @@
   </div>
 </template>
 <script>
+// import qs from 'qs'
 import { layout, pageSizes, pageSize, mockData, markOptions } from './common'
 import { rules, DialogType } from './common'
-import { getExamRecordById, publishRecordById } from '@/api/exam'
+import { getExamRecordById, publishRecordById, getRecordList } from '@/api/exam'
 
 export default {
   name: 'Exam',
@@ -345,16 +346,28 @@ export default {
     /**
      * 查询数据
      */
-    search() {
+    async search() {
       // 传送到后端的数据
       const query = {
-        publisherName: this.queryForm.publisher,
+        pageNum: this.currentPage,
+        pageSize: this.pageSize,
+        publisher: this.queryForm.publisher,
         publishStartTime: this.queryForm.publishTimeRange[0],
         publishEndTime: this.queryForm.publishTimeRange[1],
         examStartTime: this.queryForm.examTimeRange[0],
         examEndTime: this.queryForm.examTimeRange[1],
         title: this.queryForm.title
       }
+      await getRecordList(query)
+        .then(rsp => {
+          console.log(`查询返回值`)
+          console.log(rsp)
+        }).catch(err => {
+          this.$message({
+            type: 'error',
+            message: `请求错误${err}`
+          })
+        })
       console.log(query)
     },
     /**
