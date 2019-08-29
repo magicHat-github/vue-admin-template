@@ -35,7 +35,7 @@ export const mockData = [
     examLimitTime: '112',
     judges: '王工,李工',
     description: '秋招',
-    status: '已发布',
+    status: '未发布',
     publishTimes: 5
   },
   {
@@ -105,6 +105,17 @@ export const rules = {
   markingEndTime: [
     { required: true, message: '必须选择阅卷截止时间', trigger: 'blur' }
   ]
+}
+/**
+ * 弹窗的类型
+ */
+export const DialogType = {
+  // 重新发布记录类型
+  REPUBLISH: 1,
+  // 新发布记录类型
+  NEWPUBLISH: 2,
+  // 编辑记录
+  EDITRECORD: 3
 }
 /**
  * 模拟答卷数据

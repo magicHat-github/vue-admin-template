@@ -170,16 +170,16 @@
         </el-table>
       </div>
     </el-dialog>
-    <!-- 编辑块 -->
+    <!-- 菜单栏 -->
     <div id="editDiv">
       <span>
         <el-link :underline="false" class="el-icon-edit" @click="handleEditEvent">修改</el-link>
       </span>
       <span>
-        <el-link :underline="false" class="el-icon-delete" @click="deleteRows">删除</el-link>
+        <el-link :underline="false" class="el-icon-delete" @click="handleDeleteEvent">删除</el-link>
       </span>
       <span>
-        <el-link :underline="false" class="el-icon-right" @click="newPublishRecord">发布</el-link>
+        <el-link :underline="false" class="el-icon-right" @click="handlePublishEvent">发布</el-link>
       </span>
     </div>
     <!-- 发布记录的表格 -->
@@ -205,10 +205,10 @@
         <el-table-column prop="publishTimes" label="发布次数" />
         <el-table-column label="操作列">
           <template slot-scope="{ row }">
-            <el-button class="el-icon-edit" type="text" @click="handleEditEvent(row)" />
-            <el-button class="el-icon-delete" type="text" @click="deleteRow(row)" />
-            <el-button class="el-icon-right" type="text" @click="publishRecord(row)" />
-            <el-button class="el-icon-picture" type="text" @click="showQrCode(row)" />
+            <el-button :disabled="row|operateFilter" class="el-icon-edit" type="text" @click="handleEditEvent(row)" />
+            <el-button :disabled="row|operateFilter" class="el-icon-delete" type="text" @click="handleDeleteEvent(row)" />
+            <el-button class="el-icon-right" type="text" @click="handlePublishEvent(row)" />
+            <el-button :disabled="row|operateFilter|toggle" class="el-icon-picture" type="text" @click="handleShowQrCode(row)" />
           </template>
         </el-table-column>
       </el-table>
@@ -228,11 +228,24 @@
 </template>
 <script>
 import { layout, pageSizes, pageSize, mockData, markOptions } from './common'
-import { rules } from './common'
-import { getExamRecordById } from '@/api/exam'
+import { rules, DialogType } from './common'
+import { getExamRecordById, publishRecordById } from '@/api/exam'
 
 export default {
   name: 'Exam',
+  filters: {
+    operateFilter: val => {
+      const published = '已发布'
+      if (val.status === published) {
+        return true
+      } else {
+        return false
+      }
+    },
+    toggle: val => {
+      return !val
+    }
+  },
   data() {
     return {
       // 查询数据的表单数据
@@ -361,18 +374,35 @@ export default {
           })
         } else if (selectNum === 1) {
           // 根据id编辑
-          const seleteId = this.tableForm.select[0].id
-          this.editRecord(seleteId)
+          const seleteId = this.tableForm.select[0].recordId
+          const selectRow = this.tableForm.select[0]
+          const published = '已发布'
+          if (selectRow.status === published) {
+            this.$message({
+              type: 'error',
+              message: '已经发布不可编辑'
+            })
+          } else {
+            this.editRecord(seleteId)
+          }
         } else {
           this.$message({
             type: 'info',
-            message: '你没有选择一个选项'
+            message: '请选择数据'
           })
         }
       } else {
         // 侧边栏编辑
         const rowId = row.id
-        this.editRecord(rowId)
+        const published = '已发布'
+        if (row.status === published) {
+          this.$message({
+            type: 'error',
+            message: '已经发布不可编辑'
+          })
+        } else {
+          this.editRecord(rowId)
+        }
       }
     },
     /**
@@ -382,19 +412,107 @@ export default {
 
     },
     /**
-     * 发布新纪录弹窗
+     * 发布记录的事件处理
+     * 可能是发布新的记录
+     * 可能是重新发布新的记录
+     * 如果是重新发布就要获得已发布的数据
+     */
+    handlePublishEvent(row) {
+      const id = row.recordId
+      if (!id) {
+        // 菜单栏的发布操作
+        const selectNum = this.tableForm.select.length
+        if (selectNum > 1) {
+          this.$message({
+            type: 'info',
+            message: '选项太多'
+          })
+        } else if (selectNum === 1) {
+          // 获得选择行的id
+          // 获得选择的数据
+          const published = '已发布'
+          const selectRow = this.tableForm.select[0]
+          if (selectRow.status === published) {
+            this.$confirm(
+              '该场考试已经发布过,是否重新发布',
+              '提示',
+              {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+              }
+            ).then(() => {
+              // 重新发布函数
+              this.rePublishRecord(selectRow.recordId)
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消重新发布'
+              })
+            })
+          } else {
+            // 调用发布函数 未发布 => 已发布
+            this.publishRecord(selectRow.recordId)
+          }
+        } else {
+          // 发布新的记录
+          this.newPublishRecord()
+        }
+      } else {
+        // 侧边栏的操作
+        const published = '已发布'
+        if (row.status === published) {
+          this.$confirm(
+            '该场考试已经发布过,是否重新发布',
+            '提示',
+            {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消'
+            }
+          ).then(() => {
+            // 重新发布函数
+            this.rePublishRecord(row.recordId)
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消重新发布'
+            })
+          })
+        } else {
+          // 调用发布函数 未发布 => 已发布
+          this.publishRecord(row.recordId)
+        }
+      }
+    },
+    /**
+     * 新发布记录
+     * 从0开始新增一条记录
      */
     newPublishRecord() {
       this.dialogForm.dialogTitle = '新增发布记录'
+      this.dialogForm.dialogType = DialogType.NEWPUBLISH
       this.dialogForm.dialogFormVisible = true
     },
+    /**
+     * 重新发布记录
+     */
+    rePublishRecord(id) {
+      // TODO 获得该id对应的数据
+      // 打开发布弹窗
+      this.dialogForm.dialogTitle = '重新发布考试记录'
+      this.dialogForm.dialogType = DialogType.REPUBLISH
+      this.dialogForm.dialogFormVisible = true
+    },
+    /**
+     * 根据id从
+     * 后台数据拿数据
+     */
     editRecord(id) {
       getExamRecordById(id).then(rsp => {
         console.log(`后台数据`)
         // console.log(rsp)
         const body = rsp.body
         console.log(body)
-        // 将得到的数据 给弹窗赋值
+        // TODO 将得到的数据 给弹窗赋值
         // 显示弹窗
         this.dialogForm.dialogFormVisible = true
       }).catch(err => {
@@ -405,51 +523,58 @@ export default {
       })
     },
     /**
-     * 保存考试的记录
+     * 可能是保存编辑的数据
+     * 可能是保存发布的数据
      */
     saveRecord() {
       // 判断是编辑界面还是发布界面
       if (this.dialogForm.title === '编辑') {
+        // 调用更新函数
         this.$message({
           type: 'success',
           message: '编辑成功'
         })
       } else {
+        // 调用发布函数
         this.$message({
           type: 'success',
           message: '添加发布成功'
         })
       }
-      console.log(this.dialogForm)
+      // console.log(this.dialogForm)
       // 关闭窗口
       this.dialogForm.dialogFormVisible = false
     },
     /**
-     * 发布记录操作处理函数
+     * 发布记录函数
+     * 这个函数是向后台发送要发布记录的id
+     * 效果是该条记录的状态从 未发布 => 已发布
      */
-    publishRecord(row) {
-      if (row.status === '已发布') {
-        this.$confirm('该场考试已经发布过了,是否重新发布?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
-        }).then(() => {
-          // 调用重新发布函数
-          this.rePublish(row)
-        }).catch(() => {
+    async publishRecord(id) {
+      await publishRecordById(id)
+        .then(rsp => {
           this.$message({
-            type: 'info',
-            message: '取消重新发布'
+            type: 'success',
+            message: '该场考试已经发布了,注意考试时间'
+          })
+        }).catch(err => {
+          this.$message({
+            type: 'error',
+            message: `发布错误${err}`
           })
         })
-      }
-      // 1.获得id
-      // 2.向后台请求发布记      // 3.显示相关消息
-      console.log(row)
+      // TODO 刷新页面数据
     },
     /**
-     * 删除选中的数据
+     * 处理删除事件
+     * 菜单栏 多选删除
+     * 菜单栏 单选删除
+     * 侧边栏操作 删除
+     * 删除的优先级
+     * 侧边栏删除 > 菜单栏删除
+     * @param {侧边栏删除传入的行数据} row
      */
-    deleteRows() {
+    handleDeleteEvent(row) {
       // 先判断单选和多选数据
       const selectCount = this.tableForm.select.length
       if (selectCount > 0) {
@@ -520,12 +645,6 @@ export default {
       console.log(deleteForm)
     },
     /**
-     * 重新发布的函数
-     */
-    rePublish(row) {
-      alert('重新发布成功')
-    },
-    /**
      * 选中和不选中
      */
     handleSelectionChange(val) {
@@ -535,13 +654,11 @@ export default {
     /**
      * 显示二维码
      */
-    showQrCode(row) {
-      // 1 获得id
-      const id = row.recordId
+    handleShowQrCode(row) {
+      // 1 获得row 对应的url
+      const qrCodeUrl = 'https://long95288.github.io/'
       // 2 请求该条记录的qrcodeurl
-      // 3 显示qrcode
-      console.log(id)
-      this.$router.push({ name: 'phoneanswer' })
+      this.$router.push({ name: 'phoneanswer', params: { qrCodeUrl: qrCodeUrl }})
     },
     /**
      * 处理分页页面大小改变事件

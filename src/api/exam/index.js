@@ -67,6 +67,18 @@ export function deleteRecordByIdList(idList) {
   )
 }
 /**
+ * 根据id发布考试记录，这条记录的状态只能是未发布的
+ * @param {要发布的记录的id} id
+ */
+export function publishRecordById(id) {
+  return examRequestApi(
+    '/publish',
+    'post',
+    id
+  )
+}
+
+/**
  * 根据查询条件用来查询记录
  * @param {查询的条件} queryForm Object
  */

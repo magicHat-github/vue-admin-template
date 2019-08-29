@@ -441,8 +441,8 @@ export const constantRoutes = [
     meta: { title: '考试管理', icon: 'example' },
     children: [
       {
-        path: 'examPublic',
-        name: 'examPublic',
+        path: 'examPublish',
+        name: 'examPublish',
         component: () => import('@/views/exam/index'),
         meta: { title: '发布试卷管理', icon: 'example' }
       },
