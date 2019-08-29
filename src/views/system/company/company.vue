@@ -37,7 +37,7 @@
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
               <el-select
-                v-model="formInline.org"
+                v-model="formInline.orgName"
                 filterable
                 placeholder="请选择"
                 size="mini"
@@ -160,18 +160,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
-        {
-          id: 1,
-          label: '组织机构 1',
-          children: [
-            {
-              id: 2,
-              label: '公司 1-1'
-            }
-          ]
-        }
-      ],
+      treeData: [],
       /**
        * 树结构的默认属性
        */
@@ -230,8 +219,6 @@ export default {
         // 转换表格数据
         this.companys = body.dataList
         // 分页信息
-        this.page.pageNumber = body.pageNumber
-        this.page.size = body.pageSize
         this.total = body.dataCount
       })
     },

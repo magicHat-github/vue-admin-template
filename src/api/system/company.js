@@ -18,3 +18,11 @@ export function addCompany(params) {
 export function fetchCompany(params) {
   return systemRequestApi('/company/info', 'POST', params)
 }
+
+/**
+ * 删除选定公司
+ * @param {*} params
+ */
+export function deleteCompany(params) {
+  return systemRequestApi('/company', 'DELETE', params)
+}
