@@ -1,17 +1,19 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
-      <el-aside width="160px">
+      <el-aside width="140px">
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:20px;" class="el-icon-menu">用户管理</h1>
+                <h1 style="font-size:15px;" class="el-icon-menu">用户管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -23,7 +25,7 @@
 
     <!-- 主体部分 -->
     <el-main>
-      <div class="app-container allData">
+      <div>
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -61,9 +63,27 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteUser">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateUser">修改</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="addUser"
+            >增加</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deleteUser"
+            >删除</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updateSelectedUser"
+            >修改</el-link>
             <!-- 角色分配按钮 -->
             <el-link
               class="itemAction"
@@ -76,14 +96,18 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :border="true"
             :data="users"
             tooltip-effect="dark"
             stripe
+            size="mini"
+            fit
+            style="width: 100%; margin-top: 10px;"
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column prop="code" label="用户工号" align="center" />
+            <el-table-column prop="departmentName" label="所属部门" align="center" />
+            <el-table-column prop="companyName" label="所属公司" align="center" />
             <el-table-column prop="password" label="初始密码" align="center" />
             <el-table-column prop="name" label="用户名" align="center" />
             <el-table-column prop="role" label="角色" align="center" />
@@ -93,11 +117,29 @@
             <el-table-column prop="tel" label="电话" align="center" />
             <el-table-column prop="email" label="邮箱" align="center" />
             <el-table-column prop="other" label="其它/微信" width="105" align="center" />
-            <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" width="130" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteUser" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateUser" />
+              <template slot-scope="scope">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser" />
+                <el-link
+                  class="itemAction"
+                  type="danger"
+                  icon="el-icon-delete"
+                  @click="deleteUser"
+                />
+                <el-link
+                  class="itemAction"
+                  type="warning"
+                  icon="el-icon-edit"
+                  @click="updateUser(scope.row)"
+                />
+              </template>
               <el-link
                 class="itemAction"
                 type="primary"
@@ -136,42 +178,32 @@ export default {
        */
       treeData: [
         {
-          label: '组织机构 1',
+          label: '公司 1',
           children: [
             {
-              label: '公司 1-1'
+              label: '部门 1-1'
             }
           ]
         },
         {
-          label: '组织机构 2',
+          label: '公司 2',
           children: [
             {
-              label: '公司 2-1'
+              label: '部门 2-1'
             },
             {
-              label: '公司 2-2'
+              label: '部门 2-2'
             }
           ]
         },
         {
-          label: '组织机构 3',
+          label: '公司 3',
           children: [
             {
-              label: '公司 3-1',
-              children: [
-                {
-                  label: '这是假数据 3-1-1'
-                }
-              ]
+              label: '部门 3-1'
             },
             {
-              label: '公司 3-2',
-              children: [
-                {
-                  label: '这是假数据 3-2-1'
-                }
-              ]
+              label: '部门 3-2'
             }
           ]
         }
@@ -200,6 +232,8 @@ export default {
       users: [
         {
           code: '9527',
+          departmentName: 'hr',
+          companyName: 'boss',
           password: '123456',
           name: '傻瓜许林瑜',
           role: '鼓励师',
@@ -209,7 +243,52 @@ export default {
           tel: '13000000000',
           email: 'test@test.com',
           other: '无',
-          status: '启用'
+          status: '1'
+        },
+        {
+          code: '9527',
+          departmentName: 'hr',
+          companyName: 'boss',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '0'
+        },
+        {
+          code: '9527',
+          departmentName: 'hr',
+          companyName: 'boss',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '0'
+        },
+        {
+          code: '9527',
+          departmentName: 'hr',
+          companyName: 'boss',
+          password: '123456',
+          name: '傻瓜许林瑜',
+          role: '鼓励师',
+          sex: '男',
+          birthday: '1949-10-01',
+          position: '码农',
+          tel: '13000000000',
+          email: 'test@test.com',
+          other: '无',
+          status: '0'
         }
       ],
 
@@ -260,10 +339,52 @@ export default {
         name: 'AddUser'
       })
     },
-    updateUser() {
+
+    updateUser(row) {
       this.$router.push({
-        name: 'UpdateUser'
+        name: 'UpdateUser',
+        params: {
+          row: row
+        }
       })
+    },
+
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedUser() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateUser',
+          params: {
+            row: this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedUser() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteUser()
+      }
     },
 
     /**
@@ -294,7 +415,7 @@ export default {
      */
     distributeRole() {
       this.$router.push({
-        name: 'update'
+        name: 'DistributeRole'
       })
     }
   }
@@ -304,5 +425,14 @@ export default {
 <style>
 .itemAction {
   margin-right: 10px;
+}
+.aside .el-card__body .el-main {
+  padding-left: 7px;
+}
+.aside .el-card__body .el-header {
+  padding: 5px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>

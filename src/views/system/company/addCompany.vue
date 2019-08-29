@@ -15,36 +15,36 @@
         :rules="companyRules"
         label-width="100px"
         class="user-add-Form"
-        label-position="left"
+        label-position="right"
       >
         <!-- 第一行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 公司名输入框 -->
-          <el-col :span="10">
-            <el-form-item label="公司名:" prop="name">
+          <el-col :span="7" :offset="3">
+            <el-form-item label="公司名" prop="name">
               <el-input v-model="companyForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 公司编号输入框 -->
-          <el-col :span="10">
-            <el-form-item label="公司编号:" prop="code">
+          <el-col :span="7" :offset="2">
+            <el-form-item label="公司编号" prop="code">
               <el-input v-model="companyForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 第二行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 助记码输入框 -->
-          <el-col :span="10">
-            <el-form-item label="助记码:" prop="mnemonic_code">
-              <el-input v-model="companyForm.mnemonic_code" placeholder="请输入内容" clearable />
+          <el-col :span="7" :offset="3">
+            <el-form-item label="助记码" prop="mnemonicCode">
+              <el-input v-model="companyForm.mnemonicCode" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 法人下拉框 -->
-          <el-col :span="10">
-            <el-form-item label="法人:" prop="master">
-              <el-select v-model="companyForm.master" placeholder="请选择">
+          <el-col :span="7" :offset="2">
+            <el-form-item label="法人" prop="master">
+              <el-select v-model="companyForm.master" filterable placeholder="请选择">
                 <el-option
                   v-for="position in positions"
                   :key="position.name"
@@ -57,48 +57,48 @@
         </el-row>
 
         <!-- 第三行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 税号输入框 -->
-          <el-col :span="10">
-            <el-form-item label="税号:" prop="tax">
+          <el-col :span="7" :offset="3">
+            <el-form-item label="税号" prop="tax">
               <el-input v-model="companyForm.tax" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 传真输入框 -->
-          <el-col :span="10">
-            <el-form-item label="传真:" prop="fax">
+          <el-col :span="7" :offset="2">
+            <el-form-item label="传真" prop="fax">
               <el-input v-model="companyForm.fax" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 第四行 -->
-        <el-row type="flex" justify="space-around">
+        <el-row>
           <!-- 电话输入框 -->
-          <el-col :span="10">
-            <el-form-item label="电话:">
+          <el-col :span="7" :offset="3">
+            <el-form-item label="电话">
               <el-input v-model="companyForm.tel" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 地址输入框 -->
-          <el-col :span="10">
-            <el-form-item label="地址:">
-              <el-input v-model="companyForm.address" placeholder="请输入内容" clearable />
+          <el-col :span="7" :offset="2">
+            <el-form-item label="地址">
+              <el-input v-model="companyForm.website" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 第五行 -->
         <!-- 所属机构输入框 -->
-        <el-row type="flex" justify="space-around">
-          <el-col :span="10">
-            <el-form-item label="所属机构:" prop="org_name">
-              <el-input v-model="companyForm.org_name" placeholder="请输入内容" clearable />
+        <el-row>
+          <el-col :span="7" :offset="3">
+            <el-form-item label="所属机构" prop="orgName">
+              <el-input v-model="companyForm.orgName" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 邮箱输入框 -->
-          <el-col :span="10">
-            <el-form-item label="邮箱:" prop="email">
+          <el-col :span="7" :offset="2">
+            <el-form-item label="邮箱" prop="email">
               <el-input v-model="companyForm.email" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -107,10 +107,10 @@
         <!-- 第七行 -->
         <!--复选按钮 -->
         <el-row>
-          <el-col :span="8" :offset="1">
-            <el-form-item label="是否启用:">
+          <el-col :span="7" :offset="3">
+            <el-form-item label="是否启用">
               <el-radio v-model="companyForm.status" label="1">是</el-radio>
-              <el-radio v-model="companyForm.status" label="2">否</el-radio>
+              <el-radio v-model="companyForm.status" label="0">否</el-radio>
             </el-form-item>
           </el-col>
         </el-row>
@@ -119,10 +119,10 @@
         <!-- 按钮组件 -->
         <el-row :gutter="0">
           <el-form-item>
-            <el-col :span="4" :offset="8">
+            <el-col :span="3" :offset="8">
               <el-button type="primary" @click="submitForm('companyForm')">保存</el-button>
             </el-col>
-            <el-col :span="4">
+            <el-col :span="3">
               <el-button @click="close">关闭</el-button>
             </el-col>
           </el-form-item>
@@ -133,6 +133,7 @@
 </template>
 
 <script>
+import { addCompany } from '@/api/system/company'
 export default {
   data() {
     return {
@@ -142,13 +143,13 @@ export default {
       companyForm: {
         name: '',
         code: '',
-        mnemonic_code: '',
+        mnemonicCode: '',
         master: '',
         tax: '',
         fax: '',
         tel: '',
-        address: '',
-        org_name: '',
+        website: '',
+        orgName: '',
         email: '',
         status: '1'
       },
@@ -164,7 +165,7 @@ export default {
           { required: true, message: '请输入姓名', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        mnemonic_code: [
+        mnemonicCode: [
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
@@ -179,7 +180,7 @@ export default {
           { required: true, message: '请输入生日', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        org_name: [
+        orgName: [
           { required: true, message: '请输入电话', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
@@ -195,9 +196,10 @@ export default {
       /**
        * 角色下拉框选项
        */
-      roles: [{ name: '鼓励师' }, { name: '搬砖人' }, { name: '搬砖人' }]
+      roles: [{ name: '鼓励师' }, { name: '搬砖人' }]
     }
   },
+
   methods: {
     /**
      * 保存按钮
@@ -214,10 +216,23 @@ export default {
       })
     },
     submit() {
-      this.$router.push({
-        name: 'Company'
-      })
-      this.$message('操作成功')
+      const params = {
+        name: this.companyForm.name,
+        code: this.companyForm.code,
+        mnemonicCode: this.companyForm.mnemonicCode,
+        master: this.companyForm.master,
+        tax: this.companyForm.tax,
+        fax: this.companyForm.fax,
+        tel: this.companyForm.tel,
+        website: this.companyForm.website,
+        orgName: this.companyForm.orgName,
+        email: this.companyForm.email,
+        status: this.companyForm.status
+      }
+      addCompany(params).then(
+        this.close(),
+        this.$message('操作成功')
+      )
     },
     /**
      * 关闭按钮

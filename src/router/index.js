@@ -254,6 +254,9 @@ export const constantRoutes = [
         component: () => import('@/views/system/department/updatedepartment'),
         meta: { title: '修改部门信息', icon: 'tree' }
       },
+      /**
+       * 资源管理界面
+       */
       {
         path: 'resource',
         name: 'Resource',
@@ -274,6 +277,9 @@ export const constantRoutes = [
         component: () => import('@/views/system/resource/updateResource'),
         meta: { title: '修改资源信息', icon: 'tree' }
       },
+      /**
+       * 用户管理界面
+       */
       {
         path: 'role',
         name: 'Role',
@@ -315,15 +321,18 @@ export const constantRoutes = [
         name: 'AddPosition',
         hidden: true,
         component: () => import('@/views/system/position/addposition'),
-        meta: { title: '职位增加' }
+        meta: { title: '增加职位' }
       },
       {
         path: 'updateposition',
         name: 'UpdatePosition',
         hidden: true,
         component: () => import('@/views/system/position/updateposition'),
-        meta: { title: '职位修改' }
+        meta: { title: '修改职位' }
       },
+      /**
+      * yonghui管理界面
+      */
       {
         path: 'user',
         name: 'User',
@@ -345,8 +354,8 @@ export const constantRoutes = [
         meta: { title: '修改用户' }
       },
       {
-        path: 'distributeUser',
-        name: 'DistributeUser',
+        path: 'distributeRole',
+        name: 'DistributeRole',
         hidden: true,
         component: () => import('@/views/system/user/distributeRole'),
         meta: { title: '为用户分配角色' }

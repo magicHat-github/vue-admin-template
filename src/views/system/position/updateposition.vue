@@ -1,6 +1,6 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">增加职位</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">修改职位</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
@@ -20,7 +20,7 @@
       >
         <el-form-item label="公司" prop="company">
           <el-col :span="8">
-            <el-select v-model="form.company">
+            <el-select v-model="form.company" filterable placeholder="请选择">
               <el-option label="博思软件" value="shanghai" />
               <el-option label="阿里巴巴" value="beijing" />
             </el-select>
@@ -104,6 +104,11 @@ export default {
         ]
       }
     }
+  },
+  created() {
+    var x = this
+    x.form = this.$route.params.row
+    console.log(x.form)
   },
   methods: {
     /**

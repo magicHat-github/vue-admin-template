@@ -1,21 +1,30 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
-      <el-aside width="160px">
+      <el-aside width="140px">
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:20px;" class="el-icon-menu">部门管理</h1>
+                <h1 style="font-size:15px;" class="el-icon-menu">部门管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              :data="treeData"
+              :props="defaultProps"
+              node-key="id"
+              default-expanded-keys="1"
+              accordion
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -23,7 +32,7 @@
 
     <!-- 主体部分 -->
     <el-main>
-      <div class="app-container allData">
+      <div>
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -50,38 +59,79 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteDepartment">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateDepartment">修改</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="addDepartment"
+            >增加</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deleteSelectedDepartment"
+            >删除</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updateSelectedDepartment"
+            >修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
-          <el-table
-            ref="multipleTable"
-            :border="true"
-            :data="departments"
-            tooltip-effect="dark"
-            stripe
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column type="selection" width="55" align="center" />
-            <el-table-column prop="name" label="部门名称" align="center" />
-            <el-table-column prop="code" label="部门编号" align="center" />
-            <el-table-column prop="level" label="部门等级" sortable="true" align="center" />
-            <el-table-column prop="parentName" label="上级部门" sortable="true" align="center" />
-            <el-table-column prop="companyName" label="所属公司" align="center" />
-            <el-table-column prop="master" label="负责人" align="center" />
-            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
-              <template slot-scope="scope">
-                <el-tag>{{ scope.row.status }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDepartment" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteDepartment" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateDepartment" />
-            </el-table-column>
-          </el-table>
+          <div>
+            <el-table
+              ref="multipleTable"
+              :data="departments"
+              tooltip-effect="dark"
+              stripe
+              style="width: 100%; margin-top: 10px;"
+              fit
+              size="mini"
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column type="selection" width="55" align="center" />
+              <el-table-column prop="name" label="部门名称" align="center" />
+              <el-table-column prop="code" label="部门编号" align="center" />
+              <el-table-column prop="level" label="部门等级" sortable="true" align="center" />
+              <el-table-column prop="parentName" label="上级部门" sortable="true" align="center" />
+              <el-table-column prop="companyName" label="所属公司" align="center" />
+              <el-table-column prop="master" label="负责人" align="center" />
+              <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    :type="scope.row.status === '1' ? 'primary' : 'info'"
+                  >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
+                <template slot-scope="scope">
+                  <el-link
+                    class="itemAction"
+                    type="primary"
+                    icon="el-icon-plus"
+                    @click="addDepartment"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="danger"
+                    icon="el-icon-delete"
+                    @click="deleteDepartment"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="warning"
+                    icon="el-icon-edit"
+                    @click="updateDepartment(scope.row)"
+                  />
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
           <!-- 分页部分 -->
           <div class="block">
             <pagination
@@ -101,6 +151,8 @@
 <script>
 // 引入分页组件
 import Pagination from '@/components/Pagination'
+// 引入方法
+import { queryAsideTree } from '@/api/system/department'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -112,20 +164,25 @@ export default {
        */
       treeData: [
         {
+          id: 1,
           label: '公司 1',
           children: [
             {
+              id: 11,
               label: '部门 1-1'
             }
           ]
         },
         {
+          id: 2,
           label: '公司 2',
           children: [
             {
+              id: 21,
               label: '部门 2-1'
             },
             {
+              id: 22,
               label: '部门 2-2'
             }
           ]
@@ -157,7 +214,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '1',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -166,7 +223,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '5',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -175,7 +232,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '2',
-          status: '否',
+          status: '0',
           companyName: 'boss'
         },
         {
@@ -184,7 +241,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '4',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -193,7 +250,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '3',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         },
         {
@@ -202,7 +259,7 @@ export default {
           code: 'hrCode',
           master: 'hrMaster',
           level: '0',
-          status: '是',
+          status: '1',
           companyName: 'boss'
         }
       ],
@@ -225,8 +282,21 @@ export default {
   },
   created() {
     this.queryData()
+    this.fetchAsideTree()
   },
   methods: {
+    /**
+     * 查询树结构数据
+     */
+    fetchAsideTree() {
+      const params = {
+        name: 'test'
+      }
+      queryAsideTree(params).then(result => {
+        const body = result.body
+        this.treeData = body.TreeVO
+      })
+    },
     /**
      * 查询数据
      */
@@ -252,13 +322,53 @@ export default {
      */
     addDepartment() {
       this.$router.push({
-        name: 'addDepartment'
+        name: 'AddDepartment'
       })
     },
-    updateDepartment() {
+    updateDepartment(row) {
       this.$router.push({
-        name: 'updateDepartment'
+        name: 'UpdateDepartment',
+        params: {
+          row: row
+        }
       })
+    },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedDepartment() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateDepartment',
+          params: {
+            row: this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedDepartment() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteDepartment()
+      }
     },
 
     /**
@@ -290,5 +400,14 @@ export default {
 <style>
 .itemAction {
   margin-right: 10px;
+}
+.aside .el-card__body .el-main {
+  padding-left: 7px;
+}
+.aside .el-card__body .el-header {
+  padding: 5px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>

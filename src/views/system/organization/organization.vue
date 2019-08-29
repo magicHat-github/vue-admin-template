@@ -16,38 +16,66 @@
     <el-card>
       <div>
         <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addOrg">增加</el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteOrg">删除</el-link>
-        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateOrg">修改</el-link>
+        <el-link
+          class="itemAction"
+          type="danger"
+          icon="el-icon-delete"
+          @click="deleteSelectedOrg"
+        >删除</el-link>
+        <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateSelectedOrg">修改</el-link>
       </div>
       <!-- 数据显示表单 -->
-      <el-table
-        ref="multipleTable"
-        :data="organizations"
-        :border="true"
-        tooltip-effect="dark"
-        style="width: 100%"
-        stripe
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="orgname" label="组织机构" width="120" align="center" />
-        <el-table-column prop="code" label="机构代码" width="120" align="center" />
-        <el-table-column prop="master" label="负责人" show-overflow-tooltip align="center" />
-        <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
-        <el-table-column prop="address" label="地址" show-overflow-tooltip align="center" />
-        <el-table-column
-          prop="status"
-          label="是否启用"
-          show-overflow-tooltip
-          width="110"
-          align="center"
-        />
-        <el-table-column label="操作" width="110" align="center">
-          <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addOrg" />
-          <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteOrg" />
-          <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateOrg" />
-        </el-table-column>
-      </el-table>
+      <div>
+        <el-table
+          ref="multipleTable"
+          :data="organizations"
+          tooltip-effect="dark"
+          style="width: 100%; margin-top: 10px;"
+          stripe
+          size="mini"
+          fit
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" align="center" />
+          <el-table-column prop="orgname" label="组织机构" width="120" align="center" />
+          <el-table-column prop="code" label="机构代码" width="120" align="center" />
+          <el-table-column prop="master" label="负责人" show-overflow-tooltip align="center" />
+          <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
+          <el-table-column prop="address" label="地址" show-overflow-tooltip align="center" />
+          <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.status === '1' ? 'primary' : 'info'"
+              >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="110" align="center">
+            <template slot-scope="scope">
+              <el-link
+                class="itemAction"
+                size="mini"
+                type="primary"
+                icon="el-icon-plus"
+                @click="addOrg"
+              />
+              <el-link
+                class="itemAction"
+                size="mini"
+                type="danger"
+                icon="el-icon-delete"
+                @click="deleteOrg"
+              />
+              <el-link
+                class="itemAction"
+                size="mini"
+                type="warning"
+                icon="el-icon-edit"
+                @click="updateOrg(scope.row)"
+              />
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
       <!-- 分页部分 -->
       <div class="block">
         <pagination
@@ -99,7 +127,7 @@ export default {
           status: '1'
         },
         {
-          orgname: '腾讯',
+          orgname: '豆瓣',
           code: 'CEO',
           master: 'xly是懒猪',
           tel: '0',
@@ -107,7 +135,15 @@ export default {
           status: '1'
         },
         {
-          orgname: '腾讯',
+          orgname: '滴滴',
+          code: 'CEO',
+          master: 'xly是懒猪',
+          tel: '0',
+          address: '博思大厦',
+          status: '0'
+        },
+        {
+          orgname: '字节',
           code: 'CEO',
           master: 'xly是懒猪',
           tel: '0',
@@ -115,7 +151,7 @@ export default {
           status: '1'
         },
         {
-          orgname: '腾讯',
+          orgname: '百度',
           code: 'CEO',
           master: 'xly是懒猪',
           tel: '0',
@@ -123,15 +159,7 @@ export default {
           status: '1'
         },
         {
-          orgname: '腾讯',
-          code: 'CEO',
-          master: 'xly是懒猪',
-          tel: '0',
-          address: '博思大厦',
-          status: '1'
-        },
-        {
-          orgname: '腾讯',
+          orgname: '阿里巴巴',
           code: 'CEO',
           master: 'xly是懒猪',
           tel: '0',
@@ -180,10 +208,50 @@ export default {
         name: 'AddOrg'
       })
     },
-    updateOrg() {
+    updateOrg(row) {
       this.$router.push({
-        name: 'UpdateOrg'
+        name: 'UpdateOrg',
+        params: {
+          row: row
+        }
       })
+    },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedOrg() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateOrg',
+          params: {
+            row: this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedOrg() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteOrg()
+      }
     },
 
     /**

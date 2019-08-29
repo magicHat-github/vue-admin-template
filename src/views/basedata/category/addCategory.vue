@@ -10,6 +10,16 @@
     <div class="app-container allData">
       <hr>
       <el-form ref="form" :label-position="left" :rules="rules" :model="form" label-width="80px" size="mini" style="padding-left:30%;">
+        <el-form-item label="父类别" required>
+          <el-select v-model="form.parentId" placeholder="请选择">
+            <el-option
+              v-for="parent in parents"
+              :key="parent.name"
+              :label="parent.name"
+              :value="parent.id"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="题目类别" prop="name">
           <el-col :span="8">
             <el-input v-model="form.name" />
@@ -51,14 +61,20 @@ export default {
       form: {
         name: '',
         remark: '',
-        status: '1'
+        status: '1',
+        parentId: ''
       },
+      parents: [
+        { id: '',
+          name: ''
+        },
+        { id: '1',
+          name: '2'
+        }
+      ],
       rules: {
         name: [
           { required: true, message: '请输入题目类别', trigger: 'blur' }
-        ],
-        status: [
-          { required: true, message: '请选择是否启用', trigger: 'blur' }
         ]
       }
     }

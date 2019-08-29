@@ -2,163 +2,151 @@
   <div class="app-container allData">
     <!--查询框 -->
     <div>
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+      <el-form :inline="true" :model="searchData" class="demo-form-inline">
         <el-form-item label="字典名称:">
-          <el-input v-model="formInline.name" size="mini" />
+          <el-input v-model="searchData.name" placeholder="字典名称" size="mini" @keyup.enter.native="handleFilter" />
         </el-form-item>
         <el-form-item label="字典类型:">
-          <el-input v-model="formInline.type" size="mini" />
+          <el-input v-model="searchData.type" placeholder="字典类型" size="mini" @keyup.enter.native="handleFilter" />
         </el-form-item>
         <el-form-item>
-          <el-button size="mini" type="primary">查询</el-button>
+          <el-button size="mini" type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
 
-    <!-- 增删改按钮框 -->
-    <div>
-      <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-      <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1">删除</el-link>
-      <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1">修改</el-link>
-      <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="import1">导入</el-link>
-      <el-link class="itemAction" type="primary" icon="el-icon-download" @click="export1">导出</el-link>
-    </div>
+    <el-card class="tableData">
+      <!-- 增删改按钮框 -->
+      <div>
+        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDictionary">增加</el-link>
+        <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDictionary">删除</el-link>
+        <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDictionary">修改</el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="importDictioanry">导入</el-link>
+        <el-link class="itemAction" type="primary" icon="el-icon-download" @click="exportDictionary">导出</el-link>
+      </div>
+      <!-- stripe斑马纹  border带边框 -->
+      <el-table
+        ref="multipleTable"
+        v-loading="listLoading"
+        border="true"
+        element-loading-text="Loading"
+        :data="list"
+        tooltip-effect="dark"
+        stripe="true"
+        height
+        fit
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="name" label="字典名" align="center">
+          <template slot-scope="scope">{{ scope.row.name }}</template>
+        </el-table-column>
+        <el-table-column prop="category" label="字典类型" sortable="true" align="center">
+          <template slot-scope="scope">{{ scope.row.category }}</template>
+        </el-table-column>
+        <el-table-column prop="value" label="字典值" align="center">
+          <template slot-scope="scope">{{ scope.row.value }}</template>
+        </el-table-column>
+        <el-table-column prop="updatedTime" label="更新时间" align="center">
+          <template slot-scope="scope">{{ scope.row.updatedTime }}</template>
+        </el-table-column>
+        <el-table-column prop="remark" label="备注信息" align="center">
+          <template slot-scope="scope">{{ scope.row.remark }}</template>
+        </el-table-column>
+        <el-table-column prop="status" label="启用标记" sortable="true" align="center">
+          <template slot-scope="scope"><el-tag>{{ scope.row.status }}</el-tag></template>
+        </el-table-column>
+        <el-table-column label="操作" style="white-space:nowrap" align="center">
+          <template slot-scope="{row}">
+            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDictionary" />
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDictionary(row)" />
+            <el-link class="itemAction" type="danger" :disabled="row.status=='启用'" icon="el-icon-delete" @click="deleteDictionary(row)" />
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <el-table
-      ref="multipleTable"
-      border="true"
-      :data="dictionaries"
-      tooltip-effect="dark"
-      stripe
-      height
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column prop="name" label="字典名" />
-      <el-table-column prop="category" label="字典类型" sortable="true" />
-      <el-table-column prop="value" label="字典值" />
-      <el-table-column prop="updatedTime" label="更新时间" />
-      <el-table-column prop="remark" label="备注信息" />
-      <el-table-column prop="status" label="启用标记" sortable="true" />
-      <el-table-column label="操作" style="white-space:nowrap">
-        <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-        <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="delete1" />
-        <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="update1" />
-      </el-table-column>
-    </el-table>
-
-    <!-- 分页部分 -->
-    <div class="block">
-      <el-pagination
-        :current-page.sync="currentPage1"
-        :page-size="70"
-        layout="prev, pager, next, jumper"
-        :total="1000"
-      />
-    </div>
+      <!-- 分页部分 -->
+      <pagination v-show="total>0" :total="total" :page.sync="page.pageNumber" :limit.sync="page.size" @pagination="fetchData" />
+    </el-card>
   </div>
 </template>
 
 <script>
 // import { log } from 'util'
+import Pagination from '@/components/Pagination'
+import { select } from '@/api/basedata/dictionary'
 export default {
   name: 'Dictionary',
+  components: { Pagination },
   data() {
     return {
+      // 数据字典集合
+      list: null,
+      // 数据字典总条目数
+      total: 0,
       /**
        * 查询字段
        */
-      formInline: {
+      searchData: {
         name: '',
         type: ''
       },
-
-      /**
-       * 字典管理
-       */
-      dictionaries: [
-        {
-          name: '难度',
-          category: 'parentDep',
-          value: 'hrCode',
-          updatedTime: '2019-8-18',
-          remark: '1',
-          status: '启用'
-        },
-        {
-          name: '部门',
-          category: 'parentDep',
-          value: 'hrCode',
-          updatedTime: '2019-8-18',
-          remark: '1',
-          status: '启用'
-        },
-        {
-          name: '试卷类型',
-          category: 'parentDep',
-          value: 'hrCode',
-          updatedTime: '2019-8-18',
-          remark: '1',
-          status: '启用'
-        },
-        {
-          name: '题型',
-          category: 'parentDep',
-          value: 'hrCode',
-          updatedTime: '2019-8-18',
-          remark: '1',
-          status: '启用'
-        },
-        {
-          name: '组织机构',
-          category: 'parentDep',
-          value: 'hrCode',
-          updatedTime: '2019-8-18',
-          remark: '1',
-          status: '启用'
-        },
-        {
-          name: '人资部',
-          category: 'parentDep',
-          value: 'hrCode',
-          updatedTime: '2019-8-18',
-          remark: '1',
-          status: '启用'
-        }
-      ],
-
-      /**
-       * 待确认字段
-       */
-      multipleSelection: [],
-      /**
-       * 初始显示的页数
-       */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
+      // 分页的页面数据，默认5条一页，默认处于第一页
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // load加载动画标志
+      listLoading: false,
+      // 表格选择列表
+      multipleSelection: []
     }
   },
-
+  created() {
+    this.fetchData()
+  },
   methods: {
     /**
-     * 勾选事件触发的函数
-     */
-    handleSelectionChange(val) {
-      this.multipleSelection = val
+     * 分页查询数据字典数据
+    */
+    fetchData() {
+      this.listLoading = true
+      const params = {
+        size: this.page.size,
+        page: this.page.pageNumber,
+        name: this.searchData.name,
+        type: this.searchData.type
+      }
+      select(params).then(result => {
+        const body = result.body
+        this.list = body.data.list
+        this.total = body.data.total
+        this.listLoading = false
+      })
+    },
+    /**
+     * 获取表格选取的数据
+    */
+    handleSelectionChange(selection) {
+      this.multipleSelection = selection
     },
 
     /**
+     * 输入框响应enter查询
+     */
+    handleFilter() {
+      this.page.pageNumber = 1
+      this.fetchData()
+    },
+    /**
      * 跳转到增加界面
      */
-    goto() {
+    addDictionary() {
       this.$router.push({
         name: 'AddDictionary'
       })
     },
-    update1() {
+    updateDictionary() {
       this.$router.push({
         name: 'UpdateDictionary'
       })
@@ -167,7 +155,7 @@ export default {
     /**
      * 删除信息
      */
-    delete1() {
+    deleteDictionary() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

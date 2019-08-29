@@ -32,17 +32,22 @@ export default [
       const { username } = config.body
       const token = tokens[username]
 
-      // mock error
       if (!token) {
         return {
           code: 60204,
           message: 'Account and password are incorrect.'
         }
       }
-
       return {
-        code: 200,
-        data: token
+        head: {
+          version: '123',
+          code: 200,
+          msg: 'success',
+          crypt: '123'
+        },
+        body: {
+          data: token
+        }
       }
     }
   },
@@ -64,8 +69,15 @@ export default [
       }
 
       return {
-        code: 200,
-        data: info
+        head: {
+          version: '123',
+          code: 200,
+          msg: 'success',
+          crypt: '123'
+        },
+        body: {
+          data: info
+        }
       }
     }
   },
@@ -87,8 +99,15 @@ export default [
       }
 
       return {
-        code: 200,
-        data: info
+        head: {
+          version: '123',
+          code: 200,
+          msg: 'success',
+          crypt: '123'
+        },
+        body: {
+          data: info
+        }
       }
     }
   },
@@ -99,8 +118,15 @@ export default [
     type: 'post',
     response: _ => {
       return {
-        code: 200,
-        data: 'success'
+        head: {
+          version: '123',
+          code: 200,
+          msg: 'success',
+          crypt: '123'
+        },
+        body: {
+          data: 'success'
+        }
       }
     }
   }

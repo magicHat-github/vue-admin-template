@@ -1,23 +1,15 @@
 import request from '@/utils/request'
-import { paperRequestApi } from '@/utils/requestUtil'
+import { systemRequestApi } from '@/utils/requestUtil'
 /**
- * 组卷管理的相关API
+ * 用户管理的相关API
  */
 
 /**
- * 分页查询
+ * 对用户分页查询
  * @param {*} params 参数
  */
-export function select(params) {
-  return paperRequestApi('/paper/composition', 'post', params)
-}
-
-/**
- * 分页查询
- * @param {*} params 参数
- */
-export function selectConfigList(params) {
-  return paperRequestApi('/paper/config/list', 'get', params)
+export function selectTable(params) {
+  return systemRequestApi('/system/user', 'get', params)
 }
 
 /**
@@ -26,7 +18,7 @@ export function selectConfigList(params) {
  * @returns {AxiosPromise}
  */
 export function selectConfigItemById(params) {
-  return paperRequestApi('/paper/config/item', 'get', params)
+  return systemRequestApi('/paper/config/item', 'get', params)
 }
 
 /**

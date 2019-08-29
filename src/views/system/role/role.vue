@@ -1,21 +1,23 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
-      <el-aside width="160px">
+      <el-aside width="140px">
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:20px;" class="el-icon-menu">角色管理</h1>
+                <h1 style="font-size:15px;" class="el-icon-menu">角色管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree :data="organizationTreeVO" :props="defaultProps" @node-click="handleNodeClick" />
           </el-main>
         </el-container>
       </el-aside>
@@ -23,7 +25,7 @@
 
     <!-- 主体部分 -->
     <el-main>
-      <div class="app-container allData">
+      <div>
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -41,9 +43,27 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addRole">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteRole">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateRole">修改</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="addRole"
+            >增加</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deleteSelectedRole"
+            >删除</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updateSelectedRole"
+            >修改</el-link>
             <!-- 资源分配按钮 -->
             <el-link
               class="itemAction"
@@ -52,17 +72,17 @@
               @click="distributeResource = true"
             >资源分配</el-link>
             <el-dialog title="为角色分配资源" :visible.sync="distributeResource">
-              <el-form :model="resourceDestribution">
-                <el-form-item label="活动名称" :label-width="formLabelWidth">
-                  <el-input v-model="resourceDestribution.name" autocomplete="off" />
-                </el-form-item>
-                <el-form-item label="活动区域" :label-width="formLabelWidth">
-                  <el-select v-model="resourceDestribution.region" placeholder="请选择活动区域">
-                    <el-option label="区域一" value="shanghai" />
-                    <el-option label="区域二" value="beijing" />
-                  </el-select>
-                </el-form-item>
-              </el-form>
+              <!-- 角色的资源树 -->
+              <el-tree
+                ref="resourceTree"
+                :data="resourceTreeVO"
+                show-checkbox
+                default-expand-all
+                node-key="id"
+                highlight-current
+                :default-checked-keys="[5]"
+                :props="defaultProps"
+              />
               <div slot="footer" class="dialog-footer">
                 <el-button @click="distributeResource = false">取 消</el-button>
                 <el-button type="primary" @click="distributeResource = false">确 定</el-button>
@@ -80,10 +100,12 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :border="true"
             :data="roles"
             tooltip-effect="dark"
             stripe
+            style="width: 100%; margin-top: 10px;"
+            size="mini"
+            fit
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" align="center" />
@@ -92,23 +114,41 @@
             <el-table-column prop="remark" label="角色备注" show-overflow-tooltip align="center" />
             <el-table-column prop="companyName" label="所属公司" align="center" />
             <el-table-column prop="organizationName" label="所属机构" align="center" />
-            <el-table-column prop="status" label="是否启用" sortable="true" align="center" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" width="160" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addRole" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteRole" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateRole" />
-              <el-link
-                class="itemAction"
-                type="primary"
-                icon="el-icon-circle-plus-outline"
-                @click="distributeResource = true"
-              />
-              <el-link
-                class="itemAction"
-                type="primary"
-                icon="el-icon-user"
-                @click="distributeUser"
-              />
+              <template slot-scope="scope">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addRole" />
+                <el-link
+                  class="itemAction"
+                  type="danger"
+                  icon="el-icon-delete"
+                  @click="deleteRole"
+                />
+                <el-link
+                  class="itemAction"
+                  type="warning"
+                  icon="el-icon-edit"
+                  @click="updateRole(scope.row)"
+                />
+                <el-link
+                  class="itemAction"
+                  type="primary"
+                  icon="el-icon-circle-plus-outline"
+                  @click="distributeResource = true"
+                />
+                <el-link
+                  class="itemAction"
+                  type="primary"
+                  icon="el-icon-user"
+                  @click="distributeUser"
+                />
+              </template>
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
@@ -139,7 +179,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
+      organizationTreeVO: [
         {
           label: '组织机构 1',
           children: [
@@ -188,6 +228,30 @@ export default {
         children: 'children',
         label: 'label'
       },
+      /**
+       * 资源树数据（为角色分配资源时弹出）
+       */
+      resourceTreeVO: [
+        {
+          label: '资源树 1',
+          children: [
+            {
+              label: '资源 1-1'
+            }
+          ]
+        },
+        {
+          label: '资源树 2',
+          children: [
+            {
+              label: '资源 2-1'
+            },
+            {
+              label: '资源 2-2'
+            }
+          ]
+        }
+      ],
 
       /**
        * 查询字段
@@ -206,7 +270,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '1'
         },
         {
           name: 'name1',
@@ -214,7 +278,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '1'
         },
         {
           name: 'name1',
@@ -222,7 +286,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '1'
         },
         {
           name: 'name1',
@@ -230,7 +294,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '0'
         },
         {
           name: 'name1',
@@ -238,7 +302,7 @@ export default {
           remark: '傻瓜许林瑜',
           companyName: '福报厂',
           organizationName: '码农基地',
-          status: '启用'
+          status: '0'
         }
       ],
 
@@ -303,13 +367,53 @@ export default {
      */
     addRole() {
       this.$router.push({
-        name: 'AddCompany'
+        name: 'AddRole'
       })
     },
-    updateRole() {
+    updateRole(row) {
       this.$router.push({
-        name: 'update'
+        name: 'UpdateRole',
+        params: {
+          row: row
+        }
       })
+    },
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedRole() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateRole',
+          params: {
+            row: this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedRole() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteRole()
+      }
     },
 
     /**
@@ -350,5 +454,14 @@ export default {
 <style>
 .itemAction {
   margin-right: 10px;
+}
+.aside .el-card__body .el-main {
+  padding-left: 7px;
+}
+.aside .el-card__body .el-header {
+  padding: 5px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>

@@ -25,24 +25,11 @@
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <!-- 组织机构下拉框 -->
             <el-form-item label="题目类别:">
-              <el-select
-                v-model="formInline.name"
-                filterable
-                multiple
-                placeholder="请选择"
-                size="mini"
-              >
-                <el-option
-                  v-for="category in categories"
-                  :key="category.name"
-                  :value="category.name"
-                />
-              </el-select>
+              <el-input v-model="formInline.name" clearable size="mini" />
             </el-form-item>
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" @click="fetch">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -50,39 +37,68 @@
           <!-- 增删改按钮框 -->
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1">修改</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="update1">导入</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="update1">导出</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCheck">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCheck">修改</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="updateItem">导入</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="updateItem">导出</el-link>
           </div>
 
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :data="categories"
+            v-loading="listLoading"
+            :data="dataList"
             tooltip-effect="dark"
             stripe
             height
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" />
-            <el-table-column prop="name" label="题目类别" />
-            <el-table-column prop="remark" label="备注" show-overflow-tooltip />
-            <el-table-column prop="updatedTime" label="更新时间" />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
+            <el-table-column prop="name" label="题目类别">
+              <template slot-scope="scope">
+                {{ scope.row.name }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="remark" label="备注" show-overflow-tooltip>
+              <template slot-scope="scope">
+                {{ scope.row.remark }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="updatedTime" label="更新时间">
+              <template slot-scope="scope">
+                {{ scope.row.updatedTime }}
+              </template>
+            </el-table-column>
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status === 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+              <template slot-scope="scope">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem(scope.row.id)" />
+              </template>
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
-          <div class="block">
-            <el-pagination
-              :current-page.sync="currentPage1"
-              :page-size="70"
-              layout="prev, pager, next, jumper"
-              :total="1000"
+          <div>
+            <pagination
+              v-show="dataCount>0 && formInline.name === ''"
+              :total="dataCount"
+              :page.sync="page.pageNum"
+              :limit.sync="page.pageSize"
+              @pagination="fetchData"
+            />
+            <pagination
+              v-show="dataCount>0 && formInline.name !== ''"
+              :total="dataCount"
+              :page.sync="page.pageNumSearch"
+              :limit.sync="page.pageSize"
+              @pagination="fetchByName"
             />
           </div>
         </el-card>
@@ -93,10 +109,16 @@
 
 <script>
 // import { log } from 'util'
+import Pagination from '@/components/Pagination'
+// eslint-disable-next-line no-unused-vars
+import { select, selectByName, deleteList } from '@/api/basedata/catetory'
 export default {
   name: 'App',
+  // eslint-disable-next-line vue/no-unused-components
+  components: { Pagination },
   data() {
     return {
+      dataList: null,
       /**
          * 树结构数据
          */
@@ -133,65 +155,16 @@ export default {
          * 查询字段
          */
       formInline: {
-        categoryName: '',
-        organizationNames: []
+        name: ''
       },
-
-      /**
-         * 公司管理
-         */
-      categories: [
-        {
-          name: '腾讯',
-          categoryId: '001',
-          remark: '腾讯',
-          updatedTime: '2019/8/19',
-          status: '启用'
-        },
-        {
-          name: '阿里',
-          categoryId: '002',
-          remark: '腾讯',
-          updatedTime: '2019/8/19',
-          status: '不启用'
-        }
-        // {
-        //   name: '百度',
-        //   categoryId: '003',
-        //   remark: '腾讯sd',
-        //   updatedTime: '2019/8/19',
-        //   status: ' 启用'
-        // },
-        // {
-        //   name: '百度',
-        //   categoryId: '003',
-        //   remark: '腾讯',
-        //   updatedTime: '2019/8/19',
-        //   status: ' 启用'
-        // },
-        // {
-        //   name: '百度',
-        //   categoryId: '003',
-        //   remark: '腾讯',
-        //   updatedTime: '2019/8/19',
-        //   status: ' 启用'
-        // },
-        // {
-        //   name: '百度',
-        //   categoryId: '003',
-        //   remark: '腾讯',
-        //   updatedTime: '2019/8/19',
-        //   status: ' 启用'
-        // },
-        // {
-        //   name: '百度',
-        //   categoryId: '003',
-        //   remark: '腾讯',
-        //   updatedTime: '2019/8/19',
-        //   status: ' 启用'
-        // }
-      ],
-
+      page: {
+        pageSize: 5,
+        pageNum: 1,
+        pageNumSearch: 1
+      },
+      listLoading: false,
+      // 试卷总数
+      dataCount: 0,
       /**
          * 待确认字段
          */
@@ -206,8 +179,57 @@ export default {
       dynamicTags: ['标签一', '标签二', '标签三']
     }
   },
+  created() {
+    this.fetchData()
+  },
 
   methods: {
+
+    handleSizeChange(val) {
+      this.page.pageSize = val
+      this.fetchData()
+    },
+    handleCurrentChange(val) {
+      this.page.pageNum = val
+      this.fetchData()
+    },
+    /**
+     * 分页查询数据字典数据
+     */
+    fetchData() {
+      this.listLoading = true
+      const params = {
+        pageSize: this.page.pageSize,
+        pageNum: this.page.pageNum
+      }
+      select(params).then(result => {
+        const body = result.body
+        this.dataList = body.categories.dataList
+        this.dataCount = body.categories.dataCount
+        this.listLoading = false
+      })
+    },
+    fetch() {
+      this.page.pageNumSearch = 1
+      this.fetchByName()
+    },
+    fetchByName() {
+      this.listLoading = true
+      const params = {
+        name: this.formInline.name,
+        pageSize: this.page.pageSize,
+        pageNum: this.page.pageNumSearch
+      }
+      selectByName(params).then(result => {
+        const body = result.body
+        this.dataList = body.categories.dataList
+        this.dataCount = body.categories.dataCount
+        this.listLoading = false
+      })
+    },
+    queryData() {
+      this.dataCount = this.categories.length
+    },
     /**
        * 树结构的点击事件
        */
@@ -230,25 +252,54 @@ export default {
         name: 'AddCategory'
       })
     },
-    update1() {
+    /**
+     * 跳转至修改页面
+     */
+    updateItem() {
       this.$router.push({
         name: 'UpdateCategory'
       })
+    },
+    /**
+     * 对表格多选项进行判定，成则跳转至修改页面
+     */
+    updateCheck() {
+      // eslint-disable-next-line eqeqeq
+      if (this.multipleSelection.length !== 1) {
+        this.$message({
+          type: 'warning',
+          message: '请选择单个修改选项'
+        })
+      } else {
+        this.$router.push({
+          name: 'UpdateCategory'
+        })
+      }
     },
 
     /**
        * 删除信息
        */
-    delete1() {
+    deleteItem(id) {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+          // eslint-disable-next-line no-unused-vars
+          const idList = { idList: [id] }
+          deleteList(idList).then(result => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.fetchByName()
+          }).catch(result => {
+            this.$message({
+              type: 'success',
+              message: '删除失败!'
+            })
           })
         })
         .catch(() => {
@@ -257,6 +308,51 @@ export default {
             message: '已取消删除'
           })
         })
+    },
+    /**
+     * 对表格多选项进行判定，成功则删除
+     */
+    deleteCheck() {
+      // eslint-disable-next-line eqeqeq
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: '请选择删除选项'
+        })
+      } else {
+        // eslint-disable-next-line no-unused-vars
+        const idList = { idList: [] }
+        this.multipleSelection.forEach(item => {
+          idList.idList.push(item.id)
+        })
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            deleteList(idList).then(result => {
+              console.log(idList)
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.fetchData()
+            }).catch(result => {
+              console.log(idList)
+              this.$message({
+                type: 'success',
+                message: '删除失败!'
+              })
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
+      }
     }
   }
 }

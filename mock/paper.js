@@ -6,10 +6,17 @@ export default [
     response: config => {
       // console.log(config.body)
       return {
-        code: 200,
-        data: {
-          list: paperList,
-          total: 3
+        head: {
+          version: '123',
+          code: 200,
+          msg: 'success',
+          crypt: '123'
+        },
+        body: {
+          data: {
+            list: paperList,
+            total: 3
+          }
         }
       }
     }
@@ -20,10 +27,17 @@ export default [
     response: config => {
       // console.log(config.body)
       return {
-        code: 200,
-        data: {
-          list: paperConfigList,
-          total: 20
+        head: {
+          version: '123',
+          code: 200,
+          msg: 'success',
+          crypt: '123'
+        },
+        body: {
+          data: {
+            list: paperConfigList,
+            total: 20
+          }
         }
       }
     }
@@ -34,10 +48,17 @@ export default [
     response: config => {
       console.log(config)
       return {
-        code: 200,
-        data: {
-          list: configItemList,
-          total: 20
+        head: {
+          version: '123',
+          code: 200,
+          msg: 'success',
+          crypt: '123'
+        },
+        body: {
+          data: {
+            list: configItemList,
+            total: 20
+          }
         }
       }
     }

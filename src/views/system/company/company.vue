@@ -1,17 +1,19 @@
 <template>
   <el-container>
-    <el-card>
+    <el-card class="aside">
       <!-- 左侧边栏 -->
-      <el-aside width="160px">
+      <el-aside width="140px">
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>
             <el-row>
               <el-col>
-                <h1 style="font-size:20px;" class="el-icon-menu">公司管理</h1>
+                <h1 style="font-size: 15px;" class="el-icon-menu">公司管理</h1>
               </el-col>
             </el-row>
-            <hr>
+            <div class="horizon">
+              <hr>
+            </div>
           </el-header>
           <!-- 树 -->
           <el-main>
@@ -23,7 +25,7 @@
 
     <!-- 主体部分 -->
     <el-main>
-      <div class="app-container allData">
+      <div>
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -31,13 +33,12 @@
             <el-form-item label="公司名称:">
               <el-input v-model="formInline.companyName" clearable size="mini" />
             </el-form-item>
+
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.organizationNames">
-                <el-option label="博思软件" value="shanghai" />
-                <el-option label="阿里巴巴" value="beijing" />
-              </el-select>
+              <el-select v-model="formInline.orgNames" placeholder="请选择" size="mini" />
             </el-form-item>
+
             <el-form-item>
               <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
@@ -47,46 +48,91 @@
         <el-card>
           <!-- 增删改按钮框 -->
           <div>
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany">增加</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteCompany">删除</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateCompany">修改</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="primary"
+              icon="el-icon-plus"
+              @click="addCompany"
+            >增加</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="deleteSelectedCompany"
+            >删除</el-link>
+            <el-link
+              class="itemAction"
+              size="mini"
+              type="warning"
+              icon="el-icon-edit"
+              @click="updateSelectedCompany"
+            >修改</el-link>
           </div>
-          <!-- 数据显示表单 -->
-          <el-table
-            ref="multipleTable"
-            :border="true"
-            :data="companys"
-            tooltip-effect="dark"
-            stripe
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column type="selection" width="55" align="center" />
-            <el-table-column prop="name" label="公司名称" align="center" />
-            <el-table-column prop="code" label="公司编号" align="center" />
-            <el-table-column prop="mnemonicCode" label="助记码" align="center" />
-            <el-table-column prop="master" label="法人" align="center" />
-            <el-table-column prop="organizationName" label="所属机构" align="center" />
-            <el-table-column prop="tax" label="税号" show-overflow-tooltip align="center" />
-            <el-table-column prop="fax" label="传真" show-overflow-tooltip align="center" />
-            <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
-            <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
-            <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
-            <el-table-column prop="status" label="是否启用" sortable="true" width="110" align="center" />
-            <el-table-column label="操作" width="110" align="center">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCompany" />
-              <el-link class="itemAction" type="primary" icon="el-icon-delete" @click="deleteCompany" />
-              <el-link class="itemAction" type="primary" icon="el-icon-edit" @click="updateCompany" />
-            </el-table-column>
-          </el-table>
-          <!-- 分页部分 -->
-          <div class="block">
-            <pagination
-              v-show="total>0"
-              :total="total"
-              :page.sync="page.pageNumber"
-              :limit.sync="page.size"
-              @click="queryData"
-            />
+          <div>
+            <!-- 数据显示表单 -->
+            <el-table
+              ref="multipleTable"
+              :data="companys"
+              tooltip-effect="dark"
+              stripe
+              style="width: 100%; margin-top: 10px;"
+              size="mini"
+              fit
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column type="selection" width="55" align="center" />
+              <el-table-column prop="name" label="公司名称" align="center" />
+              <el-table-column prop="code" label="公司编号" align="center" />
+              <el-table-column prop="mnemonicCode" label="助记码" align="center" />
+              <el-table-column prop="master" label="法人" align="center" />
+              <el-table-column prop="orgName" label="所属机构" align="center" />
+              <el-table-column prop="tax" label="税号" show-overflow-tooltip align="center" />
+              <el-table-column prop="fax" label="传真" show-overflow-tooltip align="center" />
+              <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
+              <el-table-column prop="email" label="邮箱" show-overflow-tooltip align="center" />
+              <el-table-column prop="website" label="网址" show-overflow-tooltip align="center" />
+              <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+                <template slot-scope="scope">
+                  <el-tag
+                    :type="scope.row.status === '1' ? 'primary' : 'info'"
+                  >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" width="110" align="center">
+                <template slot-scope="scope">
+                  <el-link
+                    class="itemAction"
+                    type="primary"
+                    icon="el-icon-plus"
+                    @click="addCompany"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="danger"
+                    icon="el-icon-delete"
+                    @click="deleteCompany"
+                  />
+                  <el-link
+                    class="itemAction"
+                    type="warning"
+                    icon="el-icon-edit"
+                    @click="updateCompany(scope.row)"
+                  />
+                </template>
+              </el-table-column>
+            </el-table>
+            <!-- 分页部分 -->
+            <div class="block">
+              <pagination
+                v-show="total>0"
+                :total="total"
+                :page.sync="page.pageNumber"
+                :limit.sync="page.size"
+                @click="queryData"
+              />
+            </div>
           </div>
         </el-card>
       </div>
@@ -155,15 +201,13 @@ export default {
         children: 'children',
         label: 'label'
       },
-
       /**
        * 查询字段
        */
       formInline: {
         companyName: '',
-        organizationNames: []
+        orgNames: []
       },
-
       /**
        * 公司的表单数据
        */
@@ -173,73 +217,71 @@ export default {
           code: '001',
           mnemonicCode: '公平的游戏公司',
           master: '马化腾',
-          organizationName: 'China',
+          orgName: 'China',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: '启用'
+          status: '1'
         },
         {
           name: '阿里',
           code: '002',
           mnemonicCode: '亏钱的濒危企业',
           master: '马云',
-          organizationName: '中国',
+          orgName: '中国',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: '不启用'
+          status: '0'
         },
         {
           name: '百度',
           code: '003',
           mnemonicCode: '不接广告的搜索引擎',
           master: '李红艳',
-          organizationName: 'China',
+          orgName: 'China',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
           code: '001',
           mnemonicCode: '公平的游戏公司',
           master: '马化腾',
-          organizationName: 'China',
+          orgName: 'China',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
           code: '001',
           mnemonicCode: '公平的游戏公司',
           master: '马化腾',
-          organizationName: 'China',
+          orgName: 'China',
           tax: '123456789012',
           fax: '123456789012',
           tel: '13000000000',
           email: 'test@test.com',
           website: 'www.test.com',
-          status: ' 启用'
+          status: '1'
         }
       ],
-
       /**
        * 多选事件中的数据
        */
       multipleSelection: [],
-
       /**
        * 默认的分页的页面数据
        */
@@ -267,26 +309,65 @@ export default {
     handleNodeClick(data) {
       console.log(data)
     },
-
     /**
      * 勾选事件触发的函数
      */
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-
     /**
      * 跳转到增加界面
      */
-    addCompany() {
+    addCompany(row) {
       this.$router.push({
         name: 'AddCompany'
       })
     },
-    updateCompany() {
+    updateCompany(row) {
       this.$router.push({
-        name: 'UpdateCompany'
+        name: 'UpdateCompany',
+        params: {
+          row: row
+        }
       })
+    },
+
+    /**
+     * 顶层的菜单栏事件函数
+     */
+    updateSelectedCompany() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 1) {
+        this.$message({
+          type: 'info',
+          message: '请选择单个对象!'
+        })
+      }
+      if (this.multipleSelection.length === 1) {
+        this.$router.push({
+          name: 'UpdateCompany',
+          params: {
+            row: this.multipleSelection[0]
+          }
+        })
+      }
+    },
+
+    deleteSelectedCompany() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'info',
+          message: '请选择要操作对象!'
+        })
+      }
+      if (this.multipleSelection.length > 0) {
+        this.deleteCompany()
+      }
     },
 
     /**
@@ -318,5 +399,14 @@ export default {
 <style>
 .itemAction {
   margin-right: 10px;
+}
+.aside .el-card__body .el-main {
+  padding-left: 7px;
+}
+.aside .el-card__body .el-header {
+  padding: 5px;
+}
+.aside .el-card__body .el-header .el-row {
+  padding: 0px 15px;
 }
 </style>

@@ -37,16 +37,15 @@
           <!-- 增删改按钮框 -->
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1">修改</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="update1">导入</el-link>
-            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="update1">导出</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCheck">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCheck">修改</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="updateItem">导入</el-link>
+            <el-link class="itemAction" type="primary" icon="el-icon-download" @click="updateItem">导出</el-link>
           </div>
 
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            border="true"
             :data="subjects"
             tooltip-effect="dark"
             stripe
@@ -58,20 +57,27 @@
             <el-table-column prop="category" label="题目类型" sortable="true" />
             <el-table-column prop="type" label="题目分类" />
             <el-table-column prop="updatedTime" label="更新时间" />
-            <el-table-column prop="status" label="是否启用" sortable="true" />
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
+              <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="操作">
               <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
+              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
+              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
           <div class="block">
-            <el-pagination
-              :current-page.sync="currentPage1"
-              :page-size="70"
-              layout="prev, pager, next, jumper"
-              :total="1000"
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="page.pageNumber"
+              :limit.sync="page.size"
+              @click="queryData"
             />
           </div>
         </el-card>
@@ -82,8 +88,11 @@
 
 <script>
 // import { log } from 'util'
+import Pagination from '@/components/Pagination'
 export default {
   name: 'App',
+  // eslint-disable-next-line vue/no-unused-components
+  components: { Pagination },
   data() {
     return {
       /**
@@ -94,6 +103,12 @@ export default {
         type: '',
         name: ''
       },
+      page: {
+        size: 5,
+        pageNumber: 1
+      },
+      // 试卷总数
+      total: 0,
 
       /**
          * 公司管理
@@ -105,7 +120,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: '启用'
+          status: '1'
         },
         {
           name: '阿里',
@@ -113,7 +128,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: '不启用'
+          status: '0'
         },
         {
           name: '百度',
@@ -121,7 +136,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -129,7 +144,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -137,7 +152,7 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
@@ -145,14 +160,14 @@ export default {
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '1'
         },
         {
           name: '腾讯',
           category: '编程',
           type: '选择',
           updatedTime: '2019/11/11',
-          status: ' 启用'
+          status: '0'
         }
       ],
 
@@ -170,15 +185,65 @@ export default {
       dynamicTags: ['标签一', '标签二', '标签三']
     }
   },
-
+  created() {
+    this.queryData()
+  },
   methods: {
+    /**
+     * 对表格多选项进行判定，成则跳转至修改页面
+     */
+    updateCheck() {
+      // eslint-disable-next-line eqeqeq
+      if (this.multipleSelection.length !== 1) {
+        this.$message({
+          type: 'warning',
+          message: '请选择单个修改选项'
+        })
+      } else {
+        this.$router.push({
+          name: 'UpdateCategory'
+        })
+      }
+    },
+    /**
+     * 对表格多选项进行判定，成功则删除
+     */
+    deleteCheck() {
+      // eslint-disable-next-line eqeqeq
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: 'warning',
+          message: '请选择删除选项'
+        })
+      } else {
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
+      }
+    },
     /**
        * 勾选事件触发的函数
        */
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-
+    queryData() {
+      this.total = this.subjects.length
+    },
     /**
        * 跳转到增加界面
        */
@@ -187,7 +252,7 @@ export default {
         name: 'AddSubject'
       })
     },
-    update1() {
+    updateItem() {
       this.$router.push({
         name: 'UpdateSubject'
       })
@@ -196,7 +261,7 @@ export default {
     /**
        * 删除信息
        */
-    delete1() {
+    deleteItem() {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
