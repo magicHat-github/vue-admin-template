@@ -189,73 +189,7 @@ export default {
       /**
        * 公司的表单数据
        */
-      companys: [
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        },
-        {
-          name: '阿里',
-          code: '002',
-          mnemonicCode: '亏钱的濒危企业',
-          master: '马云',
-          orgName: '中国',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '0'
-        },
-        {
-          name: '百度',
-          code: '003',
-          mnemonicCode: '不接广告的搜索引擎',
-          master: '李红艳',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        }
-      ],
+      companys: [],
       /**
        * 多选事件中的数据
        */
