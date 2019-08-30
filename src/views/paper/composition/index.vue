@@ -38,7 +38,6 @@
         stripe
         highlight-current-row
         style="margin-top: 10px;"
-        @row-dblclick="editPaper"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
@@ -51,10 +50,10 @@
           </template>
         </el-table-column>
         <el-table-column label="卷子类型" align="center">
-          <template slot-scope="scope">{{ scope.row.paperType | paperTypeFiler(paperTypeList) }}</template>
+          <template slot-scope="scope">{{ scope.row.paperType | userIdToValueConversionFilter(paperTypeList) }}</template>
         </el-table-column>
         <el-table-column label="卷子难度" align="center">
-          <template slot-scope="scope">{{ scope.row.difficult | paperDifficultFilter(difficultList) }}</template>
+          <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(difficultList) }}</template>
         </el-table-column>
         <el-table-column label="组卷时间" align="center">
           <template slot-scope="scope">{{ scope.row.combExamTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
@@ -67,7 +66,8 @@
         </el-table-column>
         <el-table-column class-name="status-col" label="状态" width="110" align="center">
           <template slot-scope="scope">
-            <el-tag>{{ scope.row.status | statusFilter }}</el-tag>
+            <el-tag v-if="scope.row.status === 0" type="warning">禁用</el-tag>
+            <el-tag v-else>启用</el-tag>
           </template>
         </el-table-column>
       </el-table>
@@ -84,8 +84,8 @@
             <el-input v-model="searchConfigData.name" placeholder="配置项" style="width: 200px;" class="filter-item" @keyup.enter.native="handleConfigFilter" />
           </el-form-item>
           <el-form-item label="难度">
-            <el-select :value="searchConfigData.difficult" placeholder="请选择难度.." size="mini" style="width: 200px" class="filter-item" @change="handleConfigFilter">
-              <el-option v-for="item in difficultList" :key="item.id" :label="item.id" :value="item.value" />
+            <el-select v-model="searchConfigData.difficult" placeholder="请选择难度.." size="mini" style="width: 200px" class="filter-item">
+              <el-option v-for="item in difficultList" :key="item.id" :label="item.value" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-button class="filter-item" size="small" type="primary" icon="el-icon-search" @click="fetchConfigData">查询</el-button>
@@ -105,13 +105,15 @@
             <el-table-column align="center" property="difficult" label="难度" />
             <el-table-column align="center" property="updatedBy" label="修改人" />
             <el-table-column align="center" property="company" label="公司" />
-            <el-table-column align="center" property="updatedTime" label="修改时间" />
+            <el-table-column align="center" property="updatedTime" label="修改时间">
+              <template slot-scope="scope">{{ scope.row.updatedTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
+            </el-table-column>
             <el-table-column align="center" show-overflow-tooltip property="remark" label="备注" />
             <el-table-column align="center" property="status" label="启用标志" />
             <el-table-column align="center" label="操作" width="160">
               <template slot-scope="scope">
-                <el-button size="mini" type="primary" @click="findCombConfigItem(scope.$index, scope.row)">查看</el-button>
-                <el-button size="mini" type="danger" @click="startComposition(scope.$index, scope.row)">组卷</el-button>
+                <el-button size="mini" type="primary" @click="findCombConfigItem(scope.row)">查看</el-button>
+                <el-button size="mini" type="danger" @click="startComposition(scope.row)">组卷</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -140,10 +142,16 @@
             highlight-current-row
           >
             <el-table-column type="index" label="序号" width="50" />
-            <el-table-column property="name" label="题目类别" width="200" />
-            <el-table-column property="category" label="题型" />
-            <el-table-column property="number" label="题目数量" />
-            <el-table-column property="difficult" label="题目难度" />
+            <el-table-column property="subjectTypeId" label="题目类别" width="200">
+              <template slot-scope="scope">{{ scope.row.subjectTypeId | userIdToValueConversionFilter(subjectTypeList) }}</template>
+            </el-table-column>
+            <el-table-column property="categoryId" label="题型">
+              <template slot-scope="scope">{{ scope.row.categoryId | userIdToValueConversionFilter(subjectCategoryList) }}</template>
+            </el-table-column>
+            <el-table-column property="difficult" label="题目难度">
+              <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(subjectDifficultList) }}</template>
+            </el-table-column>
+            <el-table-column property="num" label="题目数量" />
             <el-table-column property="score" label="题目分值" />
           </el-table>
         </el-card>
@@ -153,78 +161,86 @@
     <!-- 标准组卷 -->
     <el-drawer title="标准组卷" size="60%" :visible.sync="normalDialog" :wrapper-closable="false">
       <div class="drawerClass">
-        <span>组卷配置信息</span>
-        <el-divider />
-        <div style="margin-left:20px;">
-          <el-form ref="form" :model="normalPaperConfig" size="medium" label-width="70px" inline>
-            <el-form-item label="配置项" prop="normalPaperConfigName" required>
-              <el-input v-model="normalPaperConfig.name" placeholder="配置项名称" style="width: 200px;" class="filter-item" />
-            </el-form-item>
-            <el-form-item label="是否启用" prop="normalPaperConfigStatus">
-              <el-radio-group v-model="normalPaperConfig.status">
-                <el-radio label="启用" />
-                <el-radio label="禁用" />
-              </el-radio-group>
-            </el-form-item>
-          </el-form>
-        </div>
-
-        <span style="margin-top:20px;">添加组卷明细</span>
-        <el-divider />
-        <el-card style="margin-top:5px;">
-          <div class="addCombConfigItemActions">
-            <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCombConfigItem()">添加</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="editCombConfigItem()">修改</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCombConfigItem()">删除</el-link>
+        <div class="drawer-content">
+          <span>组卷配置信息</span>
+          <el-divider />
+          <div style="margin-left:20px;">
+            <el-form ref="normalPaperConfig" :rules="normalPaperConfigRules" :model="normalPaperConfig" size="medium" label-width="100px" inline>
+              <el-form-item label="配置项" prop="name">
+                <el-input v-model="normalPaperConfig.name" placeholder="配置项名称" style="width: 200px;" class="filter-item" />
+              </el-form-item>
+              <el-form-item label="是否启用" prop="status">
+                <el-radio-group v-model="normalPaperConfig.status">
+                  <el-radio label="启用" />
+                  <el-radio label="禁用" />
+                </el-radio-group>
+              </el-form-item>
+            </el-form>
           </div>
-          <el-table
-            v-loading="normalConfigItemList"
-            :data="normalConfigListLoading"
-            size="mini"
-            element-loading-text="Loading"
-            fit
-            stripe
-            highlight-current-row
-          >
-            <el-table-column type="index" label="序号" width="50" />
-            <el-table-column property="category" label="题目类别" />
-            <el-table-column property="type" label="题型" />
-            <el-table-column property="number" label="题目数量" />
-            <el-table-column property="difficult" label="题目难度" />
-            <el-table-column property="score" label="题目分值" />
-          </el-table>
-        </el-card>
+          <span style="margin-top:20px;">添加组卷明细</span>
+          <el-divider />
+          <el-card style="margin-top:5px;">
+            <div class="addCombConfigItemActions">
+              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCombConfigItemDialog = true">添加</el-link>
+              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="editCombConfigItem()">修改</el-link>
+              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCombConfigItem()">删除</el-link>
+            </div>
+            <el-table
+              v-loading="normalConfigListLoading"
+              :data="normalConfigItemList"
+              size="mini"
+              element-loading-text="Loading"
+              fit
+              stripe
+              highlight-current-row
+              @row-dblclick="editCombConfigItem"
+              @selection-change="handleConfigItemSelectionChange"
+            >
+              <el-table-column type="selection" width="55" />
+              <el-table-column type="index" label="序号" width="50" />
+              <el-table-column property="type" label="题目类别" />
+              <el-table-column property="category" label="题型" />
+              <el-table-column property="number" label="题目数量" />
+              <el-table-column property="difficult" label="题目难度" />
+              <el-table-column property="score" label="题目分值" />
+            </el-table>
+          </el-card>
+        </div>
+        <div class="drawer-footer">
+          <el-button @click="normalDialog = false">取 消</el-button>
+          <el-button type="primary" @click="validateCombConfig('normalPaperConfig')">开始组卷</el-button>
+        </div>
       </div>
     </el-drawer>
 
     <!-- 添加组卷明细弹框 -->
-    <el-dialog title="添加组卷明细" :visible.sync="addCombConfigItemDialog" width="20%">
-      <el-form :model="combConfigItem" size="medium" label-width="70px">
-        <el-form-item label="题目类别">
-          <el-select :value="combConfigItem.type" placeholder="请选择题目类别.." style="width: 250px" class="filter-item" @change="handleFilter">
-            <el-option v-for="item in paperTypeList" :key="item.id" :label="item.id" :value="item.value" />
+    <el-dialog title="添加组卷明细" :visible.sync="addCombConfigItemDialog" width="28%" :close-on-click-modal="false" :show-close="false">
+      <el-form ref="combConfigItem" :model="combConfigItem" :rules="combConfigItemRules" size="medium" label-width="80px">
+        <el-form-item label="题目类别" prop="type">
+          <el-select v-model="combConfigItem.type" placeholder="请选择题目类别.." style="width:250px">
+            <el-option v-for="item in subjectTypeList" :key="item.id" :label="item.value" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="题型">
-          <el-select :value="combConfigItem.category" placeholder="请选择题型.." style="width: 250px" class="filter-item" @change="handleFilter">
-            <el-option v-for="item in paperTypeList" :key="item.id" :label="item.id" :value="item.value" />
+        <el-form-item label="题目类型" prop="category">
+          <el-select v-model="combConfigItem.category" placeholder="请选择题型.." style="width:250px">
+            <el-option v-for="item in subjectCategoryList" :key="item.id" :label="item.value" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="题目难度">
-          <el-select :value="combConfigItem.difficult" placeholder="请选择题目难度.." style="width: 250px" class="filter-item" @change="handleFilter">
-            <el-option v-for="item in difficultList" :key="item.id" :label="item.id" :value="item.value" />
+        <el-form-item label="题目难度" prop="difficult">
+          <el-select v-model="combConfigItem.difficult" placeholder="请选择题目难度.." style="width:250px">
+            <el-option v-for="item in subjectDifficultList" :key="item.id" :label="item.value" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="题目数量">
-          <el-input v-model="combConfigItem.number" style="width: 250px" />
+        <el-form-item label="题目数量" prop="number">
+          <el-input v-model="combConfigItem.number" placeholder="请选择题目数量.." style="width:250px" />
         </el-form-item>
-        <el-form-item label="题目分值" style="width: 250px">
-          <el-input v-model="combConfigItem.score" style="width: 250px" />
+        <el-form-item label="题目分值" prop="score">
+          <el-input v-model="combConfigItem.score" placeholder="请选择题目分值.." style="width:250px" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addCombConfigItemDialog = false">取 消</el-button>
-        <el-button type="primary" @click="addCombConfigItemDialog = false">确 定</el-button>
+        <el-button @click="exitAddCombConfigItem">取 消</el-button>
+        <el-button type="primary" @click="addCombConfigItemData('combConfigItem')">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -242,8 +258,9 @@
 </template>
 
 <script>
-import { select, selectConfigList, selectConfigItemById } from '@/api/paper/composition.js'
-import { parseTime } from '@/utils'
+import { select } from '@/api/paper/composition.js'
+import { selectConfigs, selectItemsByConfigId } from '@/api/basedata/config'
+import { parseTime, idToValueConversionFilter } from '@/utils'
 import Pagination from '@/components/Pagination'
 import PaperView from '@/components/PaperView'
 
@@ -251,33 +268,42 @@ export default {
   name: 'Composition',
   components: { Pagination, PaperView },
   filters: {
-    statusFilter(status) {
-      return status === '0' ? '启用' : '禁用'
-    },
     parseUserTime(time, cFormat) {
       return parseTime(time, cFormat)
     },
-    paperTypeFiler(type, paperTypeList) {
-      let result = null
-      paperTypeList.forEach(item => {
-        if (item.id === type) {
-          result = item.value
-        }
-      })
-      return result
-    },
-    paperDifficultFilter(difficult, difficultList) {
-      let result = null
-      difficultList.forEach(item => {
-        if (item.id === difficult) {
-          result = item.value
-        }
-      })
-      return result
+    userIdToValueConversionFilter(target, targetList) {
+      return idToValueConversionFilter(target, targetList)
     }
   },
   data() {
     return {
+      // 校验规则
+      normalPaperConfigRules: {
+        name: [
+          { required: true, message: '请输入题目配置项', trigger: 'blur' }
+        ],
+        status: [
+          { required: true, message: '题目配置项状态不能为空', trigger: 'blur' }
+        ]
+      },
+      // 校验规则
+      combConfigItemRules: {
+        type: [
+          { required: true, message: '题目类别不能为空', trigger: 'blur' }
+        ],
+        category: [
+          { required: true, message: '题型不能为空', trigger: 'blur' }
+        ],
+        difficult: [
+          { required: true, message: '题目难度不能为空', trigger: 'blur' }
+        ],
+        number: [
+          { required: true, message: '题目数量不能为空', trigger: 'blur' }
+        ],
+        score: [
+          { required: true, message: '题目分值不能为空', trigger: 'blur' }
+        ]
+      },
       // 试卷集合
       list: null,
       // 配置项表格数据
@@ -285,7 +311,7 @@ export default {
       // 试卷配置明细表格数据
       configItemList: null,
       // 标准组卷中配置明细的表格数据
-      normalConfigItemList: null,
+      normalConfigItemList: [],
       // 试卷详细数据，用于预览
       paperInfo: {},
       // 试卷总数
@@ -296,6 +322,14 @@ export default {
       difficultList: [],
       // 试卷类型集合
       paperTypeList: [],
+      // 组卷配置难度集合
+      configDifficultList: [],
+      // 题目类型集合
+      subjectTypeList: [],
+      // 题型集合
+      subjectCategoryList: [],
+      // 题目难度集合
+      subjectDifficultList: [],
       // 试卷查询条件
       searchData: {
         name: '',
@@ -326,9 +360,9 @@ export default {
       },
       // 添加的组卷配置明细
       combConfigItem: {
-        type: 'Java',
-        category: 'Java',
-        difficult: '困难',
+        type: null,
+        category: null,
+        difficult: null,
         number: '',
         score: ''
       },
@@ -350,13 +384,19 @@ export default {
       configItemListLoading: false,
       normalConfigListLoading: false,
       // 表格选择列表
-      multipleSelection: []
+      multipleSelection: [],
+      multipleConfigItemSelection: [],
+      configItemCount: 0
     }
   },
   created() {
     this.getDifficultList()
     this.getPaperTypeList()
     this.fetchData()
+    this.getConfigDifficultList()
+    this.getSubjectTypeList()
+    this.getSubjectCategoryList()
+    this.getSubjectDifficultList()
   },
   methods: {
     /**
@@ -364,12 +404,13 @@ export default {
      */
     fetchData() {
       this.listLoading = true
+      const difficultId = this.getIdByValue(this.difficultList, this.searchData.difficult)
       const params = {
         pageSize: this.page.size,
         pageNum: this.page.pageNumber,
         name: this.searchData.name,
         combExamMan: this.searchData.createdBy,
-        difficult: this.searchData.difficult,
+        difficult: difficultId,
         combExamTimeStart: this.searchData.comTime[0],
         combExamTimeEnd: this.searchData.comTime[1]
       }
@@ -385,34 +426,47 @@ export default {
      */
     fetchConfigData() {
       this.configListLoading = true
+      const difficult = this.getIdByValue(this.configDifficultList, this.searchConfigData.difficult)
       const params = {
-        size: this.pageConfig.size,
-        page: this.pageConfig.pageNumber,
+        pageSize: this.pageConfig.size,
+        pageNum: this.pageConfig.pageNumber,
         name: this.searchConfigData.name,
-        difficult: this.searchConfigData.difficult
+        difficult: difficult
       }
-      selectConfigList(params).then(result => {
+      selectConfigs(params).then(result => {
         const body = result.body
-        this.configList = body.data.list
-        this.configTotal = body.data.total
+        this.configList = body.list
+        this.configTotal = body.total * 1
         this.configListLoading = false
+      })
+      this.configItemList = null
+    },
+    /**
+     * 查看组卷配置明细
+     */
+    findCombConfigItem(row) {
+      this.configItemListLoading = true
+      selectItemsByConfigId(row.id).then(result => {
+        this.configItemList = result.body
+        this.configItemListLoading = false
       })
     },
     /**
      * 初始获取全部试卷难度
      */
     getDifficultList() {
+      // TODO: 获取全部试卷难度
       this.difficultList = [
         {
-          id: '1',
+          id: '327071356621533183',
           value: '困难'
         },
         {
-          id: '2',
+          id: '327071356621533182',
           value: '中等'
         },
         {
-          id: '3',
+          id: '327071356621533184',
           value: '简单'
         }
       ]
@@ -421,7 +475,48 @@ export default {
      * 初始获取全部试卷类型
      */
     getPaperTypeList() {
+      // TODO：获取试卷类型
       this.paperTypeList = [
+        {
+          id: '327071356621533184',
+          value: 'Java'
+        },
+        {
+          id: '2',
+          value: 'Python'
+        },
+        {
+          id: '3',
+          value: 'C#'
+        }
+      ]
+    },
+    /**
+     * 获取组卷配置类型
+     */
+    getConfigDifficultList() {
+      // TODO：获取组卷配置类型
+      this.configDifficultList = [
+        {
+          id: '1',
+          value: '简单'
+        },
+        {
+          id: '2',
+          value: '中等'
+        },
+        {
+          id: '3',
+          value: '困难'
+        }
+      ]
+    },
+    /**
+     * 初始获取题目类别
+     */
+    getSubjectTypeList() {
+      // TODO：获取题目类别
+      this.subjectTypeList = [
         {
           id: '1',
           value: 'Java'
@@ -433,6 +528,50 @@ export default {
         {
           id: '3',
           value: 'C#'
+        }
+      ]
+    },
+    /**
+     * 初始获取题目类型
+     */
+    getSubjectCategoryList() {
+      // TODO：获取题目类型
+      this.subjectCategoryList = [
+        {
+          id: '326730406219907072',
+          value: '单选'
+        },
+        {
+          id: '326730408442888192',
+          value: '多选'
+        },
+        {
+          id: '326730410808475648',
+          value: '填空'
+        },
+        {
+          id: '326730412939182080',
+          value: '主观'
+        }
+      ]
+    },
+    /**
+     * 初始获取题目难度
+     */
+    getSubjectDifficultList() {
+      // TODO：获取题目难度
+      this.subjectDifficultList = [
+        {
+          id: '1',
+          value: '简单'
+        },
+        {
+          id: '2',
+          value: '中等'
+        },
+        {
+          id: '3',
+          value: '困难'
         }
       ]
     },
@@ -451,10 +590,49 @@ export default {
       this.fetchConfigData()
     },
     /**
+     * 添加配置项条目数据
+     */
+    addCombConfigItemData(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const configItem = JSON.parse(JSON.stringify(this.combConfigItem))
+          configItem.id = this.configItemCount
+          this.normalConfigItemList.push(configItem)
+          this.exitAddCombConfigItem()
+          this.configItemCount++
+        } else {
+          this.$message({
+            type: 'error',
+            message: '数据格式验证失败！'
+          })
+        }
+      })
+    },
+    /**
+     * 退出配置项目条目的窗口
+     * 重置 combConfigItem
+     */
+    exitAddCombConfigItem() {
+      this.addCombConfigItemDialog = false
+      this.combConfigItem = {
+        type: null,
+        category: null,
+        difficult: null,
+        number: '',
+        score: ''
+      }
+    },
+    /**
      * 获取表格选取的数据
      */
     handleSelectionChange(selection) {
       this.multipleSelection = selection
+    },
+    /**
+     * 获取配置条目表格选取的数据
+     */
+    handleConfigItemSelectionChange(selection) {
+      this.multipleConfigItemSelection = selection
     },
     /**
      * 响应分页事件
@@ -477,30 +655,67 @@ export default {
       this.normalDialog = true
     },
     /**
-     * 查看组卷配置明细
+     * 开始快速组卷
      */
-    findCombConfigItem(index, row) {
-      this.configItemListLoading = true
-      const params = {
-        configId: row.id
-      }
-      selectConfigItemById(params).then(result => {
-        const body = result.body
-        this.configItemList = body.data.list
-        this.configItemListLoading = false
-      })
-    },
-    /**
-     * 开始组卷
-     */
-    startComposition() {
-      this.$confirm('是否开始组卷?', '提示', {
+    startComposition(row) {
+      this.$confirm('是否开始快速组卷?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.paperTipDialog = true
         // TODO: 这里进行组卷
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '已取消组卷'
+        })
+      })
+    },
+    /**
+     * 标准组卷前校验配置项格式
+     */
+    validateCombConfig(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.normalConfigItemList.length > 0) {
+            this.startNormalComposition()
+          } else {
+            this.$message({
+              type: 'error',
+              message: '请添加配置明细！'
+            })
+          }
+        } else {
+          this.$message({
+            type: 'error',
+            message: '数据格式验证失败！'
+          })
+        }
+      })
+    },
+    /**
+     * 开始标准组卷
+     */
+    startNormalComposition() {
+      this.$confirm('是否开始标准组卷?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.normalConfigItemList.forEach(item => {
+          item.difficult = this.getIdByValue(this.subjectDifficultList, item.difficult)
+          item.category = this.getIdByValue(this.subjectCategoryList, item.category)
+          item.type = this.getIdByValue(this.subjectTypeList, item.type)
+        })
+        const result = {
+          name: this.normalPaperConfig.name,
+          status: this.getStatusValue(this.normalPaperConfig.status),
+          itemList: this.normalConfigItemList
+        }
+        console.log(result)
+        // TODO: 这里进行组卷
+        this.paperTipDialog = true
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -571,25 +786,55 @@ export default {
       console.log('这里进行修改试卷操作!')
     },
     /**
-     * 添加组卷明细
-     */
-    addCombConfigItem() {
-      // TODO: 添加组卷明细
-      this.addCombConfigItemDialog = true
-    },
-    /**
      * 修改组卷明细
      */
     editCombConfigItem() {
-      // TODO: 添加修改弹窗
-      console.log('editCombConfigItem')
+      if (this.multipleConfigItemSelection.length === 1) {
+        this.combConfigItem = JSON.parse(JSON.stringify(this.multipleConfigItemSelection[0]))
+        this.addCombConfigItemDialog = true
+      } else {
+        this.$message({
+          type: 'error',
+          message: '只能选择一条配置条目数据'
+        })
+      }
     },
     /**
      * 删除组卷明细
      */
     deleteCombConfigItem() {
-      // TODO: 删除组卷明细
-      console.log('deleteCombConfigItem')
+      if (this.multipleConfigItemSelection.length === 1) {
+        const selectItem = JSON.parse(JSON.stringify(this.multipleConfigItemSelection[0]))
+        this.normalConfigItemList.forEach((item, index, arry) => {
+          if (item.id === selectItem.id) {
+            arry.splice(index, 1)
+          }
+        })
+      } else {
+        this.$message({
+          type: 'error',
+          message: '只能选择一条配置条目数据'
+        })
+      }
+    },
+
+    /**
+     * 根据value和集合获取对应的ID
+     */
+    getIdByValue(list, value) {
+      let result = null
+      list.forEach(item => {
+        if (item.value === value) {
+          result = item.id
+        }
+      })
+      return result
+    },
+    /**
+     * 返回Status Value的工具方法
+     */
+    getStatusValue(value) {
+      return value === '启用' ? 1 : 0
     },
     /**
      * 同步试卷预览的值
@@ -607,7 +852,17 @@ export default {
   width: 100%;
   height: 100%;
   padding: 0 10px;
-  // border-top: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  .drawer-content {
+    flex-grow: 1;
+  }
+  .drawer-footer {
+    margin-bottom: 15px;
+    margin-right: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
 }
 .paginationSmall {
   margin-top: 5px;

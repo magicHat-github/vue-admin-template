@@ -9,7 +9,15 @@ import { paperRequestApi } from '@/utils/requestUtil'
  * @param {*} params 参数
  */
 export function select(params) {
-  return paperRequestApi('/paper/composition', 'post', params)
+  return paperRequestApi('/composition/papers', 'post', params)
+}
+
+/**
+ * 上传试卷为模板
+ * @param {*} params 参数
+ */
+export function uploadPaper(params) {
+  return paperRequestApi('/upload/template', 'post', params)
 }
 
 /**

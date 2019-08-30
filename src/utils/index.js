@@ -110,3 +110,19 @@ export function param2Obj(url) {
       '"}'
   )
 }
+
+/**
+ * id转value
+ * @param target
+ * @param targetList
+ * @returns {*}
+ */
+export function idToValueConversionFilter(target, targetList) {
+  let result = null
+  targetList.forEach(item => {
+    if (item.id === target) {
+      result = item.value
+    }
+  })
+  return result
+}
