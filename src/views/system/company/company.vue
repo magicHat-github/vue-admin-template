@@ -36,7 +36,14 @@
 
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.orgNames" placeholder="请选择" size="mini" />
+              <el-select
+                v-model="formInline.orgName"
+                filterable
+                placeholder="请选择"
+                size="mini"
+              >
+                <el-option v-for="company in companys" :key="company.orgName" :value="company.orgName" />
+              </el-select>
             </el-form-item>
 
             <el-form-item>
@@ -130,7 +137,7 @@
                 :total="total"
                 :page.sync="page.pageNumber"
                 :limit.sync="page.size"
-                @click="queryData"
+                @pagination="queryData"
               />
             </div>
           </div>
@@ -143,6 +150,7 @@
 <script>
 // 引入分页组件
 import Pagination from '@/components/Pagination'
+import { fetchCompany } from '@/api/system/company'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -152,48 +160,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
-        {
-          label: '组织机构 1',
-          children: [
-            {
-              label: '公司 1-1'
-            }
-          ]
-        },
-        {
-          label: '组织机构 2',
-          children: [
-            {
-              label: '公司 2-1'
-            },
-            {
-              label: '公司 2-2'
-            }
-          ]
-        },
-        {
-          label: '组织机构 3',
-          children: [
-            {
-              label: '公司 3-1',
-              children: [
-                {
-                  label: '这是假数据 3-1-1'
-                }
-              ]
-            },
-            {
-              label: '公司 3-2',
-              children: [
-                {
-                  label: '这是假数据 3-2-1'
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      treeData: [],
       /**
        * 树结构的默认属性
        */
@@ -206,78 +173,12 @@ export default {
        */
       formInline: {
         companyName: '',
-        orgNames: []
+        orgName: ''
       },
       /**
        * 公司的表单数据
        */
-      companys: [
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        },
-        {
-          name: '阿里',
-          code: '002',
-          mnemonicCode: '亏钱的濒危企业',
-          master: '马云',
-          orgName: '中国',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '0'
-        },
-        {
-          name: '百度',
-          code: '003',
-          mnemonicCode: '不接广告的搜索引擎',
-          master: '李红艳',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        }
-      ],
+      companys: [],
       /**
        * 多选事件中的数据
        */
@@ -301,7 +202,56 @@ export default {
      * 查询数据
      */
     queryData() {
-      this.total = this.companys.length
+      const params = {
+        companyName: this.formInline.companyName,
+        orgName: this.formInline.orgName,
+        pageSize: this.page.size,
+        pageNum: this.page.pageNumber
+      }
+      fetchCompany(params).then(result => {
+        const body = result.body
+        // 转换树结构的数据
+        console.log(body.tree)
+        const tree = body.tree.treeNodeList
+        this.treeData = this.transDataToTree(tree)
+        console.log('this is result')
+        console.log(this.treeData)
+        // 转换表格数据
+        this.companys = body.dataList
+        // 分页信息
+        this.total = body.dataCount
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    transDataToTree(arr) {
+      return arr.map(element => {
+        return this.getChildren(element)
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    getChildren(element) {
+      if (!element.childList) {
+        console.log('this is recall')
+        console.log(element)
+        const re = {
+          label: element.name,
+          id: element.id,
+          children: null
+        }
+        return re
+      } else {
+        console.log('this is call')
+        console.log(element)
+        return {
+          label: element.name,
+          id: element.id,
+          children: this.transDataToTree(element.childList)
+        }
+      }
     },
     /**
      * 树结构的点击事件
