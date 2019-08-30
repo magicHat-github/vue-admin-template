@@ -133,7 +133,7 @@
 </template>
 
 <script>
-import { addCompany, fetchCompany } from '@/api/system/company'
+import { updateCompany, fetchCompany } from '@/api/system/company'
 export default {
   data() {
     return {
@@ -141,6 +141,8 @@ export default {
        * 表单数据
        */
       companyForm: {
+        id: '',
+        version: '',
         name: '',
         code: '',
         mnemonicCode: '',
@@ -277,6 +279,8 @@ export default {
       console.log('this is formData')
       console.log(this.companyForm)
       const params = {
+        id: this.companyForm.id,
+        version: this.companyForm.version,
         name: this.companyForm.name,
         code: this.companyForm.code,
         mnemonicCode: this.companyForm.mnemonicCode,
@@ -292,7 +296,7 @@ export default {
       }
       console.log('this is params')
       console.log(params)
-      addCompany(params).then(
+      updateCompany(params).then(
         this.$message('操作成功')
       )
     },
