@@ -10,15 +10,18 @@
     <div class="app-container allData">
       <hr>
       <el-form ref="form" :label-position="left" :rules="rules" :model="form" label-width="80px" size="mini" style="padding-left:30%;">
-        <el-form-item label="父类别" required>
-          <el-select v-model="form.parentId" placeholder="请选择">
-            <el-option
-              v-for="parent in parents"
-              :key="parent.name"
-              :label="parent.id"
-              :value="parent.id"
-            />
-          </el-select>
+        <el-form-item label="原父类别" prop="name">
+          <el-col :span="8">
+            {{ form.parentName }}
+          </el-col>
+        </el-form-item>
+        <el-form-item label="新父类别" required>
+          <el-cascader
+            v-model="form.parentIdCheck"
+            :options="options"
+            :props="{ checkStrictly: true }"
+            clearable
+          />
         </el-form-item>
         <el-form-item label="题目类别" prop="name">
           <el-col :span="8">
@@ -55,23 +58,22 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
+import { searchTree, updateItem } from '@/api/basedata/catetory'
 export default {
   data() {
     return {
+      checkStrictly: true,
       form: {
-        name: '',
-        remark: '',
-        status: '1',
-        parentId: ''
+        id: this.$route.params.id,
+        name: this.$route.params.name,
+        remark: this.$route.params.remark,
+        status: this.$route.params.status,
+        parentId: this.$route.params.parentId,
+        parentIdCheck: '',
+        parentName: this.$route.params.parentName
       },
-      parents: [
-        { id: '',
-          name: ''
-        },
-        { id: '1',
-          name: '2'
-        }
-      ],
+      options: null,
       rules: {
         name: [
           { required: true, message: '请输入题目类别', trigger: 'blur' }
@@ -79,7 +81,18 @@ export default {
       }
     }
   },
+  created() {
+    this.searchTree()
+  },
   methods: {
+    searchTree() {
+      searchTree().then(result => {
+        const body = result.body
+        this.options = body.treeData
+        console.log(this.options)
+        console.log(this.form)
+      })
+    },
     /**
        * 路由跳转
        */
@@ -87,10 +100,32 @@ export default {
       console.log('submit!')
     },
     save() {
-      this.$router.push({
-        name: 'Category'
+      // eslint-disable-next-line no-unused-vars
+      if (this.form.parentIdCheck !== '') {
+        this.form.parentId = this.form.parentIdCheck.pop()
+      }
+      const params = {
+        id: this.form.id,
+        name: this.form.name,
+        parentId: this.form.parentId,
+        remark: this.form.remark,
+        status: this.form.status
+      }
+      console.log(params)
+      updateItem(params).then(result => {
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.$router.push({
+          name: 'Category'
+        })
+      }).catch(result => {
+        this.$message({
+          type: 'success',
+          message: '操作失败!'
+        })
       })
-      this.$message('操作成功')
     },
     close() {
       this.$router.push({
