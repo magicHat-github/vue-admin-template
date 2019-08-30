@@ -6,9 +6,12 @@
         <!-- 树上方的信息 -->
         <el-container>
           <el-header>
-            <el-row>
-              <el-col>
+            <el-row align="center">
+              <el-col span="18">
                 <h1 style="font-size:20px;" class="el-icon-menu">题目类别</h1>
+              </el-col>
+              <el-col span="6">
+                <el-link class="el-image-viewer__actions__inner" type="primary" icon="el-icon-refresh-right" @click="searchTree" />
               </el-col>
             </el-row>
           </el-header>
@@ -72,14 +75,14 @@
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
                 <el-tag
-                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                  :type="scope.row.status === 1 ? 'primary' : 'info'"
                 >{{ scope.row.status === 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem(scope.row.id)" />
                 <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem(scope.row.id)" />
               </template>
             </el-table-column>
@@ -111,7 +114,7 @@
 // import { log } from 'util'
 import Pagination from '@/components/Pagination'
 // eslint-disable-next-line no-unused-vars
-import { select, selectByName, deleteList } from '@/api/basedata/catetory'
+import { select, selectByName, deleteList, searchTree, searchItem } from '@/api/basedata/catetory'
 export default {
   name: 'App',
   // eslint-disable-next-line vue/no-unused-components
@@ -122,33 +125,14 @@ export default {
       /**
          * 树结构数据
          */
-      treeData: [
-        {
-          label: '数学题',
-          children: [
-            {
-              label: '几何'
-            }
-          ]
-        },
-        {
-          label: '物理题',
-          children: [
-            {
-              label: '力学'
-            },
-            {
-              label: '电学'
-            }
-          ]
-        }
-      ],
+      treeData: null,
       /**
          * 树结构的默认属性
          */
       defaultProps: {
         children: 'children',
-        label: 'label'
+        label: 'label',
+        id: 'id'
       },
 
       /**
@@ -181,17 +165,24 @@ export default {
   },
   created() {
     this.fetchData()
+    this.searchTree()
   },
 
   methods: {
-
-    handleSizeChange(val) {
-      this.page.pageSize = val
-      this.fetchData()
+    searchTree() {
+      searchTree().then(result => {
+        const body = result.body
+        this.treeData = body.treeData
+        console.log(this.treeData)
+      })
     },
-    handleCurrentChange(val) {
-      this.page.pageNum = val
-      this.fetchData()
+    /**
+     * 树结构的点击事件
+     */
+    handleNodeClick(data) {
+      console.log(data)
+      this.formInline.name = data.label
+      this.fetchByName()
     },
     /**
      * 分页查询数据字典数据
@@ -213,7 +204,7 @@ export default {
       this.page.pageNumSearch = 1
       this.fetchByName()
     },
-    fetchByName() {
+    fetchByName(id) {
       this.listLoading = true
       const params = {
         name: this.formInline.name,
@@ -230,13 +221,6 @@ export default {
     queryData() {
       this.dataCount = this.categories.length
     },
-    /**
-       * 树结构的点击事件
-       */
-    handleNodeClick(data) {
-      console.log(data)
-    },
-
     /**
        * 勾选事件触发的函数
        */
@@ -255,9 +239,20 @@ export default {
     /**
      * 跳转至修改页面
      */
-    updateItem() {
-      this.$router.push({
-        name: 'UpdateCategory'
+    updateItem(id) {
+      searchItem(id).then(result => {
+        const body = result.body
+        this.$router.push({
+          name: 'UpdateCategory',
+          params: {
+            id: body.id,
+            name: body.name,
+            parentId: body.parentId,
+            parentName: body.parentName,
+            remark: body.remark,
+            status: body.status
+          }
+        })
       })
     },
     /**
@@ -281,6 +276,12 @@ export default {
        * 删除信息
        */
     deleteItem(id) {
+      this.treeData.forEach(item => {
+        if (item.id === id) {
+          console.log(id)
+        }
+      })
+
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -321,9 +322,9 @@ export default {
         })
       } else {
         // eslint-disable-next-line no-unused-vars
-        const idList = { idList: [] }
+        const params = { idList: [] }
         this.multipleSelection.forEach(item => {
-          idList.idList.push(item.id)
+          params.idList.push(item.id)
         })
         this.$confirm('是否要删除选定信息', '提示', {
           confirmButtonText: '确定',
@@ -331,15 +332,13 @@ export default {
           type: 'warning'
         })
           .then(() => {
-            deleteList(idList).then(result => {
-              console.log(idList)
+            deleteList(params).then(result => {
               this.$message({
                 type: 'success',
                 message: '删除成功!'
               })
               this.fetchData()
             }).catch(result => {
-              console.log(idList)
               this.$message({
                 type: 'success',
                 message: '删除失败!'
