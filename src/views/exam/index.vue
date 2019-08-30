@@ -32,13 +32,13 @@
       </el-form-item>
     </el-form>
     <!-- 发布弹窗 -->
-    <el-dialog :title="dialogForm.dialogTitle" :visible.sync="dialogForm.dialogFormVisible">
+    <el-dialog :title="dialogConfig.dialogTitle" :visible.sync="dialogConfig.dialogVisible">
       <div style="text-align:center">
         <!-- <h3>{{ dialogForm.dialogTitle }}</h3> -->
         <el-form :model="dialogForm" :rules="rules" size="small" label-position="left" label-width="120px">
           <el-form-item label="试卷名称" prop="paperName">
             <el-col :span="16">
-              <el-input v-model="dialogForm.paperName" />
+              <el-input v-model="dialogForm.paperName" disabled />
             </el-col>
             <el-col :span="4">
               <el-button @click="openChoicePaperDialog">选择试卷</el-button>
@@ -46,7 +46,7 @@
           </el-form-item>
           <el-form-item label="考试场次">
             <el-col :span="16">
-              <el-input v-model="dialogForm.examTimes" disabled />
+              <el-input v-model="dialogForm.examTimes" disabled placeholder="系统自动生成" />
             </el-col>
           </el-form-item>
           <el-form-item label="考试标题:" prop="title">
@@ -54,23 +54,21 @@
               <el-input v-model="dialogForm.title" />
             </el-col>
           </el-form-item>
-          <el-form-item label="考试截止日期:" prop="examEndDay">
+          <el-form-item label="考试开始时间:" prop="examStartTime">
             <el-col :span="16">
               <el-date-picker
-                v-model="dialogForm.examEndDay"
-                type="date"
-                placeholder="选择考试截止日期"
+                v-model="dialogForm.examStartTime"
+                type="datetime"
+                placeholder="选择考试开始时间"
                 style="width:100%;"
               />
             </el-col>
           </el-form-item>
-          <el-form-item label="考试截止时间" prop="examEndTime">
+          <el-form-item label="考试截止时间:" prop="examEndTime">
             <el-col :span="16">
-              <el-time-picker
+              <el-date-picker
                 v-model="dialogForm.examEndTime"
-                :picker-options="{
-                  selectableRange:'00:00:00 - 23:59:59'
-                }"
+                type="datetime"
                 placeholder="选择考试截止时间"
                 style="width:100%;"
               />
@@ -78,12 +76,12 @@
           </el-form-item>
           <el-form-item label="计划参加人数" prop="planPeopleNum">
             <el-col :span="16">
-              <el-input v-model="dialogForm.planPeopleNum" />
+              <el-input v-model.number="dialogForm.planPeopleNum" />
             </el-col>
           </el-form-item>
           <el-form-item label="考试时长" prop="examLimitTime">
             <el-col :span="16">
-              <el-input v-model="dialogForm.examLimitTime" />
+              <el-input v-model.number="dialogForm.examLimitTime" />
             </el-col>
           </el-form-item>
           <el-form-item label="评卷官" prop="judges">
@@ -96,7 +94,7 @@
                 style="margin-left:5px;"
                 @close="handleCloseTag(tag)"
               >
-                {{ tag.name }}
+                {{ tag.judgeName }}
               </el-tag>
             </el-col>
             <el-col :span="4">
@@ -105,7 +103,7 @@
           </el-form-item>
           <el-form-item label="评卷方式:">
             <el-col :span="16">
-              <el-select v-model="dialogForm.markingWay" style="width:100%;">
+              <el-select v-model="dialogForm.markingMode" style="width:100%;">
                 <el-option
                   v-for="markway in markOptions"
                   :key="markway.value"
@@ -146,7 +144,7 @@
       <div class="choice-paper">
         <el-table :data="choicePaperDialog.paperList">
           <el-table-column type="index" />
-          <el-table-column prop="name" label="试卷名" />
+          <el-table-column prop="paperName" label="试卷名" />
           <el-table-column label="操作">
             <template slot-scope="{row}">
               <el-button type="text" @click="choicePaper(row)">选择</el-button>
@@ -161,7 +159,7 @@
         <h3>选择阅卷官</h3>
         <el-table :data="choiceJudgesDialog.judgeList">
           <el-table-column type="index" />
-          <el-table-column prop="name" label="阅卷官" />
+          <el-table-column prop="judgeName" label="阅卷官" />
           <el-table-column label="操作">
             <template slot-scope="{row}">
               <el-button type="text" class="el-icon-plus" @click="addJudge(row)">增加</el-button>
@@ -190,18 +188,37 @@
         size="mini"
         border
         fit
+        style="width:100%"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" />
         <el-table-column type="index" label="序号" />
         <el-table-column prop="publisher" label="试卷发布人" />
-        <el-table-column prop="publishTimeRange" label="发布时间段" />
-        <el-table-column prop="examEndTime" label="考试结束日期和时间" />
+        <el-table-column label="发布时间段" width="280">
+          <template slot-scope="{ row }">
+            <span>{{ row.publishStartTime|timeFilter }} 至 {{ row.publishEndTime|timeFilter }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="考试结束日期和时间">
+          <template slot-scope="{ row }">
+            <span>{{ row.examEndTime | timeFilter }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="planPeopleCount" label="计划人数" />
         <el-table-column prop="examLimitTime" label="考试时长" />
-        <el-table-column prop="judges" label="评卷管" />
+        <el-table-column label="评卷管">
+          <template slot-scope="{ row }">
+            <el-tag v-for="judge in row.judges" :key="judge.judegId" size="small" style="margin-left:5px">
+              {{ judge.judgeName }}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="description" label="考试说明" />
-        <el-table-column prop="status" label="状态列" />
+        <el-table-column label="状态列">
+          <template slot-scope="{ row }">
+            <span>{{ row.status | statusFilter }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="publishTimes" label="发布次数" />
         <el-table-column label="操作列">
           <template slot-scope="{ row }">
@@ -228,25 +245,16 @@
 </template>
 <script>
 // import qs from 'qs'
-import { layout, pageSizes, pageSize, mockData, markOptions } from './common'
+import { layout, pageSizes, pageSize, markOptions } from './common'
 import { rules, DialogType } from './common'
-import { getExamRecordById, publishRecordById, getRecordList } from '@/api/exam'
+import { getExamRecordById, publishRecordById, getRecordList, getPapers, getJudgeList } from '@/api/exam'
+import { filters } from './common'
+import { addPublishRecord } from './common'
+import service from './service'
 
 export default {
   name: 'Exam',
-  filters: {
-    operateFilter: val => {
-      const published = '已发布'
-      if (val.status === published) {
-        return true
-      } else {
-        return false
-      }
-    },
-    toggle: val => {
-      return !val
-    }
-  },
+  filters: filters,
   data() {
     return {
       // 查询数据的表单数据
@@ -263,33 +271,37 @@ export default {
       /**
        * 编辑和发布弹窗的数据
        */
+      dialogConfig: {
+        dialogTitle: '',
+        dialogType: '',
+        dialogVisble: false
+      },
       dialogForm: {
-        // 弹窗的显示标题 编辑or发布
-        dialogTitle: '编辑',
-        dialogFormVisible: false,
-        paperName: '试卷名',
-        paperId: '试卷id',
+        // 记录id
+        id: '',
+        // 试卷名
+        paperName: '',
+        // 试卷id
+        paperId: '',
         // 考试场次
-        examTimes: 2,
-        title: '考试标题',
-        // 考试截止日期
-        examEndDay: '',
+        examSession: '',
+        // 考试标题
+        title: '',
+        // 考试开始时间
+        examStartTime: '',
         // 考试截止日期
         examEndTime: '',
         // 计划参加人数
-        planPeopleNum: '',
+        planPeopleNum: 0,
         // 考试时长
-        examLimitTime: '',
+        examLimitTime: 0,
         // 评卷官
-        judges: [
-          {
-            id: 123,
-            name: '清木'
-          }
-        ],
+        judges: [],
         // 评卷方式
-        markingWay: 1,
-        // 备注
+        markingMode: 1,
+        // 评卷截止时间
+        markingEndTime: '',
+        // 备注 描述
         description: ''
       },
       /**
@@ -303,32 +315,14 @@ export default {
        */
       choicePaperDialog: {
         dialogFormVisible: false,
-        paperList: [
-          {
-            name: 'java基础',
-            id: 1234
-          },
-          {
-            name: 'java进阶',
-            id: 2433
-          }
-        ]
+        paperList: []
       },
       /**
        * 选择阅卷官弹窗相关
        */
       choiceJudgesDialog: {
         dialogFormVisible: false,
-        judgeList: [
-          {
-            name: '王工',
-            id: 12345
-          },
-          {
-            name: '李工',
-            id: 2345
-          }
-        ]
+        judgeList: []
       },
       markOptions: markOptions,
       rules: rules,
@@ -339,8 +333,22 @@ export default {
       currentPage: 1
     }
   },
-  created() {
-    this.tableData = mockData
+  async mounted() {
+    // 初始化数据
+    const query = {
+      pageNum: this.currentPage,
+      pageSize: this.pageSize
+    }
+    await getRecordList(query)
+      .then(rsp => {
+        const listData = rsp.body
+        this.loadListData(listData)
+      }).catch(err => {
+        this.$message({
+          type: 'error',
+          message: `错误请求${err}`
+        })
+      })
   },
   methods: {
     /**
@@ -360,15 +368,14 @@ export default {
       }
       await getRecordList(query)
         .then(rsp => {
-          console.log(`查询返回值`)
-          console.log(rsp)
+          const listData = rsp.body
+          this.loadListData(listData)
         }).catch(err => {
           this.$message({
             type: 'error',
             message: `请求错误${err}`
           })
         })
-      console.log(query)
     },
     /**
      * 编辑记录函数
@@ -376,7 +383,7 @@ export default {
      * 也可能是从一行中的操作栏来的
      */
     handleEditEvent(row) {
-      const id = row.recordId
+      const id = row.id
       if (!id) {
         // 菜单栏编辑
         const selectNum = this.tableForm.select.length
@@ -387,9 +394,9 @@ export default {
           })
         } else if (selectNum === 1) {
           // 根据id编辑
-          const seleteId = this.tableForm.select[0].recordId
+          const seleteId = this.tableForm.select[0].id
           const selectRow = this.tableForm.select[0]
-          const published = '已发布'
+          const published = 1
           if (selectRow.status === published) {
             this.$message({
               type: 'error',
@@ -407,7 +414,7 @@ export default {
       } else {
         // 侧边栏编辑
         const rowId = row.id
-        const published = '已发布'
+        const published = 1
         if (row.status === published) {
           this.$message({
             type: 'error',
@@ -419,18 +426,13 @@ export default {
       }
     },
     /**
-     * 选择试卷处理事件
-     */
-    handleSelectPaper() {
-
-    },
-    /**
      * 发布记录的事件处理
      * 可能是发布新的记录
      * 可能是重新发布新的记录
      * 如果是重新发布就要获得已发布的数据
      */
     handlePublishEvent(row) {
+      const published = 1
       const id = row.recordId
       if (!id) {
         // 菜单栏的发布操作
@@ -443,7 +445,7 @@ export default {
         } else if (selectNum === 1) {
           // 获得选择行的id
           // 获得选择的数据
-          const published = '已发布'
+          const published = 1
           const selectRow = this.tableForm.select[0]
           if (selectRow.status === published) {
             this.$confirm(
@@ -472,7 +474,6 @@ export default {
         }
       } else {
         // 侧边栏的操作
-        const published = '已发布'
         if (row.status === published) {
           this.$confirm(
             '该场考试已经发布过,是否重新发布',
@@ -501,9 +502,9 @@ export default {
      * 从0开始新增一条记录
      */
     newPublishRecord() {
-      this.dialogForm.dialogTitle = '新增发布记录'
-      this.dialogForm.dialogType = DialogType.NEWPUBLISH
-      this.dialogForm.dialogFormVisible = true
+      this.dialogConfig.dialogTitle = '新增发布记录'
+      this.dialogConfig.dialogType = DialogType.NEWPUBLISH
+      this.dialogConfig.dialogFormVisible = true
     },
     /**
      * 重新发布记录
@@ -511,9 +512,9 @@ export default {
     rePublishRecord(id) {
       // TODO 获得该id对应的数据
       // 打开发布弹窗
-      this.dialogForm.dialogTitle = '重新发布考试记录'
-      this.dialogForm.dialogType = DialogType.REPUBLISH
-      this.dialogForm.dialogFormVisible = true
+      this.dialogConfig.dialogTitle = '重新发布考试记录'
+      this.dialogConfig.dialogType = DialogType.REPUBLISH
+      this.dialogConfig.dialogFormVisible = true
     },
     /**
      * 根据id从
@@ -526,8 +527,10 @@ export default {
         const body = rsp.body
         console.log(body)
         // TODO 将得到的数据 给弹窗赋值
+        this.dialogForm = body
         // 显示弹窗
-        this.dialogForm.dialogFormVisible = true
+        this.dialogConfig.dialogTitle = '编辑记录'
+        this.dialogConfig.dialogVisible = true
       }).catch(err => {
         this.$message({
           type: 'error',
@@ -541,21 +544,30 @@ export default {
      */
     saveRecord() {
       // 判断是编辑界面还是发布界面
-      if (this.dialogForm.title === '编辑') {
-        // 调用更新函数
-        this.$message({
-          type: 'success',
-          message: '编辑成功'
-        })
+      console.log(`表单选项${this.dialogConfig.dialogType}`)
+      const dialogType = this.dialogConfig.dialogType
+      if (dialogType === DialogType.NEWPUBLISH) {
+        service.addPublishRecord(this.dialogForm)
+          .then(() => {
+            console.log(`发送成功`)
+          }).catch(() => {
+            console.log(`发布失败`)
+          })
+      } else if (dialogType === DialogType.REPUBLISH) {
+        addPublishRecord(this.dialogForm)
+          .then(() => {
+            console.log(`发送成功`)
+          }).catch(() => {
+            console.log(`发布失败`)
+          })
+      } else if (dialogType === DialogType.EDITRECORD) {
+        console.log('log')
       } else {
-        // 调用发布函数
         this.$message({
-          type: 'success',
-          message: '添加发布成功'
+          type: 'error',
+          message: '错误选项'
         })
       }
-      // console.log(this.dialogForm)
-      // 关闭窗口
       this.dialogForm.dialogFormVisible = false
     },
     /**
@@ -690,8 +702,18 @@ export default {
     /**
      * 打开选择试卷弹窗
      */
-    openChoicePaperDialog() {
-      this.choicePaperDialog.dialogFormVisible = true
+    async openChoicePaperDialog() {
+      // 后端捞试卷数据
+      await getPapers().then(rsp => {
+        // 加载试卷数据
+        this.choicePaperDialog.paperList = rsp.body
+        this.choicePaperDialog.dialogFormVisible = true
+      }).catch(err => {
+        this.$message({
+          type: 'error',
+          message: `获得试卷错误${err}`
+        })
+      })
     },
     /**
      * 关闭选择试卷弹窗
@@ -703,15 +725,24 @@ export default {
      * 选择试卷
      */
     choicePaper(row) {
-      this.dialogForm.paperName = row.name
+      this.dialogForm.paperName = row.paperName
       this.dialogForm.paperId = row.id
       this.closeChoicePaperDialog()
     },
     /**
      * 打开增加阅卷官的弹窗
      */
-    openJudgesDialog() {
-      this.choiceJudgesDialog.dialogFormVisible = true
+    async openJudgesDialog() {
+      await getJudgeList().then(rsp => {
+        // 加载阅卷官数据
+        this.choiceJudgesDialog.judgeList = rsp.body
+        this.choiceJudgesDialog.dialogFormVisible = true
+      }).catch(err => {
+        this.$message({
+          type: 'error',
+          message: `获得阅卷官失败${err}`
+        })
+      })
     },
     /**
      * 关闭阅卷官的弹窗
@@ -725,17 +756,39 @@ export default {
     addJudge(row) {
       console.log(row)
       const newJudge = {
-        name: row.name,
+        judgeName: row.judgeName,
         id: row.id
       }
-      this.dialogForm.judges.push(newJudge)
-      this.closeJudgesDialog()
+      let status = true
+      this.dialogForm.judges.forEach(el => {
+        if (el.id === newJudge.id) {
+          status = false
+        }
+      })
+      if (status) {
+        this.dialogForm.judges.push(newJudge)
+        this.closeJudgesDialog()
+      } else {
+        this.$message({
+          type: 'warn',
+          message: '已经选过了'
+        })
+      }
     },
     /**
      * 关闭试卷官标签的处理事件
      */
     handleCloseTag(tag) {
       this.dialogForm.judges.splice(this.dialogForm.judges.indexOf(tag), 1)
+    },
+    /**
+     * 加载列表数据
+     */
+    loadListData(listData) {
+      this.pageSize = listData.pageSize
+      this.currentPage = listData.pageNum
+      this.total = listData.total
+      this.tableData = listData.list
     }
   }
 }

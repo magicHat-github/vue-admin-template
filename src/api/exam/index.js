@@ -14,7 +14,7 @@ export function getExamRecordById(id) {
  */
 export function addNewRecord(record) {
   return examRequestApi(
-    '/',
+    '/publish',
     'post',
     record
   )
@@ -93,25 +93,17 @@ export function queryRecord(queryForm) {
  * 获得阅卷官的列表
  */
 export function getJudgeList() {
-  const param = {
-    queryType: 'judge'
-  }
   return examRequestApi(
-    '/extra',
-    'post',
-    param
+    '/judge',
+    'post'
   )
 }
 /**
  * 获得试卷的列表
  */
 export function getPapers() {
-  const param = {
-    queryType: 'paper'
-  }
   return examRequestApi(
-    '/extra',
-    'post',
-    param
+    '/paper',
+    'post'
   )
 }

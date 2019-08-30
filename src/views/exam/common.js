@@ -1,3 +1,4 @@
+import { parseTime } from '@/utils'
 /**
  * 分页布局
  */
@@ -85,18 +86,19 @@ export const rules = {
   title: [
     { required: true, message: '必须输入考试标题', trigger: 'blur' }
   ],
-  examEndDay: [
-    { type: 'date', required: true, message: '必须选择考试截止日期', trigger: 'blur' }
+  examStartTime: [
+    { type: 'date', required: true, message: '必须选择考试开始时间', trigger: 'blur' }
   ],
   examEndTime: [
     { type: 'date', required: true, message: '必须选择考试截止时间', trigger: 'blur' }
   ],
   planPeopleNum: [
-    { required: true, message: '必须输入计划参加人数', trigger: 'blur' }
+    { required: true, message: '必须输入计划参加人数', trigger: 'blur' },
+    { type: 'number', message: '必须输入数字' }
   ],
   examLimitTime: [
     { required: true, message: '必须输入考试时长', trigger: 'blur' },
-    { type: 'number', message: '时长必须为数字', trigger: 'blur' }
+    { type: 'number', message: '时长必须为数字' }
   ],
   judges: [
     // { type: 'array', required: true, message: '必须选择至少一个阅卷官', trigger: 'blur' }
@@ -240,3 +242,36 @@ export const markingMockData = [
     status: 1
   }
 ]
+export const filters = {
+  operateFilter: val => {
+    const published = 1
+    if (val.status === published) {
+      return true
+    } else {
+      return false
+    }
+  },
+  toggle: val => {
+    return !val
+  },
+  timeFilter: val => {
+    return parseTime(val)
+  },
+  statusFilter: val => {
+    const description = ['未发布', '已发布']
+    return description[val]
+  }
+}
+/**
+ * 添加一条新的记录
+ */
+export function addPublishRecord(formData) {
+  return new Promise((resolve, reject) => {
+    console.log(formData)
+    if (formData.dialogType === DialogType.NEWPUBLISH || formData.dialogType === DialogType.REPUBLISH) {
+      resolve()
+    } else {
+      reject(new Error('错误调用'))
+    }
+  })
+}
