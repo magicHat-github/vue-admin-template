@@ -64,7 +64,7 @@
         <el-table-column label="操作" style="white-space:nowrap" align="center">
           <template slot-scope="{row}">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDictionary" />
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDictionary(row)" />
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDictionary(row.id)" />
             <el-link class="itemAction" type="danger" :disabled="row.status===1 " icon="el-icon-delete" @click="deleteDictionary(row.id)" />
           </template>
         </el-table-column>
@@ -81,7 +81,7 @@
 <script>
 // import { log } from 'util'
 import Pagination from '@/components/Pagination'
-import { select, deleteList } from '@/api/basedata/dictionary'
+import { select, deleteList, searchItem } from '@/api/basedata/dictionary'
 export default {
   name: 'Dictionary',
   components: { Pagination },
@@ -177,9 +177,20 @@ export default {
     /**
      * 跳转至更新页面
      */
-    updateDictionary() {
-      this.$router.push({
-        name: 'UpdateDictionary'
+    updateDictionary(id) {
+      searchItem(id).then(result => {
+        const body = result.body
+        this.$router.push({
+          name: 'UpdateDictionary',
+          params: {
+            id: body.id,
+            name: body.name,
+            category: body.category,
+            value: body.value,
+            remark: body.remark,
+            status: body.status
+          }
+        })
       })
     },
     /**
