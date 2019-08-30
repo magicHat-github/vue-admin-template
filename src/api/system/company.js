@@ -23,6 +23,14 @@ export function fetchCompany(params) {
  * 删除选定公司
  * @param {*} params
  */
-export function deleteCompany(params) {
+export function dropCompany(params) {
   return systemRequestApi('/company', 'DELETE', params)
+}
+
+/**
+ * 修改选定公司信息
+ * @param {*} params
+ */
+export function updateCompany(params) {
+  return systemRequestApi('/company', 'PUT', params)
 }

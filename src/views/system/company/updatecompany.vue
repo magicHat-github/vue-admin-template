@@ -15,19 +15,19 @@
         :rules="companyRules"
         label-width="100px"
         class="user-add-Form"
-        label-position="left"
+        label-org-name="right"
       >
         <!-- 第一行 -->
         <el-row>
           <!-- 公司名输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="公司名:" prop="name">
+            <el-form-item label="公司名" prop="name">
               <el-input v-model="companyForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 公司编号输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="公司编号:" prop="code">
+            <el-form-item label="公司编号" prop="code">
               <el-input v-model="companyForm.code" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -37,21 +37,14 @@
         <el-row>
           <!-- 助记码输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="助记码:" prop="mnemonicCode">
+            <el-form-item label="助记码" prop="mnemonicCode">
               <el-input v-model="companyForm.mnemonicCode" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 法人下拉框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="法人:" prop="master">
-              <el-select v-model="companyForm.master" filterable placeholder="请选择">
-                <el-option
-                  v-for="position in positions"
-                  :key="position.name"
-                  :label="position.name"
-                  :value="position.name"
-                />
-              </el-select>
+            <el-form-item label="法人" prop="master">
+              <el-input v-model="companyForm.master" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -60,13 +53,13 @@
         <el-row>
           <!-- 税号输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="税号:" prop="tax">
+            <el-form-item label="税号" prop="tax">
               <el-input v-model="companyForm.tax" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 传真输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="传真:" prop="fax">
+            <el-form-item label="传真" prop="fax">
               <el-input v-model="companyForm.fax" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -76,13 +69,13 @@
         <el-row>
           <!-- 电话输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="电话:">
+            <el-form-item label="电话">
               <el-input v-model="companyForm.tel" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 网址输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="网址:">
+            <el-form-item label="网址">
               <el-input v-model="companyForm.website" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -92,13 +85,20 @@
         <!-- 所属机构输入框 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="所属机构:" prop="orgName">
-              <el-input v-model="companyForm.orgName" placeholder="请输入内容" clearable />
+            <el-form-item label="所属机构" prop="org">
+              <el-select v-model="companyForm.org" filterable placeholder="请选择" clearable>
+                <el-option
+                  v-for="org in orgs"
+                  :key="org.id"
+                  :label="org.name"
+                  :value="org"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
           <!-- 邮箱输入框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="邮箱:" prop="email">
+            <el-form-item label="邮箱" prop="email">
               <el-input v-model="companyForm.email" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -108,7 +108,7 @@
         <!--复选按钮 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="是否启用:">
+            <el-form-item label="是否启用">
               <el-radio v-model="companyForm.status" label="1">是</el-radio>
               <el-radio v-model="companyForm.status" label="0">否</el-radio>
             </el-form-item>
@@ -133,6 +133,7 @@
 </template>
 
 <script>
+import { addCompany, fetchCompany } from '@/api/system/company'
 export default {
   data() {
     return {
@@ -148,7 +149,7 @@ export default {
         fax: '',
         tel: '',
         website: '',
-        orgName: '',
+        org: '',
         email: '',
         status: '1'
       },
@@ -157,31 +158,27 @@ export default {
        */
       companyRules: {
         name: [
-          { required: true, message: '请输入工号', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入公司名称', trigger: 'blur' }
         ],
         code: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入公司编号', trigger: 'blur' }
         ],
         mnemonicCode: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入助记码', trigger: 'blur' }
         ],
-        master: [
-          { required: true, message: '请输入职位', trigger: 'change' }
+        org: [
+          { required: true, message: '请选择所属机构', trigger: 'change' }
         ],
         tax: [
-          { required: true, message: '请输入性别', trigger: 'blur' },
+          { required: true, message: '请输入税号', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         fax: [
-          { required: true, message: '请输入生日', trigger: 'blur' },
+          { required: true, message: '请输入传真', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        orgName: [
-          { required: true, message: '请输入电话', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        master: [
+          { required: true, message: '请输入法人信息', trigger: 'blur' }
         ],
         email: [
           { required: true, message: '请输入邮箱', trigger: 'blur' },
@@ -189,21 +186,79 @@ export default {
         ]
       },
       /**
-       * 职位下拉框选项
+       * 组织机构下拉框选项
        */
-      positions: [{ name: '鼓励师' }, { name: '搬砖人' }],
-      /**
-       * 角色下拉框选项
-       */
-      roles: [{ name: '鼓励师' }, { name: '搬砖人' }]
+      orgs: []
     }
   },
   created() {
-    var x = this
-    x.companyForm = this.$route.params.row
-    console.log(x.companyForm)
+    const company = this.$route.params.company
+    this.queryOrgAndCompanyData(company)
   },
   methods: {
+    /**
+     * 查询树结构数据，从而获取公司名字和机构数据
+     */
+    queryOrgAndCompanyData(company) {
+      const params = {
+        companyName: company.name,
+        orgName: company.orgName,
+        pageSize: 1,
+        pageNum: 1
+      }
+      fetchCompany(params).then(result => {
+        const body = result.body
+        // 转换树结构的数据
+        console.log(body.tree)
+        const tree = body.tree.treeNodeList
+        this.transDataToTree(tree)
+        console.log('this is result')
+        this.companyForm = body.dataList[0]
+        const org = {
+          name: body.dataList[0].orgName,
+          id: body.dataList[0].orgId
+        }
+        this.companyForm.org = org
+        this.companyForm.status = body.dataList[0].status + ''
+        console.log(this.companyForm)
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    transDataToTree(arr) {
+      return arr.map(element => {
+        return this.getChildren(element)
+      })
+    },
+    /**
+     * 查询树结构中的数据
+     */
+    getChildren(element) {
+      if (!element.childList) {
+        // 这里可以用于判断公司名是否为空
+        console.log('this is companys')
+        console.log(element)
+        const re = {
+          label: element.name,
+          id: element.id,
+          children: null
+        }
+        return re
+      } else {
+        // 填充组织结构下拉框数据
+        console.log('this is orgs')
+        console.log(element)
+        const org = {
+          name: element.name,
+          id: element.id
+        }
+        this.orgs.push(org)
+        return {
+          children: this.transDataToTree(element.childList)
+        }
+      }
+    },
     /**
      * 保存按钮
      */
@@ -219,10 +274,27 @@ export default {
       })
     },
     submit() {
-      this.$router.push({
-        name: 'Company'
-      })
-      this.$message('操作成功')
+      console.log('this is formData')
+      console.log(this.companyForm)
+      const params = {
+        name: this.companyForm.name,
+        code: this.companyForm.code,
+        mnemonicCode: this.companyForm.mnemonicCode,
+        master: this.companyForm.master,
+        tax: this.companyForm.tax,
+        fax: this.companyForm.fax,
+        tel: this.companyForm.tel,
+        website: this.companyForm.website,
+        orgName: this.companyForm.org.name,
+        orgId: this.companyForm.org.id,
+        email: this.companyForm.email,
+        status: this.companyForm.status
+      }
+      console.log('this is params')
+      console.log(params)
+      addCompany(params).then(
+        this.$message('操作成功')
+      )
     },
     /**
      * 关闭按钮
