@@ -1,37 +1,8 @@
-import { DialogType } from './common'
 import { addNewRecord } from '@/api/exam'
+import { deleteRecordById, deleteRecordByIdList, updatePublishRecord } from '../../api/exam'
 /**
- * 获得弹窗的表单数据
- * @param {弹窗数据} DialogData
+ * service 层,用来调用接口的api
  */
-function getDialogFromData(formData) {
-  return {
-    // 试卷名
-    paperName: formData.paperName,
-    // 试卷id
-    paperId: formData.paperId,
-    // 考试场次
-    examSession: formData.examSession,
-    // 考试的标题
-    title: formData.title,
-    // 考试开始时间
-    examStartTime: formData.examStartTime,
-    // 考试结束时间
-    examEndTime: formData.examEndTime,
-    // 考试时长
-    examLimitTime: formData.examLimitTime,
-    // 阅卷官列表
-    judges: formData.judges,
-    // 阅卷方式
-    markingMode: formData.markingMode,
-    // 阅卷结束时间
-    markingEndTime: formData.markingEndTime,
-    // 计划参加人数
-    planPeopleNum: formData.planPeopleNum,
-    // 备注
-    description: formData.description
-  }
-}
 export default {
 
   /**
@@ -40,20 +11,66 @@ export default {
    */
   addPublishRecord(formData) {
     return new Promise((resolve, reject) => {
-      if (formData.dialogType === DialogType.NEWPUBLISH || formData.dialogType === DialogType.REPUBLISH) {
-        console.log(formData)
-        /**
-         * 设置请求格式
-         */
-        const record = getDialogFromData(formData)
-        addNewRecord(record).then(rsp => {
-          resolve(rsp)
-        }).catch(err => {
-          reject(err)
-        })
-      } else {
-        reject(new Error('错误调用'))
+      console.log(`传到后台的表单数据`)
+      console.log(formData)
+      /**
+       * 设置请求格式
+       */
+      addNewRecord(formData)
+        .then(rsp => resolve(rsp))
+        .catch(err => reject(err))
+    })
+  },
+  /**
+   * 重新发布考试记录的函数
+   * @param {重新发布记录的数据} formData
+   */
+  rePublishRecord(formData) {
+    return new Promise((resolve, reject) => {
+      addNewRecord(formData)
+        .then(rsp => resolve(rsp))
+        .catch(err => reject(err))
+    })
+  },
+  /**
+   * 根据id删除单条数据
+   */
+  deleteRecordById(id) {
+    const deleteVo = {
+      id: id
+    }
+    return new Promise((resolve, reject) => {
+      deleteRecordById(deleteVo)
+        .then(rsp => resolve(rsp))
+        .catch(err => reject(err))
+    })
+  },
+  /**
+   * 批量删除数据
+   * @param {传进来的id列表} idList
+   */
+  deleteRecordByIdList(idList) {
+    // 剔除不必要的数据
+    const deleteListVo = idList.map(element => {
+      return {
+        id: element.id
       }
+    })
+    return new Promise((resolve, reject) => {
+      deleteRecordByIdList(deleteListVo)
+        .then(rsp => resolve(rsp))
+        .catch(err => reject(err))
+    })
+  },
+  /**
+   * 编辑和更新发布的数据
+   * @param formData
+   */
+  updatePublishRecord(formData) {
+    return new Promise((resolve, reject) => {
+      updatePublishRecord(formData)
+        .then(rsp => resolve(rsp))
+        .catch(err => reject(err))
     })
   }
 }

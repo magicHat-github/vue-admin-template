@@ -46,7 +46,7 @@
           </el-form-item>
           <el-form-item label="考试场次">
             <el-col :span="16">
-              <el-input v-model="dialogForm.examTimes" disabled placeholder="系统自动生成" />
+              <el-input v-model="dialogForm.examSession" disabled placeholder="系统自动生成" />
             </el-col>
           </el-form-item>
           <el-form-item label="考试标题:" prop="title">
@@ -130,7 +130,7 @@
           </el-form-item>
           <el-form-item>
             <el-col :span="8">
-              <el-button size="large" type="danger" @click="()=>{dialogForm.dialogFormVisible=false;}">取消</el-button>
+              <el-button size="large" type="danger" @click="()=>{dialogConfig.dialogVisible=false;}">取消</el-button>
             </el-col>
             <el-col :span="8">
               <el-button size="large" @click="saveRecord">保存</el-button>
@@ -249,7 +249,6 @@ import { layout, pageSizes, pageSize, markOptions } from './common'
 import { rules, DialogType } from './common'
 import { getExamRecordById, publishRecordById, getRecordList, getPapers, getJudgeList } from '@/api/exam'
 import { filters } from './common'
-import { addPublishRecord } from './common'
 import service from './service'
 
 export default {
@@ -269,12 +268,15 @@ export default {
        */
       tableData: [],
       /**
-       * 编辑和发布弹窗的数据
+       * 编辑和发布弹窗的配置数据
        */
       dialogConfig: {
+        // 弹窗的标题
         dialogTitle: '',
+        // 弹窗的类型
         dialogType: '',
-        dialogVisble: false
+        // 弹窗显示与否
+        dialogVisible: false
       },
       dialogForm: {
         // 记录id
@@ -292,9 +294,9 @@ export default {
         // 考试截止日期
         examEndTime: '',
         // 计划参加人数
-        planPeopleNum: 0,
+        planPeopleNum: '',
         // 考试时长
-        examLimitTime: 0,
+        examLimitTime: '',
         // 评卷官
         judges: [],
         // 评卷方式
@@ -334,23 +336,22 @@ export default {
     }
   },
   async mounted() {
-    // 初始化数据
-    const query = {
-      pageNum: this.currentPage,
-      pageSize: this.pageSize
-    }
-    await getRecordList(query)
-      .then(rsp => {
-        const listData = rsp.body
-        this.loadListData(listData)
-      }).catch(err => {
-        this.$message({
-          type: 'error',
-          message: `错误请求${err}`
-        })
-      })
+    this.freshIndex()
   },
   methods: {
+    /**
+     * 获得首页数据
+     */
+    async freshIndex() {
+      // 初始化数据
+      const query = {
+        pageNum: this.currentPage,
+        pageSize: this.pageSize
+      }
+      await getRecordList(query)
+        .then(rsp => this.loadListData(rsp.body))
+        .catch(err => this.showMessage('error', `网络错误${err}`))
+    },
     /**
      * 查询数据
      */
@@ -394,7 +395,7 @@ export default {
           })
         } else if (selectNum === 1) {
           // 根据id编辑
-          const seleteId = this.tableForm.select[0].id
+          const selectId = this.tableForm.select[0].id
           const selectRow = this.tableForm.select[0]
           const published = 1
           if (selectRow.status === published) {
@@ -403,7 +404,7 @@ export default {
               message: '已经发布不可编辑'
             })
           } else {
-            this.editRecord(seleteId)
+            this.editRecord(selectId)
           }
         } else {
           this.$message({
@@ -433,7 +434,7 @@ export default {
      */
     handlePublishEvent(row) {
       const published = 1
-      const id = row.recordId
+      const id = row.id
       if (!id) {
         // 菜单栏的发布操作
         const selectNum = this.tableForm.select.length
@@ -445,7 +446,6 @@ export default {
         } else if (selectNum === 1) {
           // 获得选择行的id
           // 获得选择的数据
-          const published = 1
           const selectRow = this.tableForm.select[0]
           if (selectRow.status === published) {
             this.$confirm(
@@ -457,7 +457,7 @@ export default {
               }
             ).then(() => {
               // 重新发布函数
-              this.rePublishRecord(selectRow.recordId)
+              this.rePublishRecord(selectRow.id)
             }).catch(() => {
               this.$message({
                 type: 'info',
@@ -466,7 +466,7 @@ export default {
             })
           } else {
             // 调用发布函数 未发布 => 已发布
-            this.publishRecord(selectRow.recordId)
+            this.publishRecord(selectRow.id)
           }
         } else {
           // 发布新的记录
@@ -484,7 +484,7 @@ export default {
             }
           ).then(() => {
             // 重新发布函数
-            this.rePublishRecord(row.recordId)
+            this.rePublishRecord(row.id)
           }).catch(() => {
             this.$message({
               type: 'info',
@@ -493,7 +493,7 @@ export default {
           })
         } else {
           // 调用发布函数 未发布 => 已发布
-          this.publishRecord(row.recordId)
+          this.publishRecord(row.id)
         }
       }
     },
@@ -504,7 +504,7 @@ export default {
     newPublishRecord() {
       this.dialogConfig.dialogTitle = '新增发布记录'
       this.dialogConfig.dialogType = DialogType.NEWPUBLISH
-      this.dialogConfig.dialogFormVisible = true
+      this.dialogConfig.dialogVisible = true
     },
     /**
      * 重新发布记录
@@ -514,7 +514,7 @@ export default {
       // 打开发布弹窗
       this.dialogConfig.dialogTitle = '重新发布考试记录'
       this.dialogConfig.dialogType = DialogType.REPUBLISH
-      this.dialogConfig.dialogFormVisible = true
+      this.dialogConfig.dialogVisible = true
     },
     /**
      * 根据id从
@@ -528,8 +528,12 @@ export default {
         console.log(body)
         // TODO 将得到的数据 给弹窗赋值
         this.dialogForm = body
-        // 显示弹窗
+        console.log(body.examSession)
+        // 设置弹窗的标题
         this.dialogConfig.dialogTitle = '编辑记录'
+        // 设置弹窗类型为编辑
+        this.dialogConfig.dialogType = DialogType.EDITRECORD
+        // 显示弹窗
         this.dialogConfig.dialogVisible = true
       }).catch(err => {
         this.$message({
@@ -542,33 +546,53 @@ export default {
      * 可能是保存编辑的数据
      * 可能是保存发布的数据
      */
-    saveRecord() {
+    async saveRecord() {
       // 判断是编辑界面还是发布界面
-      console.log(`表单选项${this.dialogConfig.dialogType}`)
       const dialogType = this.dialogConfig.dialogType
       if (dialogType === DialogType.NEWPUBLISH) {
-        service.addPublishRecord(this.dialogForm)
-          .then(() => {
-            console.log(`发送成功`)
-          }).catch(() => {
-            console.log(`发布失败`)
+        // 调用service 的新发布函数来发布一条数据
+        await service.addPublishRecord(this.dialogForm)
+          .then(rsp => {
+            console.log(rsp)
+            if (rsp.body.status === 200) {
+              this.showMessage('success', '发布成功')
+            } else {
+              this.showMessage('error', `发布失败${rsp.body.description}`)
+            }
           })
+          .catch(err => this.showMessage('error', `网络错误${err}`))
+        this.dialogConfig.dialogVisible = false
+        // 刷新数据
+        this.freshIndex()
       } else if (dialogType === DialogType.REPUBLISH) {
-        addPublishRecord(this.dialogForm)
-          .then(() => {
-            console.log(`发送成功`)
-          }).catch(() => {
-            console.log(`发布失败`)
+        // 重新发布记录流程
+        service.rePublishRecord(this.dialogForm)
+          .then(rsp => {
+            // TODO 判断操作结果
+            this.showMessage('success', rsp.body.description)
           })
+          .catch(err => { this.showMessage('error', `网络错误${err}`) })
       } else if (dialogType === DialogType.EDITRECORD) {
-        console.log('log')
+        // 更新发布记录
+        service.updatePublishRecord(this.dialogForm)
+          .then(rsp => {
+            if (rsp.body.status === 200) {
+              this.showMessage('success', '记录更改成功')
+            } else if (rsp.body.status === 201) {
+              this.showMessage('error', `记录更改失败${rsp.body.description}`)
+            } else {
+              this.showMessage('error', '未知错误')
+            }
+            this.freshIndex()
+          })
+          .catch(err => this.showMessage('error', `网络错误${err}`))
       } else {
         this.$message({
           type: 'error',
           message: '错误选项'
         })
       }
-      this.dialogForm.dialogFormVisible = false
+      this.dialogForm.dialogVisible = false
     },
     /**
      * 发布记录函数
@@ -600,74 +624,65 @@ export default {
      * @param {侧边栏删除传入的行数据} row
      */
     handleDeleteEvent(row) {
-      // 先判断单选和多选数据
-      const selectCount = this.tableForm.select.length
-      if (selectCount > 0) {
-        // 删除确认框
-        this.$confirm(`是否删除${selectCount}条数据?`, '提示', {
+      if (row.id) {
+        // 侧边栏删除操作
+        const id = row.id
+        this.$confirm('确定删除该条记录?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          const deleteData = this.tableForm.select
-          this.deleteRecord(deleteData)
-          this.$message({
-            type: 'success',
-            message: '删除成功'
+          type: 'warning' })
+          .then(_ => {
+            service.deleteRecordById(id)
+              .then(rsp => {
+                if (rsp.body.status === 200) {
+                  this.showMessage('success', '删除成功')
+                } else if (rsp.body.status === 201) {
+                  this.showMessage('error', `${rsp.body.description}`)
+                } else {
+                  this.showMessage('error', '未知错误')
+                }
+                this.freshIndex()
+              })
+          }).catch(_ => { this.showMessage('info', '取消删除') })
+      } else {
+        // 菜单栏删除操作
+        console.log('菜单栏删除')
+        // 先判断单选和多选数据
+        const selectCount = this.tableForm.select.length
+        if (selectCount > 0) {
+          // 删除确认框
+          this.$confirm(`是否删除${selectCount}条数据?`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            const deleteData = this.tableForm.select
+            // 批量删除数据
+            service.deleteRecordByIdList(deleteData)
+              .then(rsp => {
+                if (rsp.body.status === 200) {
+                  this.showMessage('success', '删除数据成功')
+                } else if (rsp.body.status === 201) {
+                  this.showMessage('error', '删除数据失败')
+                } else {
+                  this.showMessage('error', '未知错误')
+                }
+              })
+            this.freshIndex()
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
           })
-        }).catch(() => {
+        } else {
+          // 没有选中任何数据
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: '没有选中任何行'
           })
-        })
-      } else {
-        // 没有选中任何数据
-        this.$message({
-          type: 'info',
-          message: '没有选中任何行'
-        })
+        }
       }
-    },
-    /**
-     * 删除一条记录
-     */
-    deleteRow(row) {
-      const id = row.recordId
-      // alert(`id=${id}`)
-      console.log(id)
-      // 删除确认框
-      this.$confirm('是否删除该条记录?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // 确认删除的操作
-        const deleteData = [row]
-        this.deleteRecord(deleteData)
-        this.$message({
-          type: 'success',
-          message: '删除成功'
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
-    },
-    /**
-     * 删除记录
-     * @param rows 传进来数据列表
-     */
-    deleteRecord(rows) {
-      // 获得传进来的id列表
-      const deleteForm = rows.map(row => {
-        // 返回选中的id列表
-        return row.recordId
-      })
-      // 调用api进行删除
-      console.log(deleteForm)
     },
     /**
      * 选中和不选中
@@ -737,12 +752,7 @@ export default {
         // 加载阅卷官数据
         this.choiceJudgesDialog.judgeList = rsp.body
         this.choiceJudgesDialog.dialogFormVisible = true
-      }).catch(err => {
-        this.$message({
-          type: 'error',
-          message: `获得阅卷官失败${err}`
-        })
-      })
+      }).catch(err => { this.showMessage('error', `网络错误${err}`) })
     },
     /**
      * 关闭阅卷官的弹窗
@@ -789,6 +799,15 @@ export default {
       this.currentPage = listData.pageNum
       this.total = listData.total
       this.tableData = listData.list
+    },
+    /**
+     * 消息提示框
+     */
+    showMessage(type, message) {
+      this.$message({
+        type: type,
+        message: message
+      })
     }
   }
 }

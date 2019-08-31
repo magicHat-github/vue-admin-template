@@ -23,9 +23,9 @@ export function addNewRecord(record) {
  * 更新发布记录
  * @param {更新后的数据} record Object
  */
-export function updateRecord(record) {
+export function updatePublishRecord(record) {
   return examRequestApi(
-    '/',
+    '/publish',
     'put',
     record
   )
@@ -37,7 +37,7 @@ export function updateRecord(record) {
  */
 export function deleteRecordById(id) {
   return examRequestApi(
-    '/',
+    '/publish',
     'delete',
     id
   )

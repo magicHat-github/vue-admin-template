@@ -244,8 +244,9 @@ export const markingMockData = [
 ]
 export const filters = {
   operateFilter: val => {
-    const published = 1
-    if (val.status === published) {
+    // 只有处于未发布的状态才可以编辑
+    const unPublished = 0
+    if (val.status !== unPublished) {
       return true
     } else {
       return false
@@ -258,20 +259,7 @@ export const filters = {
     return parseTime(val)
   },
   statusFilter: val => {
-    const description = ['未发布', '已发布']
+    const description = ['未发布', '发布中', '发布结束']
     return description[val]
   }
-}
-/**
- * 添加一条新的记录
- */
-export function addPublishRecord(formData) {
-  return new Promise((resolve, reject) => {
-    console.log(formData)
-    if (formData.dialogType === DialogType.NEWPUBLISH || formData.dialogType === DialogType.REPUBLISH) {
-      resolve()
-    } else {
-      reject(new Error('错误调用'))
-    }
-  })
 }
