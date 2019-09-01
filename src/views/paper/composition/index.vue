@@ -113,7 +113,7 @@
             <el-table-column align="center" label="操作" width="160">
               <template slot-scope="scope">
                 <el-button size="mini" type="primary" @click="findCombConfigItem(scope.row)">查看</el-button>
-                <el-button size="mini" type="danger" @click="startComposition(scope.row)">组卷</el-button>
+                <el-button size="mini" type="danger" @click="fillPaperForm(scope.row)">组卷</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -181,9 +181,9 @@
           <el-divider />
           <el-card style="margin-top:5px;">
             <div class="addCombConfigItemActions">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCombConfigItemDialog = true">添加</el-link>
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="editCombConfigItem()">修改</el-link>
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCombConfigItem()">删除</el-link>
+              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addCombConfigItem">添加</el-link>
+              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="editCombConfigItem">修改</el-link>
+              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCombConfigItem">删除</el-link>
             </div>
             <el-table
               v-loading="normalConfigListLoading"
@@ -239,7 +239,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="exitAddCombConfigItem">取 消</el-button>
+        <el-button @click="exitAddCombConfigItem('combConfigItem')">取 消</el-button>
         <el-button type="primary" @click="addCombConfigItemData('combConfigItem')">确 定</el-button>
       </div>
     </el-dialog>
@@ -247,26 +247,27 @@
     <!-- 试卷详情 -->
     <paper-view :page-show="paperDetailDialog" :paper-info="paperInfo" size="50%" @show-change="showChange" />
 
+    <!-- 填写试卷信息弹框 -->
+    <paper-form-dialog ref="paperForm" :default-paper-name="defaultPaperName" :dialog-show="paperFormDialog" :difficult-list="difficultList" :paper-type-list="paperTypeList" @showChange="showPaperFormDialog" @startComposition="getPaperInfo" />
+
     <!-- 组卷提示框 -->
-    <el-dialog title="提示" width="30%" :visible.sync="paperTipDialog" :close-on-click-modal="false">
-      <span>正在组卷.....</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="danger" @click="paperTipDialog = false">取消组卷</el-button>
-      </span>
-    </el-dialog>
+    <composition-loading ref="compositionLoading" :dialog-show="paperTipDialog" @showChange="showCompositionLoading" @cancelRequest="cancelCompositionRequest" />
   </div>
 </template>
 
 <script>
-import { select } from '@/api/paper/composition.js'
+import { select, startCompositionRequest, normalCompositionRequest } from '@/api/paper/composition.js'
+import { cancel } from '@/utils/requestUtil'
 import { selectConfigs, selectItemsByConfigId } from '@/api/basedata/config'
-import { parseTime, idToValueConversionFilter } from '@/utils'
+import { parseTime, idToValueConversionFilter, getIdByValue } from '@/utils'
 import Pagination from '@/components/Pagination'
 import PaperView from '@/components/PaperView'
+import CompositionLoading from '@/views/paper/composition/compositionLoading'
+import PaperFormDialog from '@/views/paper/composition/paperFormDialog'
 
 export default {
   name: 'Composition',
-  components: { Pagination, PaperView },
+  components: { Pagination, PaperView, CompositionLoading, PaperFormDialog },
   filters: {
     parseUserTime(time, cFormat) {
       return parseTime(time, cFormat)
@@ -289,13 +290,13 @@ export default {
       // 校验规则
       combConfigItemRules: {
         type: [
-          { required: true, message: '题目类别不能为空', trigger: 'blur' }
+          { required: true, message: '题目类别不能为空', trigger: 'change' }
         ],
         category: [
-          { required: true, message: '题型不能为空', trigger: 'blur' }
+          { required: true, message: '题型不能为空', trigger: 'change' }
         ],
         difficult: [
-          { required: true, message: '题目难度不能为空', trigger: 'blur' }
+          { required: true, message: '题目难度不能为空', trigger: 'change' }
         ],
         number: [
           { required: true, message: '题目数量不能为空', trigger: 'blur' }
@@ -363,8 +364,8 @@ export default {
         type: null,
         category: null,
         difficult: null,
-        number: '',
-        score: ''
+        number: null,
+        score: null
       },
       // 快速组卷弹窗标志
       fastDialog: false,
@@ -386,7 +387,13 @@ export default {
       // 表格选择列表
       multipleSelection: [],
       multipleConfigItemSelection: [],
-      configItemCount: 0
+      configItemCount: 0,
+      cancelId: null,
+      paperFormDialog: false,
+      paperConfigId: Number,
+      combConfigDialogStatus: Boolean,
+      compositionType: '',
+      defaultPaperName: ''
     }
   },
   created() {
@@ -404,7 +411,7 @@ export default {
      */
     fetchData() {
       this.listLoading = true
-      const difficultId = this.getIdByValue(this.difficultList, this.searchData.difficult)
+      const difficultId = getIdByValue(this.difficultList, this.searchData.difficult)
       const params = {
         pageSize: this.page.size,
         pageNum: this.page.pageNumber,
@@ -426,7 +433,7 @@ export default {
      */
     fetchConfigData() {
       this.configListLoading = true
-      const difficult = this.getIdByValue(this.configDifficultList, this.searchConfigData.difficult)
+      const difficult = getIdByValue(this.configDifficultList, this.searchConfigData.difficult)
       const params = {
         pageSize: this.pageConfig.size,
         pageNum: this.pageConfig.pageNumber,
@@ -576,101 +583,77 @@ export default {
       ]
     },
     /**
-     * 输入框响应enter查询
-     */
-    handleFilter() {
-      this.page.pageNumber = 1
-      this.fetchData()
-    },
-    /**
-     * 输入框响应enter查询
-     */
-    handleConfigFilter() {
-      this.pageConfig.pageNumber = 1
-      this.fetchConfigData()
-    },
-    /**
-     * 添加配置项条目数据
-     */
-    addCombConfigItemData(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          const configItem = JSON.parse(JSON.stringify(this.combConfigItem))
-          configItem.id = this.configItemCount
-          this.normalConfigItemList.push(configItem)
-          this.exitAddCombConfigItem()
-          this.configItemCount++
-        } else {
-          this.$message({
-            type: 'error',
-            message: '数据格式验证失败！'
-          })
-        }
-      })
-    },
-    /**
-     * 退出配置项目条目的窗口
-     * 重置 combConfigItem
-     */
-    exitAddCombConfigItem() {
-      this.addCombConfigItemDialog = false
-      this.combConfigItem = {
-        type: null,
-        category: null,
-        difficult: null,
-        number: '',
-        score: ''
-      }
-    },
-    /**
-     * 获取表格选取的数据
-     */
-    handleSelectionChange(selection) {
-      this.multipleSelection = selection
-    },
-    /**
-     * 获取配置条目表格选取的数据
-     */
-    handleConfigItemSelectionChange(selection) {
-      this.multipleConfigItemSelection = selection
-    },
-    /**
      * 响应分页事件
      */
     paperConfigPagination(number) {
       this.pageConfig.pageNumber = number
       this.fetchConfigData()
     },
+
+    // 快速组卷的方法
     /**
-     * 快速组卷
+     * 打开快速组卷的抽屉
      */
     fastComposition() {
       this.fastDialog = true
+      this.compositionType = 'fast'
       this.fetchConfigData()
     },
     /**
-     * 标准组卷
+     * 快速组卷前的填写表单
      */
-    normalComposition() {
-      this.normalDialog = true
+    fillPaperForm(row) {
+      this.paperConfigId = row.id
+      this.defaultPaperName = row.name
+      console.log(this.defaultPaperName)
+      this.paperFormDialog = true
     },
     /**
      * 开始快速组卷
      */
-    startComposition(row) {
+    startComposition(paperInfo) {
       this.$confirm('是否开始快速组卷?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.paperTipDialog = true
-        // TODO: 这里进行组卷
+        const params = {
+          id: this.paperConfigId,
+          name: paperInfo.name,
+          paperType: getIdByValue(this.paperTypeList, paperInfo.paperType),
+          difficult: getIdByValue(this.difficultList, paperInfo.difficult),
+          descript: paperInfo.descript
+        }
+        this.$refs.compositionLoading.init()
+        this.cancelId = new Date().getTime()
+        startCompositionRequest(params, this.cancelId).then(result => {
+          this.$refs.compositionLoading.stopComposition('组卷成功，弹窗即将关闭！', true)
+        }).catch(result => {
+          this.$refs.compositionLoading.stopComposition(result.msg, false)
+        })
       }).catch(() => {
         this.$message({
           type: 'warning',
           message: '已取消组卷'
         })
       })
+    },
+
+    // 标准组卷
+    /**
+     * 打开标准组卷的抽屉
+     */
+    normalComposition() {
+      this.normalDialog = true
+      this.compositionType = 'normal'
+    },
+    /**
+     * 快速组卷前的填写表单
+     */
+    normalFillPaperForm() {
+      this.defaultPaperName = this.normalPaperConfig.name
+      this.paperFormDialog = true
     },
     /**
      * 标准组卷前校验配置项格式
@@ -679,7 +662,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           if (this.normalConfigItemList.length > 0) {
-            this.startNormalComposition()
+            this.normalFillPaperForm()
           } else {
             this.$message({
               type: 'error',
@@ -697,25 +680,34 @@ export default {
     /**
      * 开始标准组卷
      */
-    startNormalComposition() {
+    startNormalComposition(paperInfo) {
       this.$confirm('是否开始标准组卷?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.normalConfigItemList.forEach(item => {
-          item.difficult = this.getIdByValue(this.subjectDifficultList, item.difficult)
-          item.category = this.getIdByValue(this.subjectCategoryList, item.category)
-          item.type = this.getIdByValue(this.subjectTypeList, item.type)
+          item.difficult = getIdByValue(this.subjectDifficultList, item.difficult)
+          item.category = getIdByValue(this.subjectCategoryList, item.category)
+          item.type = getIdByValue(this.subjectTypeList, item.type)
         })
-        const result = {
-          name: this.normalPaperConfig.name,
+        const params = {
+          name: paperInfo.name,
+          paperType: getIdByValue(this.paperTypeList, paperInfo.paperType),
+          difficult: getIdByValue(this.difficultList, paperInfo.difficult),
+          descript: paperInfo.descript,
+          configName: this.normalPaperConfig.name,
           status: this.getStatusValue(this.normalPaperConfig.status),
           itemList: this.normalConfigItemList
         }
-        console.log(result)
-        // TODO: 这里进行组卷
         this.paperTipDialog = true
+        this.$refs.compositionLoading.init()
+        this.cancelId = new Date().getTime()
+        normalCompositionRequest(params, this.cancelId).then(result => {
+          this.$refs.compositionLoading.stopComposition('组卷成功，弹窗即将关闭！', true)
+        }).catch(result => {
+          this.$refs.compositionLoading.stopComposition(result.msg, false)
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -723,75 +715,23 @@ export default {
         })
       })
     },
+
+    // 标准组卷中配置明细的相关操作
     /**
-     * 模板组卷
+     * 添加组卷明细弹框
      */
-    templateComposition() {
-      this.$confirm('该功能与下载试卷一致，是否打开下载试卷页面?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$router.push('/paper/download')
-      }).catch(() => {
-        console.log('取消')
-      })
+    addCombConfigItem() {
+      this.addCombConfigItemDialog = true
+      this.combConfigDialogStatus = true
     },
     /**
-     * 试卷详情
-     */
-    paperDetail() {
-      if (this.multipleSelection.length === 1) {
-        console.log(this.multipleSelection[0])
-        this.paperDetailDialog = true
-      } else {
-        this.$message({
-          type: 'error',
-          message: '只能选择一条试卷数据'
-        })
-      }
-    },
-    /**
-     * 导入数据
-     */
-    exportData() {
-      this.$message({
-        type: 'info',
-        message: '该功能暂未开发...'
-      })
-    },
-    /**
-     * 删除试卷
-     * @param row
-     */
-    deletePaper(row) {
-      this.$confirm('是否删除' + row.name + '?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // TODO: 这里进行删除操作
-        console.log('这里进行删除操作')
-      }).catch(() => {
-        console.log('取消')
-      })
-    },
-    /**
-     * 删除试卷
-     * @param row
-     */
-    editPaper(row) {
-      // TODO: 这里进行修改试卷操作
-      console.log(row)
-      console.log('这里进行修改试卷操作!')
-    },
-    /**
-     * 修改组卷明细
+     * 修改组卷明细弹框
      */
     editCombConfigItem() {
       if (this.multipleConfigItemSelection.length === 1) {
         this.combConfigItem = JSON.parse(JSON.stringify(this.multipleConfigItemSelection[0]))
         this.addCombConfigItemDialog = true
+        this.combConfigDialogStatus = false
       } else {
         this.$message({
           type: 'error',
@@ -817,31 +757,152 @@ export default {
         })
       }
     },
-
     /**
-     * 根据value和集合获取对应的ID
+     * 添加配置项条目数据
      */
-    getIdByValue(list, value) {
-      let result = null
-      list.forEach(item => {
-        if (item.value === value) {
-          result = item.id
+    addCombConfigItemData(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const configItem = JSON.parse(JSON.stringify(this.combConfigItem))
+          if (this.combConfigDialogStatus) {
+            // 添加
+            configItem.id = this.configItemCount
+            this.normalConfigItemList.push(configItem)
+            this.configItemCount++
+          } else {
+            // 修改
+            this.normalConfigItemList.forEach((item, index) => {
+              if (item.id === configItem.id) {
+                this.normalConfigItemList.splice(index, 1, configItem)
+              }
+            })
+          }
+          this.exitAddCombConfigItem(formName)
+        } else {
+          this.$message({
+            type: 'error',
+            message: '数据格式验证失败！'
+          })
         }
       })
-      return result
     },
+    /**
+     * 退出配置项目条目的窗口
+     * 重置 combConfigItem
+     */
+    exitAddCombConfigItem(formName) {
+      this.addCombConfigItemDialog = false
+      this.$refs[formName].resetFields()
+    },
+
+    /**
+     * 填写完试卷信息的回调方法
+     */
+    getPaperInfo(paperInfo) {
+      if (this.compositionType === 'fast') {
+        this.startComposition(paperInfo)
+      } else if (this.compositionType === 'normal') {
+        this.startNormalComposition(paperInfo)
+      }
+    },
+    /**
+     * 取消组卷请求
+     */
+    cancelCompositionRequest() {
+      cancel(this.cancelId, '取消组卷请求')
+      // TODO: 这里要取消后端的请求
+    },
+
+    // 模板组卷
+    /**
+     * 模板组卷
+     */
+    templateComposition() {
+      this.$confirm('该功能与下载试卷一致，是否打开下载试卷页面?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$router.push('/paper/download')
+      }).catch(() => {
+        console.log('取消')
+      })
+    },
+
+    // 试卷详情
+    /**
+     * 查看试卷详情
+     */
+    paperDetail() {
+      if (this.multipleSelection.length === 1) {
+        console.log(this.multipleSelection[0])
+        this.paperDetailDialog = true
+      } else {
+        this.$message({
+          type: 'error',
+          message: '只能选择一条试卷数据'
+        })
+      }
+    },
+
     /**
      * 返回Status Value的工具方法
      */
     getStatusValue(value) {
       return value === '启用' ? 1 : 0
     },
+
+    // 键盘或者鼠标的响应事件
+    /**
+     * 输入框响应enter查询
+     */
+    handleFilter() {
+      this.page.pageNumber = 1
+      this.fetchData()
+    },
+    /**
+     * 输入框响应enter查询
+     */
+    handleConfigFilter() {
+      this.pageConfig.pageNumber = 1
+      this.fetchConfigData()
+    },
+
+    // 同步数据表格左侧的多选框
+    /**
+     * 获取表格选取的数据
+     */
+    handleSelectionChange(selection) {
+      this.multipleSelection = selection
+    },
+    /**
+     * 获取配置条目表格选取的数据
+     */
+    handleConfigItemSelectionChange(selection) {
+      this.multipleConfigItemSelection = selection
+    },
+
+    // 同步父子组件中值的方法，基本为控制弹窗的打开与关闭
     /**
      * 同步试卷预览的值
      * @param val
      */
     showChange(val) {
       this.paperDetailDialog = val
+    },
+    /**
+     * 同步组卷提示弹框的值
+     * @param val
+     */
+    showCompositionLoading(val) {
+      this.paperTipDialog = val
+    },
+    /**
+     * 同步试卷表单弹框的值
+     * @param val
+     */
+    showPaperFormDialog(val) {
+      this.paperFormDialog = val
     }
   }
 }

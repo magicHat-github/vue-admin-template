@@ -126,3 +126,19 @@ export function idToValueConversionFilter(target, targetList) {
   })
   return result
 }
+
+/**
+ * 根据value和集合获取对应的ID
+ * @param list 集合
+ * @param value 值
+ * @returns {*}
+ */
+export function getIdByValue(list, value) {
+  let result = null
+  list.forEach(item => {
+    if (item.value === value) {
+      result = item.id
+    }
+  })
+  return result
+}
