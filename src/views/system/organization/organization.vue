@@ -7,7 +7,7 @@
           <el-input v-model="formInline.name" size="mini" />
         </el-form-item>
         <el-form-item>
-          <el-button size="mini" type="primary">查询</el-button>
+          <el-button size="mini" type="primary" @click="queryData">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -16,12 +16,7 @@
     <el-card>
       <div>
         <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addOrg">增加</el-link>
-        <el-link
-          class="itemAction"
-          type="danger"
-          icon="el-icon-delete"
-          @click="deleteSelectedOrg"
-        >删除</el-link>
+        <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteSelectedOrg">删除</el-link>
         <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateSelectedOrg">修改</el-link>
       </div>
       <!-- 数据显示表单 -->
@@ -38,7 +33,7 @@
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" align="center" />
-          <el-table-column prop="orgname" label="组织机构" width="120" align="center" />
+          <el-table-column prop="name" label="组织机构" width="120" align="center" />
           <el-table-column prop="code" label="机构代码" width="120" align="center" />
           <el-table-column prop="master" label="负责人" show-overflow-tooltip align="center" />
           <el-table-column prop="tel" label="电话" show-overflow-tooltip align="center" />
@@ -46,25 +41,19 @@
           <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
             <template slot-scope="scope">
               <el-tag
-                :type="scope.row.status === '1' ? 'primary' : 'info'"
+                :type="scope.row.status === 1 ? 'primary' : 'info'"
               >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="110" align="center">
             <template slot-scope="scope">
-              <el-link
-                class="itemAction"
-                size="mini"
-                type="primary"
-                icon="el-icon-plus"
-                @click="addOrg"
-              />
+              <el-link class="itemAction" size="mini" type="primary" icon="el-icon-plus" @click="addOrg" />
               <el-link
                 class="itemAction"
                 size="mini"
                 type="danger"
                 icon="el-icon-delete"
-                @click="deleteOrg"
+                @click="deleteSpecificOrg(scope.row)"
               />
               <el-link
                 class="itemAction"
@@ -84,7 +73,7 @@
           :total="total"
           :page.sync="page.pageNumber"
           :limit.sync="page.size"
-          @click="queryData"
+          @pagination="queryData"
         />
       </div>
     </el-card>
@@ -94,6 +83,8 @@
 <script>
 // 引入分页组件
 import Pagination from '@/components/Pagination'
+import { queryOrg, deleteOrg } from '@/api/system/org'
+
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -101,81 +92,24 @@ export default {
   data() {
     return {
       /**
-       * 查询字段
-       */
+			 * 查询字段
+			 */
       formInline: {
         name: ''
       },
 
       /**
-       * 职位管理
-       */
-      organizations: [
-        {
-          orgname: '腾讯',
-          code: 'CEO',
-          master: 'xly是懒猪',
-          tel: '0',
-          address: '博思大厦',
-          status: '1'
-        },
-        {
-          orgname: '腾讯',
-          code: 'CEO',
-          master: 'xly是懒猪',
-          tel: '0',
-          address: '博思大厦',
-          status: '1'
-        },
-        {
-          orgname: '豆瓣',
-          code: 'CEO',
-          master: 'xly是懒猪',
-          tel: '0',
-          address: '博思大厦',
-          status: '1'
-        },
-        {
-          orgname: '滴滴',
-          code: 'CEO',
-          master: 'xly是懒猪',
-          tel: '0',
-          address: '博思大厦',
-          status: '0'
-        },
-        {
-          orgname: '字节',
-          code: 'CEO',
-          master: 'xly是懒猪',
-          tel: '0',
-          address: '博思大厦',
-          status: '1'
-        },
-        {
-          orgname: '百度',
-          code: 'CEO',
-          master: 'xly是懒猪',
-          tel: '0',
-          address: '博思大厦',
-          status: '1'
-        },
-        {
-          orgname: '阿里巴巴',
-          code: 'CEO',
-          master: 'xly是懒猪',
-          tel: '0',
-          address: '博思大厦',
-          status: '1'
-        }
-      ],
+			 * 组织管理
+			 */
+      organizations: [],
 
       /**
-       * 待确认字段
-       */
+			 * 待确认字段
+			 */
       multipleSelection: [],
       /**
-       * 默认的分页的页面数据
-       */
+			 * 默认的分页的页面数据
+			 */
       page: {
         size: 5,
         pageNumber: 1
@@ -190,38 +124,61 @@ export default {
   },
   methods: {
     /**
-     * 查询数据
-     */
+		 * 查询数据
+		 */
     queryData() {
+      console.log(this.formInline.name)
+      const params = {
+        orgName: this.formInline.name,
+        pageSize: this.page.size,
+        pageNum: this.page.pageNumber
+      }
+      console.log(params)
+      queryOrg(params).then(result => {
+        const body = result.body
+        // 转换树结构的数据
+        console.log('this is result')
+        console.log(body)
+        // 转换表格数据
+        this.organizations = body.dataList
+        // 分页信息
+        this.total = parseInt(body.dataCount)
+      }).catch(err => {
+        console.log(err)
+      })
       this.total = this.organizations.length
       this.loading = false
     },
 
     /**
-     * 勾选事件触发的函数
-     */
+		 * 勾选事件触发的函数
+		 */
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
     /**
-     * 跳转到增加界面
-     */
+		 * 跳转到增加界面
+		 */
     addOrg() {
       this.$router.push({
         name: 'AddOrg'
       })
     },
+
+    /**
+		 * 跳转到更新界面
+		 */
     updateOrg(row) {
       this.$router.push({
         name: 'UpdateOrg',
         params: {
-          row: row
+          org: row
         }
       })
     },
     /**
-     * 顶层的菜单栏事件函数
-     */
+		 * 顶层的菜单栏更新事件函数
+		 */
     updateSelectedOrg() {
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -239,12 +196,14 @@ export default {
         this.$router.push({
           name: 'UpdateOrg',
           params: {
-            row: this.multipleSelection[0]
+            org: this.multipleSelection[0]
           }
         })
       }
     },
-
+    /**
+     * 删除选中组织机构
+     */
     deleteSelectedOrg() {
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -253,29 +212,73 @@ export default {
         })
       }
       if (this.multipleSelection.length > 0) {
-        this.deleteOrg()
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            const params = {
+              dataList: []
+            }
+            this.multipleSelection.forEach(item => {
+              const deleteData = {
+                id: item.id,
+                version: item.version
+              }
+              params.dataList.push(deleteData)
+            })
+            this.deleteOrg(params)
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
       }
     },
-
-    /**
-     * 删除信息
-     */
-    deleteOrg() {
+    deleteSpecificOrg(row) {
+      console.log(row)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+          const params = {
+            dataList: []
+          }
+          const deleteData = {
+            id: row.id,
+            version: row.version
+          }
+          params.dataList.push(deleteData)
+          this.deleteOrg(params)
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
+          })
+        })
+    },
+    /**
+     * 删除信息
+     */
+    deleteOrg(params) {
+      console.log(params.idList)
+      deleteOrg(params)
+        .then(_ => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: `错误${err}`
           })
         })
     }
@@ -285,6 +288,6 @@ export default {
 
 <style>
 .itemAction {
-  margin-right: 10px;
+	margin-right: 10px;
 }
 </style>
