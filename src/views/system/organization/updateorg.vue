@@ -154,7 +154,7 @@ export default {
           console.log('submit!')
           this.submit()
         } else {
-          console.log(this.userForm.status)
+      
           return false
         }
       })

@@ -119,7 +119,7 @@
                     class="itemAction"
                     type="danger"
                     icon="el-icon-delete"
-                    @click="deleteDepartment"
+                    @click="deleteSpecificDepartment(scope.row)"
                   />
                   <el-link
                     class="itemAction"
@@ -132,14 +132,15 @@
             </el-table>
           </div>
           <!-- 分页部分 -->
-          <div class="block">
-            <pagination
-              v-show="total>0"
-              :total="total"
-              :page.sync="page.pageNumber"
-              :limit.sync="page.size"
-              @click="queryData"
-            />
+
+            <div class="block">
+              <pagination
+                v-show="total>0"
+                :total="total"
+                :page.sync="page.pageNumber"
+                :limit.sync="page.size"
+                @pagination="queryData"
+              />
           </div>
         </el-card>
       </div>
@@ -151,7 +152,7 @@
 // 引入分页组件
 import Pagination from '@/components/Pagination'
 // 引入方法
-import { queryDepartment } from '@/api/system/department'
+import { queryDepartment ,deleteDepartment} from '@/api/system/department'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -219,7 +220,7 @@ export default {
       queryDepartment(params).then(result => {
         const body = result.body
         // 转换树结构的数据
-        console.log(body.tree)
+        console.log(body)
         const tree = body.tree.treeNodeList
         this.treeData = this.transDataToTree(tree)
         console.log('this is result')
@@ -288,6 +289,9 @@ export default {
         name: 'AddDepartment'
       })
     },
+     /**
+		 * 跳转到更新界面
+		 */
     updateDepartment(row) {
       this.$router.push({
         name: 'UpdateDepartment',
@@ -297,7 +301,7 @@ export default {
       })
     },
     /**
-     * 顶层的菜单栏事件函数
+     * 顶层的菜单栏更新事件函数
      */
     updateSelectedDepartment() {
       if (this.multipleSelection.length === 0) {
@@ -322,6 +326,9 @@ export default {
       }
     },
 
+     /**
+     * 删除选中组织机构
+     */
     deleteSelectedDepartment() {
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -330,29 +337,76 @@ export default {
         })
       }
       if (this.multipleSelection.length > 0) {
-        this.deleteDepartment()
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            const params = {
+              dataList: []
+            }
+            this.multipleSelection.forEach(item => {
+              const deleteData = {
+                id: item.id,
+                version: item.version
+              }
+              params.dataList.push(deleteData)
+            })
+            this.deleteDepartment(params)
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
       }
     },
-
     /**
-     * 删除信息
+     * 删除指定部门
      */
-    deleteDepartment() {
+    deleteSpecificDepartment(row) {
+      console.log(row)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+          const params = {
+            dataList: []
+          }
+          const deleteData = {
+            id: row.id,
+            version: row.version
+          }
+          params.dataList.push(deleteData)
+          this.deleteDepartment(params)
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
+          })
+        })
+    },
+    /**
+     * 删除信息
+     */
+    deleteDepartment(params) {
+      console.log(params.idList)
+      deleteDepartment(params)
+        .then(_ => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: `错误${err}`
           })
         })
     }

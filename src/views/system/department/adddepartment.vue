@@ -37,8 +37,8 @@
         <el-row>
           <!-- 注记码输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="助记码" prop="mnemonic_code">
-              <el-input v-model="departmentForm.mnemonic_code" placeholder="请输入内容" clearable />
+            <el-form-item label="助记码" prop="mnemonicCode">
+              <el-input v-model="departmentForm.mnemonicCode" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 部门等级下拉框 -->
@@ -131,7 +131,7 @@ export default {
       departmentForm: {
         name: '',
         code: '',
-        mnemonic_code: '',
+        mnemonicCode: '',
         level: '',
         parent: '',
         master: '',
@@ -161,7 +161,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        mnemonic_code: [
+        mnemonicCode: [
           { required: true, message: '请输入密码', trigger: 'blur' },
           {
             min: 3,

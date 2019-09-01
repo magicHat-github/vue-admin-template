@@ -177,7 +177,7 @@ export default {
       })
     },
     /**
-		 * 顶层的菜单栏事件函数
+		 * 顶层的菜单栏更新事件函数
 		 */
     updateSelectedOrg() {
       if (this.multipleSelection.length === 0) {

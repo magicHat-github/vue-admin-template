@@ -26,3 +26,19 @@ export function queryDepartment(params) {
 export function addDepartment(params) {
   return systemRequestApi('/department/add', 'POST', params)
 }
+
+/**
+ * 对部门进行新增操作
+ * @param {*} params 参数
+ */
+export function deleteDepartment(params) {
+  return systemRequestApi('/department/delete', 'POST', params)
+}
+
+/**
+ * 对部门进行新增操作
+ * @param {*} params 参数
+ */
+export function updateDepartment(params) {
+  return systemRequestApi('/department/update', 'POST', params)
+}
