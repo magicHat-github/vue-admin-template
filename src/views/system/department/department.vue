@@ -41,7 +41,7 @@
             </el-form-item>
             <!-- 部门等级下拉框 -->
             <el-form-item label="部门等级:">
-              <el-select v-model="formInline.level"  placeholder="请选择" size="mini">
+              <el-select v-model="formInline.level" placeholder="请选择" size="mini">
                 <el-option
                   v-for="department in formInline.departmentLevels"
                   :key="department"
@@ -175,8 +175,8 @@ export default {
        */
       formInline: {
         departmentName: '',
-        level:'',
-        departmentLevels: ['',1,2,3,4,5]
+        level: '',
+        departmentLevels: ['', 1, 2, 3, 4, 5]
       },
 
       /**
@@ -206,7 +206,7 @@ export default {
   },
   methods: {
 
-     /**
+    /**
      * 查询数据
      */
     queryData() {
@@ -273,7 +273,7 @@ export default {
       this.multipleSelection = val
     },
 
-   /**
+    /**
      * 树结构的点击事件
      */
     handleNodeClick(data) {
