@@ -37,20 +37,15 @@
         <el-row>
           <!-- 注记码输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="助记码" prop="mnemonic_code">
-              <el-input v-model="departmentForm.mnemonic_code" placeholder="请输入内容" clearable />
+            <el-form-item label="助记码" prop="mnemonicCode">
+              <el-input v-model="departmentForm.mnemonicCode" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
           <!-- 部门等级下拉框 -->
           <el-col :span="7" :offset="2">
             <el-form-item label="部门等级" prop="level">
               <el-select v-model="departmentForm.level" filterable placeholder="请选择">
-                <el-option
-                  v-for="position in positions"
-                  :key="position.name"
-                  :label="position.name"
-                  :value="position.name"
-                />
+                <el-option v-for="level in levels" :key="level" :label="level" :value="level" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -58,17 +53,11 @@
 
         <!-- 第三行 -->
         <el-row>
-
           <!-- 上级部门下拉框 -->
           <el-col :span="7" :offset="3">
             <el-form-item label="上级部门" prop="parent_id">
-              <el-select v-model="departmentForm.parent_id" filterable placeholder="请选择">
-                <el-option
-                  v-for="role in roles"
-                  :key="role.name"
-                  :label="role.name"
-                  :value="role.name"
-                />
+              <el-select v-model="departmentForm.parent" value-key="id" placeholder="请选择">
+                <el-option v-for="parent in parents" :key="parent.id" :label="parent.name" :value="parent" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -77,6 +66,28 @@
           <el-col :span="7" :offset="2">
             <el-form-item label="负责人" prop="master">
               <el-input v-model="departmentForm.master" placeholder="请输入内容" clearable />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <!-- 第四行 -->
+        <!--选择所偶公司按钮 -->
+        <el-row>
+          <el-col :span="7" :offset="3">
+            <el-form-item label="所属公司">
+              <el-select v-model="departmentForm.company" value-key="id" filterable placeholder="请选择">
+                <el-option
+                  v-for="company in companys"
+                  :key="company.id"
+                  :label="company.name"
+                  :value="company"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="7" :offset="2">
+            <el-form-item label="描述" prop="descript">
+              <el-input v-model="departmentForm.descript" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
@@ -110,83 +121,201 @@
 </template>
 
 <script>
+import { queryDepartment, addDepartment } from '@/api/system/department'
 export default {
   data() {
     return {
       /**
-       * 表单数据
-       */
+			 * 表单数据
+			 */
       departmentForm: {
         name: '',
         code: '',
-        mnemonic_code: '',
+        mnemonicCode: '',
         level: '',
-        parent_id: '',
+        parent: '',
         master: '',
+        company: '',
+        descript: '',
         status: '1'
       },
       /**
-       * 表单校验规则
-       */
+			 * 表单校验规则
+			 */
       departmentRules: {
         name: [
           { required: true, message: '请输入工号', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
         code: [
           { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
-        mnemonic_code: [
+        mnemonicCode: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
         level: [
           { required: true, message: '请输入职位', trigger: 'change' }
         ],
         parent_id: [
-          { required: true, message: '请输入性别', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { message: '请输入性别', trigger: 'blur' },
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
         master: [
           { required: true, message: '请输入生日', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
+        ],
+        descript: [
+          { required: true, message: '请输入生日', trigger: 'blur' },
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ]
       },
       /**
-       * 职位下拉框选项
-       */
-      positions: [{ name: '鼓励师' }, { name: '搬砖人' }],
+			 * 职位下拉框选项
+			 */
+      levels: [1, 2, 3, 4, 5],
       /**
-       * 角色下拉框选项
-       */
-      roles: [{ name: '鼓励师' }, { name: '搬砖人' }]
+			 * 上级部门下拉框选项
+			 */
+      parents: [],
+      companys: []
     }
+  },
+  created() {
+    this.queryData()
   },
   methods: {
     /**
-     * 保存按钮
-     */
+		 * 查询数据
+		 */
+    queryData() {
+      const params = {
+        departmentName: '',
+        level: '',
+        pageSize: 1,
+        pageNum: 1
+      }
+      queryDepartment(params)
+        .then(result => {
+          const body = result.body
+          // 转换树结构的数据
+          console.log(body.tree)
+          const tree = body.tree.treeNodeList
+          this.transDataToTree(tree)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+
+    /**
+		 * 查询树结构的方法
+		 */
+    transDataToTree(arr) {
+      return arr.map(element => {
+        return this.getChildren(element)
+      })
+    },
+
+    /**
+		 * 查询树结构中的数据
+		 */
+    getChildren(element) {
+      if (!element.childList) {
+        // 这里可以用于判断公司名是否为空
+        console.log('this is departments')
+        console.log(element)
+        const re = {
+          label: element.name,
+          id: element.id,
+          children: null
+        }
+        const parent = {
+          name: element.name,
+          id: element.id
+        }
+        this.parents.push(parent)
+        return re
+      } else {
+        // 填充公司选项下拉框数据
+        const company = {
+          name: element.name,
+          id: element.id
+        }
+        this.companys.push(company)
+        return {
+          children: this.transDataToTree(element.childList)
+        }
+      }
+    },
+
+    /**
+		 * 保存按钮
+		 */
     submitForm(formName) {
+      console.log('this is formData orgs')
+      console.log(this.departmentForm.parent)
       this.$refs[formName].validate(valid => {
         if (valid) {
           console.log('submit!')
           this.submit()
         } else {
-          console.log(this.departmentForm.status)
           return false
         }
       })
     },
     submit() {
-      this.$router.push({
-        name: 'Department'
-      })
-      this.$message('操作成功')
+      console.log('this is formData')
+      console.log(this.departmentForm)
+      const params = {
+        name: this.departmentForm.name,
+        code: this.departmentForm.code,
+        mnemonicCode: this.departmentForm.mnemonicCode,
+        master: this.departmentForm.master,
+        level: this.departmentForm.level,
+        parentId: this.departmentForm.parent.id,
+        status: this.departmentForm.status,
+        descript: this.departmentForm.descript,
+        companyId: this.departmentForm.company.id
+      }
+      console.log('this is params')
+      console.log(params)
+      addDepartment(params).then(this.$message('操作成功'))
     },
     /**
-     * 关闭按钮
-     */
+		 * 关闭按钮
+		 */
     close() {
       this.$router.push({
         name: 'Department'

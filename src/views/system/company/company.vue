@@ -17,7 +17,13 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              v-loading="loading"
+              accordion
+              :data="treeData"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -36,7 +42,13 @@
 
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.orgName" filterable placeholder="请选择" size="mini">
+              <el-select
+                v-model="formInline.orgName"
+                filterable
+                clearable
+                placeholder="请选择"
+                size="mini"
+              >
                 <el-option v-for="company in treeData" :key="company.label" :value="company.label" />
               </el-select>
             </el-form-item>
@@ -76,6 +88,7 @@
             <!-- 数据显示表单 -->
             <el-table
               ref="multipleTable"
+              v-loading="loading"
               :data="companys"
               tooltip-effect="dark"
               stripe
@@ -185,8 +198,9 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      // 试卷总数
-      total: 0
+      // 公司数据总数
+      total: 0,
+      loading: true
     }
   },
   created() {
@@ -218,6 +232,7 @@ export default {
         // 分页信息
         console.log(body.dataCount)
         this.total = parseInt(body.dataCount)
+        this.loading = false
       })
     },
     /**
@@ -271,6 +286,7 @@ export default {
         name: 'AddCompany'
       })
     },
+
     /**
      * 跳转到修改界面
      */
