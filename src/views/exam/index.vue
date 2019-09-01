@@ -304,7 +304,9 @@ export default {
         // 评卷截止时间
         markingEndTime: '',
         // 备注 描述
-        description: ''
+        description: '',
+        // 版本号
+        version: ''
       },
       /**
        * 表格单选和多选
@@ -583,6 +585,7 @@ export default {
             } else {
               this.showMessage('error', '未知错误')
             }
+            this.dialogConfig.dialogVisible = false
             this.freshIndex()
           })
           .catch(err => this.showMessage('error', `网络错误${err}`))
