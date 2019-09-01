@@ -292,7 +292,7 @@ export default {
       }
       console.log('this is params')
       console.log(params)
-      updateCompany(params).then(this.$message('操作成功'))
+      updateCompany(params).then(this.close(), this.$message('操作成功'))
     },
     /**
      * 关闭按钮
