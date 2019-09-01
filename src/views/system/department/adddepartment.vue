@@ -45,12 +45,7 @@
           <el-col :span="7" :offset="2">
             <el-form-item label="部门等级" prop="level">
               <el-select v-model="departmentForm.level" filterable placeholder="请选择">
-                <el-option
-                  v-for="position in positions"
-                  :key="position.name"
-                  :label="position.name"
-                  :value="position.name"
-                />
+                <el-option v-for="level in levels" :key="level" :label="level" :value="level" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -58,17 +53,11 @@
 
         <!-- 第三行 -->
         <el-row>
-
           <!-- 上级部门下拉框 -->
           <el-col :span="7" :offset="3">
             <el-form-item label="上级部门" prop="parent_id">
               <el-select v-model="departmentForm.parent_id" filterable placeholder="请选择">
-                <el-option
-                  v-for="role in roles"
-                  :key="role.name"
-                  :label="role.name"
-                  :value="role.name"
-                />
+                <el-option v-for="parent in parents" :key="parent.name" :label="parent.name" :value="parent.name" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -110,12 +99,13 @@
 </template>
 
 <script>
+import { queryDepartment } from '@/api/system/department'
 export default {
   data() {
     return {
       /**
-       * 表单数据
-       */
+			 * 表单数据
+			 */
       departmentForm: {
         name: '',
         code: '',
@@ -126,47 +116,103 @@ export default {
         status: '1'
       },
       /**
-       * 表单校验规则
-       */
+			 * 表单校验规则
+			 */
       departmentRules: {
         name: [
           { required: true, message: '请输入工号', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
         code: [
           { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
         mnemonic_code: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
         level: [
           { required: true, message: '请输入职位', trigger: 'change' }
         ],
         parent_id: [
-          { required: true, message: '请输入性别', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { message: '请输入性别', trigger: 'blur' },
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
         master: [
           { required: true, message: '请输入生日', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ]
       },
       /**
-       * 职位下拉框选项
-       */
-      positions: [{ name: '鼓励师' }, { name: '搬砖人' }],
+			 * 职位下拉框选项
+			 */
+      levels: [1, 2, 3, 4, 5],
       /**
-       * 角色下拉框选项
-       */
-      roles: [{ name: '鼓励师' }, { name: '搬砖人' }]
+			 * 上级部门下拉框选项
+			 */
+      parents: [{ name: '鼓励师' }, { name: '搬砖人' }]
     }
   },
+  created() {
+    this.queryData()
+  },
   methods: {
+
     /**
-     * 保存按钮
-     */
+		 * 查询数据
+		 */
+    queryData() {
+      console.log(this.formInline.name)
+      const params = {
+        orgName: this.formInline.name,
+        pageSize: this.page.size,
+        pageNum: this.page.pageNumber
+      }
+      console.log(params)
+      queryDepartment(params).then(result => {
+        const body = result.body
+        // 转换树结构的数据
+        console.log('this is result')
+        console.log(body)
+        // 转换表格数据
+        this.organizations = body.dataList
+        // 分页信息
+        this.total = parseInt(body.dataCount)
+      }).catch(err => {
+        console.log(err)
+      })
+      this.total = this.organizations.length
+      this.loading = false
+    },
+
+    /**
+		 * 保存按钮
+		 */
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -185,8 +231,8 @@ export default {
       this.$message('操作成功')
     },
     /**
-     * 关闭按钮
-     */
+		 * 关闭按钮
+		 */
     close() {
       this.$router.push({
         name: 'Department'
