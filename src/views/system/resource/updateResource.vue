@@ -15,7 +15,7 @@
         :rules="resourceRules"
         label-width="100px"
         class="user-add-Form"
-        label-position="right"
+        label-position="left"
       >
         <!-- 第一行 -->
         <el-row>
@@ -110,6 +110,17 @@
         </el-row>
 
         <!-- 第六行 -->
+        <el-row>
+          <!-- 资源类型下拉框 -->
+          <el-col :span="7" :offset="3">
+            <el-form-item label="是否启用">
+              <el-radio v-model="resourceForm.status" label="1">是</el-radio>
+              <el-radio v-model="resourceForm.status" label="0">否</el-radio>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- 第七行 -->
         <!-- 按钮组件 -->
         <el-row :gutter="0">
           <el-form-item>
@@ -141,7 +152,8 @@ export default {
         resourceType: '',
         openImg: '',
         closeImg: '',
-        leaf: '2'
+        leaf: '0',
+        status: '1'
       },
       /**
        * 表单校验规则

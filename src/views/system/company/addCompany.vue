@@ -1,10 +1,10 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">新增公司基本信息</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">新增公司</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
-      <font style="font-size:15px;" color="blue">公司的基本信息</font>
+      <font style="font-size:15px;" color="blue">公司基本信息</font>
     </el-col>
     <div class="app-container allData">
       <hr>
@@ -15,13 +15,13 @@
         :rules="companyRules"
         label-width="100px"
         class="user-add-Form"
-        label-org-name="right"
+        label-org-name="left"
       >
         <!-- 第一行 -->
         <el-row>
           <!-- 公司名输入框 -->
           <el-col :span="7" :offset="3">
-            <el-form-item label="公司名" prop="name">
+            <el-form-item label="公司名称" prop="name">
               <el-input v-model="companyForm.name" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
@@ -195,6 +195,7 @@ export default {
      * 查询树结构数据，从而获取公司名字和机构数据
      */
     queryOrgAndCompanyData() {
+      this.orgs = []
       const params = {
         companyName: '',
         orgName: '',
@@ -204,10 +205,8 @@ export default {
       fetchCompany(params).then(result => {
         const body = result.body
         // 转换树结构的数据
-        console.log(body.tree)
         const tree = body.tree.treeNodeList
         this.transDataToTree(tree)
-        console.log('this is result')
       })
     },
     /**
@@ -250,18 +249,18 @@ export default {
      * 保存按钮
      */
     submitForm(formName) {
-      console.log('this is formData orgs')
-      console.log(this.companyForm.org)
       this.$refs[formName].validate(valid => {
         if (valid) {
           console.log('submit!')
           this.submit()
         } else {
-          console.log(this.userForm.status)
           return false
         }
       })
     },
+    /**
+     * 提交数据的promise函数
+     */
     submit() {
       console.log('this is formData')
       console.log(this.companyForm)

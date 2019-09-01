@@ -15,7 +15,7 @@
         :rules="companyRules"
         label-width="100px"
         class="user-add-Form"
-        label-org-name="right"
+        label-org-name="left"
       >
         <!-- 第一行 -->
         <el-row>

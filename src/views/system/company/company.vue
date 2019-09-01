@@ -49,7 +49,7 @@
                 placeholder="请选择"
                 size="mini"
               >
-                <el-option v-for="company in treeData" :key="company.label" :value="company.label" />
+                <el-option v-for="org in treeData" :key="org.label" :value="org.label" />
               </el-select>
             </el-form-item>
 
@@ -223,7 +223,7 @@ export default {
         console.log(body.tree)
         const tree = body.tree.treeNodeList
         this.treeData = this.transDataToTree(tree)
-        console.log('this is result')
+        console.log('this is treeData')
         console.log(this.treeData)
         // 转换表格数据
         this.companys = body.dataList
@@ -248,7 +248,7 @@ export default {
      */
     getChildren(element) {
       if (!element.childList) {
-        console.log('this is recall')
+        console.log('this is childNode')
         console.log(element)
         const re = {
           label: element.name,
@@ -257,7 +257,7 @@ export default {
         }
         return re
       } else {
-        console.log('this is call')
+        console.log('this is parentNode')
         console.log(element)
         return {
           label: element.name,
@@ -290,7 +290,7 @@ export default {
      * 跳转到修改界面
      */
     updateCompany(row) {
-      console.log('this is row data')
+      console.log('this is updating-data')
       console.log(row)
       this.$router.push({
         name: 'UpdateCompany',
@@ -399,6 +399,7 @@ export default {
             type: 'success',
             message: '删除成功!'
           })
+          this.queryData()
         })
         .catch(err => {
           this.$message({
