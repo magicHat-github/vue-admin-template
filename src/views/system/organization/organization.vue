@@ -28,6 +28,7 @@
       <div>
         <el-table
           ref="multipleTable"
+          v-loading="loading"
           :data="organizations"
           tooltip-effect="dark"
           style="width: 100%; margin-top: 10px;"
@@ -179,8 +180,9 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      // 试卷总数
-      total: 0
+      // 组织机构数据总数
+      total: 0,
+      loading: true
     }
   },
   created() {
@@ -192,6 +194,7 @@ export default {
      */
     queryData() {
       this.total = this.organizations.length
+      this.loading = false
     },
 
     /**

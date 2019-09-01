@@ -17,7 +17,13 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              v-loading="loading"
+              accordion
+              :data="treeData"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -76,6 +82,7 @@
             <!-- 数据显示表单 -->
             <el-table
               ref="multipleTable"
+              v-loading="loading"
               :data="companys"
               tooltip-effect="dark"
               stripe
@@ -185,8 +192,9 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      // 试卷总数
-      total: 0
+      // 公司数据总数
+      total: 0,
+      loading: true
     }
   },
   created() {
@@ -218,6 +226,7 @@ export default {
         // 分页信息
         console.log(body.dataCount)
         this.total = parseInt(body.dataCount)
+        this.loading = false
       })
     },
     /**
