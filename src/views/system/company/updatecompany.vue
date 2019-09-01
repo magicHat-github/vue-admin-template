@@ -86,13 +86,15 @@
         <el-row>
           <el-col :span="7" :offset="3">
             <el-form-item label="所属机构" prop="org">
-              <el-select v-model="companyForm.org" filterable placeholder="请选择" clearable>
-                <el-option
-                  v-for="org in orgs"
-                  :key="org.id"
-                  :label="org.name"
-                  :value="org"
-                />
+              <el-select
+                v-model="companyForm.org"
+                value-key="id"
+                filterable
+                placeholder="请选择"
+                clearable
+                @visible-change="$forceUpdate()"
+              >
+                <el-option v-for="org in orgs" :key="org.id" :label="org.name" :value="org" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -159,18 +161,12 @@ export default {
        * 表单校验规则
        */
       companyRules: {
-        name: [
-          { required: true, message: '请输入公司名称', trigger: 'blur' }
-        ],
-        code: [
-          { required: true, message: '请输入公司编号', trigger: 'blur' }
-        ],
+        name: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
+        code: [{ required: true, message: '请输入公司编号', trigger: 'blur' }],
         mnemonicCode: [
           { required: true, message: '请输入助记码', trigger: 'blur' }
         ],
-        org: [
-          { required: true, message: '请选择所属机构', trigger: 'change' }
-        ],
+        org: [{ required: true, message: '请选择所属机构', trigger: 'change' }],
         tax: [
           { required: true, message: '请输入税号', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
@@ -296,9 +292,7 @@ export default {
       }
       console.log('this is params')
       console.log(params)
-      updateCompany(params).then(
-        this.$message('操作成功')
-      )
+      updateCompany(params).then(this.$message('操作成功'))
     },
     /**
      * 关闭按钮
