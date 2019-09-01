@@ -42,7 +42,13 @@
 
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.orgName" filterable placeholder="请选择" size="mini">
+              <el-select
+                v-model="formInline.orgName"
+                filterable
+                clearable
+                placeholder="请选择"
+                size="mini"
+              >
                 <el-option v-for="company in treeData" :key="company.label" :value="company.label" />
               </el-select>
             </el-form-item>
