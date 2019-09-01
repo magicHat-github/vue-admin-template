@@ -133,14 +133,14 @@
           </div>
           <!-- 分页部分 -->
 
-            <div class="block">
-              <pagination
-                v-show="total>0"
-                :total="total"
-                :page.sync="page.pageNumber"
-                :limit.sync="page.size"
-                @pagination="queryData"
-              />
+          <div class="block">
+            <pagination
+              v-show="total>0"
+              :total="total"
+              :page.sync="page.pageNumber"
+              :limit.sync="page.size"
+              @pagination="queryData"
+            />
           </div>
         </el-card>
       </div>
@@ -152,7 +152,7 @@
 // 引入分页组件
 import Pagination from '@/components/Pagination'
 // 引入方法
-import { queryDepartment ,deleteDepartment} from '@/api/system/department'
+import { queryDepartment, deleteDepartment } from '@/api/system/department'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -289,7 +289,7 @@ export default {
         name: 'AddDepartment'
       })
     },
-     /**
+    /**
 		 * 跳转到更新界面
 		 */
     updateDepartment(row) {
@@ -326,7 +326,7 @@ export default {
       }
     },
 
-     /**
+    /**
      * 删除选中组织机构
      */
     deleteSelectedDepartment() {

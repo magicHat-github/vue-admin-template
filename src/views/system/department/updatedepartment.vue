@@ -17,7 +17,7 @@
         class="user-add-Form"
         label-position="right"
       >
-       <!-- 第一行 -->
+        <!-- 第一行 -->
         <el-row>
           <!-- 部门名称输入框 -->
           <el-col :span="7" :offset="3">
@@ -70,19 +70,19 @@
           </el-col>
         </el-row>
 
-
         <!-- 第四行 -->
         <!--选择所偶公司按钮 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="所属公司" >
-              <el-select 
-              v-model="departmentForm.company" 
-              value-key="id" 
-              filterable 
-              placeholder="请选择" 
-              clearable 
-              @visible-change="$forceUpdate()">
+            <el-form-item label="所属公司">
+              <el-select
+                v-model="departmentForm.company"
+                value-key="id"
+                filterable
+                placeholder="请选择"
+                clearable
+                @visible-change="$forceUpdate()"
+              >
                 <el-option
                   v-for="company in companys"
                   :key="company.id"
@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import { queryDepartment, updateDepartment} from '@/api/system/department'
+import { queryDepartment, updateDepartment } from '@/api/system/department'
 export default {
   data() {
     return {
@@ -137,8 +137,8 @@ export default {
        * 表单数据
        */
       departmentForm: {
-        id:'',
-        version:'',
+        id: '',
+        version: '',
         name: '',
         code: '',
         mnemonicCode: '',
@@ -169,7 +169,7 @@ export default {
           { required: true, message: '请选择部门等级', trigger: 'change' }
         ],
         parent: [
-          { required: true, message: '请选择上级部门', trigger: 'change' },
+          { required: true, message: '请选择上级部门', trigger: 'change' }
         ],
         master: [
           { required: true, message: '请输入部门负责人', trigger: 'blur' },
@@ -188,12 +188,12 @@ export default {
     }
   },
   created() {
-   const department =  this.$route.params.row
-   this.queryData(department)
+    const department = this.$route.params.row
+    this.queryData(department)
   },
   methods: {
 
-     /**
+    /**
 		 * 查询数据
 		 */
     queryData(department) {
@@ -211,17 +211,17 @@ export default {
           console.log('this is result')
           this.departmentForm = body.dataList[0]
           const parent = {
-           name: body.dataList[0].parentName,
-           id: body.dataList[0].parentId
-        }
-           const company = {
-           name: body.dataList[0].companyName,
-           id: body.dataList[0].companyId
-        }
-        this.departmentForm.parent = parent
-        this.departmentForm.company = company
-        //this.departmentForm.status = body.dataList[0].status + ''
-        console.log(this.departmentForm)
+            name: body.dataList[0].parentName,
+            id: body.dataList[0].parentId
+          }
+          const company = {
+            name: body.dataList[0].companyName,
+            id: body.dataList[0].companyId
+          }
+          this.departmentForm.parent = parent
+          this.departmentForm.company = company
+          // this.departmentForm.status = body.dataList[0].status + ''
+          console.log(this.departmentForm)
         })
         .catch(err => {
           console.log(err)
@@ -286,8 +286,8 @@ export default {
       console.log('this is formData')
       console.log(this.departmentForm)
       const params = {
-        id:this.departmentForm.id,
-        version:this.departmentForm.version,
+        id: this.departmentForm.id,
+        version: this.departmentForm.version,
         name: this.departmentForm.name,
         code: this.departmentForm.code,
         mnemonicCode: this.departmentForm.mnemonicCode,
@@ -296,7 +296,7 @@ export default {
         parentId: this.departmentForm.parent.id,
         status: this.departmentForm.status,
         descript: this.departmentForm.descript,
-        companyId: this.departmentForm.company.id,
+        companyId: this.departmentForm.company.id
       }
       console.log('this is params')
       console.log(params)

@@ -154,7 +154,6 @@ export default {
           console.log('submit!')
           this.submit()
         } else {
-      
           return false
         }
       })
