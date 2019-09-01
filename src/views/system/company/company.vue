@@ -286,6 +286,13 @@ export default {
         name: 'AddCompany'
       })
     },
+
+   /**
+     * 树结构的点击事件
+     */
+    handleNodeClick(data) {
+      console.log(data)
+    },
     /**
      * 跳转到修改界面
      */

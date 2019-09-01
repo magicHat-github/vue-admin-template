@@ -1,243 +1,326 @@
 <template>
-  <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">新增部门</h1>
-    <hr>
-    <br>
-    <el-col :span="5" :offset="1">
-      <font style="font-size:15px;" color="blue">部门基本信息</font>
-    </el-col>
-    <div class="app-container allData">
-      <hr>
-      <!--表单输入 -->
-      <el-form
-        ref="departmentForm"
-        :model="departmentForm"
-        :rules="departmentRules"
-        label-width="100px"
-        class="user-add-Form"
-        label-position="right"
-      >
-        <!-- 第一行 -->
-        <el-row>
-          <!-- 部门名称输入框 -->
-          <el-col :span="7" :offset="3">
-            <el-form-item label="部门名称" prop="name">
-              <el-input v-model="departmentForm.name" placeholder="请输入内容" clearable />
-            </el-form-item>
-          </el-col>
-          <!-- 部门编号输入框 -->
-          <el-col :span="7" :offset="2">
-            <el-form-item label="部门编号" prop="code">
-              <el-input v-model="departmentForm.code" placeholder="请输入内容" clearable />
-            </el-form-item>
-          </el-col>
-        </el-row>
+	<div class="app-container allData">
+		<h1 style="font-size:25px;" class="el-icon-menu">新增部门</h1>
+		<hr />
+		<br />
+		<el-col :span="5" :offset="1">
+			<font style="font-size:15px;" color="blue">部门基本信息</font>
+		</el-col>
+		<div class="app-container allData">
+			<hr />
+			<!--表单输入 -->
+			<el-form
+				ref="departmentForm"
+				:model="departmentForm"
+				:rules="departmentRules"
+				label-width="100px"
+				class="user-add-Form"
+				label-position="right"
+			>
+				<!-- 第一行 -->
+				<el-row>
+					<!-- 部门名称输入框 -->
+					<el-col :span="7" :offset="3">
+						<el-form-item label="部门名称" prop="name">
+							<el-input v-model="departmentForm.name" placeholder="请输入内容" clearable />
+						</el-form-item>
+					</el-col>
+					<!-- 部门编号输入框 -->
+					<el-col :span="7" :offset="2">
+						<el-form-item label="部门编号" prop="code">
+							<el-input v-model="departmentForm.code" placeholder="请输入内容" clearable />
+						</el-form-item>
+					</el-col>
+				</el-row>
 
-        <!-- 第二行 -->
-        <el-row>
-          <!-- 注记码输入框 -->
-          <el-col :span="7" :offset="3">
-            <el-form-item label="助记码" prop="mnemonic_code">
-              <el-input v-model="departmentForm.mnemonic_code" placeholder="请输入内容" clearable />
-            </el-form-item>
-          </el-col>
-          <!-- 部门等级下拉框 -->
-          <el-col :span="7" :offset="2">
-            <el-form-item label="部门等级" prop="level">
-              <el-select v-model="departmentForm.level" filterable placeholder="请选择">
-                <el-option v-for="level in levels" :key="level" :label="level" :value="level" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
+				<!-- 第二行 -->
+				<el-row>
+					<!-- 注记码输入框 -->
+					<el-col :span="7" :offset="3">
+						<el-form-item label="助记码" prop="mnemonic_code">
+							<el-input v-model="departmentForm.mnemonic_code" placeholder="请输入内容" clearable />
+						</el-form-item>
+					</el-col>
+					<!-- 部门等级下拉框 -->
+					<el-col :span="7" :offset="2">
+						<el-form-item label="部门等级" prop="level">
+							<el-select v-model="departmentForm.level" filterable placeholder="请选择">
+								<el-option v-for="level in levels" :key="level" :label="level" :value="level" />
+							</el-select>
+						</el-form-item>
+					</el-col>
+				</el-row>
 
-        <!-- 第三行 -->
-        <el-row>
-          <!-- 上级部门下拉框 -->
-          <el-col :span="7" :offset="3">
-            <el-form-item label="上级部门" prop="parent_id">
-              <el-select v-model="departmentForm.parent_id" filterable placeholder="请选择">
-                <el-option v-for="parent in parents" :key="parent.name" :label="parent.name" :value="parent.name" />
-              </el-select>
-            </el-form-item>
-          </el-col>
+				<!-- 第三行 -->
+				<el-row>
+					<!-- 上级部门下拉框 -->
+					<el-col :span="7" :offset="3">
+						<el-form-item label="上级部门" prop="parent_id">
+							<el-select v-model="departmentForm.parent" value-key="id" placeholder="请选择">
+								<el-option v-for="parent in parents" :key="parent.id" :label="parent.name" :value="parent" />
+							</el-select>
+						</el-form-item>
+					</el-col>
 
-          <!-- 负责人输入框 -->
-          <el-col :span="7" :offset="2">
-            <el-form-item label="负责人" prop="master">
-              <el-input v-model="departmentForm.master" placeholder="请输入内容" clearable />
-            </el-form-item>
-          </el-col>
-        </el-row>
+					<!-- 负责人输入框 -->
+					<el-col :span="7" :offset="2">
+						<el-form-item label="负责人" prop="master">
+							<el-input v-model="departmentForm.master" placeholder="请输入内容" clearable />
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<!-- 第四行 -->
+				<!--选择所偶公司按钮 -->
+				<el-row>
+					<el-col :span="7" :offset="3">
+						<el-form-item label="所属公司">
+							<el-select v-model="departmentForm.company" value-key="id" filterable placeholder="请选择">
+								<el-option
+									v-for="company in companys"
+									:key="company.id"
+									:label="company.name"
+									:value="company"
+								/>
+							</el-select>
+						</el-form-item>
+					</el-col>
 
-        <!-- 第四行 -->
-        <!--复选按钮 -->
-        <el-row>
-          <el-col :span="7" :offset="3">
-            <el-form-item label="是否启用">
-              <el-radio v-model="departmentForm.status" label="1">是</el-radio>
-              <el-radio v-model="departmentForm.status" label="0">否</el-radio>
-            </el-form-item>
-          </el-col>
-        </el-row>
+					<el-col :span="7" :offset="2">
+						<el-form-item label="描述" prop="descript">
+							<el-input v-model="departmentForm.descript" placeholder="请输入内容" clearable />
+						</el-form-item>
+					</el-col>
+				</el-row>
 
-        <!-- 第五行 -->
-        <!-- 按钮组件 -->
-        <el-row :gutter="0">
-          <el-form-item>
-            <el-col :span="3" :offset="8">
-              <el-button type="primary" @click="submitForm('departmentForm')">保存</el-button>
-            </el-col>
-            <el-col :span="3">
-              <el-button @click="close">关闭</el-button>
-            </el-col>
-          </el-form-item>
-        </el-row>
-      </el-form>
-    </div>
-  </div>
+				<!-- 第四行 -->
+				<!--复选按钮 -->
+				<el-row>
+					<el-col :span="7" :offset="3">
+						<el-form-item label="是否启用">
+							<el-radio v-model="departmentForm.status" label="1">是</el-radio>
+							<el-radio v-model="departmentForm.status" label="0">否</el-radio>
+						</el-form-item>
+					</el-col>
+				</el-row>
+
+				<!-- 第五行 -->
+				<!-- 按钮组件 -->
+				<el-row :gutter="0">
+					<el-form-item>
+						<el-col :span="3" :offset="8">
+							<el-button type="primary" @click="submitForm('departmentForm')">保存</el-button>
+						</el-col>
+						<el-col :span="3">
+							<el-button @click="close">关闭</el-button>
+						</el-col>
+					</el-form-item>
+				</el-row>
+			</el-form>
+		</div>
+	</div>
 </template>
 
 <script>
-import { queryDepartment } from '@/api/system/department'
+import { queryDepartment, addDepartment } from '@/api/system/department'
 export default {
-  data() {
-    return {
-      /**
+	data() {
+		return {
+			/**
 			 * 表单数据
 			 */
-      departmentForm: {
-        name: '',
-        code: '',
-        mnemonic_code: '',
-        level: '',
-        parent_id: '',
-        master: '',
-        status: '1'
-      },
-      /**
+			departmentForm: {
+				name: '',
+				code: '',
+				mnemonic_code: '',
+				level: '',
+				parent: '',
+				master: '',
+				company: '',
+				descript: '',
+				status: '1'
+			},
+			/**
 			 * 表单校验规则
 			 */
-      departmentRules: {
-        name: [
-          { required: true, message: '请输入工号', trigger: 'blur' },
-          {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
-            trigger: 'blur'
-          }
-        ],
-        code: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
-            trigger: 'blur'
-          }
-        ],
-        mnemonic_code: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
-            trigger: 'blur'
-          }
-        ],
-        level: [
-          { required: true, message: '请输入职位', trigger: 'change' }
-        ],
-        parent_id: [
-          { message: '请输入性别', trigger: 'blur' },
-          {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
-            trigger: 'blur'
-          }
-        ],
-        master: [
-          { required: true, message: '请输入生日', trigger: 'blur' },
-          {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
-            trigger: 'blur'
-          }
-        ]
-      },
-      /**
+			departmentRules: {
+				name: [
+					{ required: true, message: '请输入工号', trigger: 'blur' },
+					{
+						min: 3,
+						max: 5,
+						message: '长度在 3 到 5 个字符',
+						trigger: 'blur'
+					}
+				],
+				code: [
+					{ required: true, message: '请输入姓名', trigger: 'blur' },
+					{
+						min: 3,
+						max: 5,
+						message: '长度在 3 到 5 个字符',
+						trigger: 'blur'
+					}
+				],
+				mnemonic_code: [
+					{ required: true, message: '请输入密码', trigger: 'blur' },
+					{
+						min: 3,
+						max: 5,
+						message: '长度在 3 到 5 个字符',
+						trigger: 'blur'
+					}
+				],
+				level: [
+					{ required: true, message: '请输入职位', trigger: 'change' }
+				],
+				parent_id: [
+					{ message: '请输入性别', trigger: 'blur' },
+					{
+						min: 3,
+						max: 5,
+						message: '长度在 3 到 5 个字符',
+						trigger: 'blur'
+					}
+				],
+				master: [
+					{ required: true, message: '请输入生日', trigger: 'blur' },
+					{
+						min: 3,
+						max: 5,
+						message: '长度在 3 到 5 个字符',
+						trigger: 'blur'
+					}
+				],
+				descript: [
+					{ required: true, message: '请输入生日', trigger: 'blur' },
+					{
+						min: 3,
+						max: 5,
+						message: '长度在 3 到 5 个字符',
+						trigger: 'blur'
+					}
+				]
+			},
+			/**
 			 * 职位下拉框选项
 			 */
-      levels: [1, 2, 3, 4, 5],
-      /**
+			levels: [1, 2, 3, 4, 5],
+			/**
 			 * 上级部门下拉框选项
 			 */
-      parents: [{ name: '鼓励师' }, { name: '搬砖人' }]
-    }
-  },
-  created() {
-    this.queryData()
-  },
-  methods: {
-
-    /**
+			parents: [],
+			companys: []
+		}
+	},
+	created() {
+		this.queryData()
+	},
+	methods: {
+		/**
 		 * 查询数据
 		 */
-    queryData() {
-      console.log(this.formInline.name)
-      const params = {
-        orgName: this.formInline.name,
-        pageSize: this.page.size,
-        pageNum: this.page.pageNumber
-      }
-      console.log(params)
-      queryDepartment(params).then(result => {
-        const body = result.body
-        // 转换树结构的数据
-        console.log('this is result')
-        console.log(body)
-        // 转换表格数据
-        this.organizations = body.dataList
-        // 分页信息
-        this.total = parseInt(body.dataCount)
-      }).catch(err => {
-        console.log(err)
-      })
-      this.total = this.organizations.length
-      this.loading = false
-    },
+		queryData() {
+			const params = {
+				departmentName: '',
+				level: '',
+				pageSize: 1,
+				pageNum: 1
+			}
+			queryDepartment(params)
+				.then(result => {
+					const body = result.body
+					// 转换树结构的数据
+					console.log(body.tree)
+					const tree = body.tree.treeNodeList
+					this.transDataToTree(tree)
+				})
+				.catch(err => {
+					console.log(err)
+				})
+		},
 
-    /**
+		/**
+		 * 查询树结构的方法
+		 */
+		transDataToTree(arr) {
+			return arr.map(element => {
+				return this.getChildren(element)
+			})
+		},
+
+		/**
+		 * 查询树结构中的数据
+		 */
+		getChildren(element) {
+			if (!element.childList) {
+				// 这里可以用于判断公司名是否为空
+				console.log('this is departments')
+				console.log(element)
+				const re = {
+					label: element.name,
+					id: element.id,
+					children: null
+				}
+				const parent = {
+					name: element.name,
+					id: element.id
+				}
+				this.parents.push(parent)
+				return re
+			} else {
+				// 填充公司选项下拉框数据
+				const company = {
+					name: element.name,
+					id: element.id
+				}
+				this.companys.push(company)
+				return {
+					children: this.transDataToTree(element.childList)
+				}
+			}
+		},
+
+		/**
 		 * 保存按钮
 		 */
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          console.log('submit!')
-          this.submit()
-        } else {
-          console.log(this.departmentForm.status)
-          return false
-        }
-      })
-    },
-    submit() {
-      this.$router.push({
-        name: 'Department'
-      })
-      this.$message('操作成功')
-    },
-    /**
+		submitForm(formName) {
+			console.log('this is formData orgs')
+			console.log(this.departmentForm.parent)
+			this.$refs[formName].validate(valid => {
+				if (valid) {
+					console.log('submit!')
+					this.submit()
+				} else {
+					return false
+				}
+			})
+		},
+		submit() {
+			console.log('this is formData')
+			console.log(this.departmentForm)
+			const params = {
+				name: this.departmentForm.name,
+				code: this.departmentForm.code,
+				mnemonicCode: this.departmentForm.mnemonicCode,
+				master: this.departmentForm.master,
+				level: this.departmentForm.level,
+				parentId: this.departmentForm.parent.id,
+        status: this.departmentForm.status,
+        descript:this.departmentForm.descript,
+        companyId:this.departmentForm.company.id
+			}
+			console.log('this is params')
+			console.log(params)
+			addDepartment(params).then(this.$message('操作成功'))
+		},
+		/**
 		 * 关闭按钮
 		 */
-    close() {
-      this.$router.push({
-        name: 'Department'
-      })
-    }
-  }
+		close() {
+			this.$router.push({
+				name: 'Department'
+			})
+		}
+	}
 }
 </script>
