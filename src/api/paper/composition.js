@@ -6,10 +6,41 @@ import { paperRequestApi } from '@/utils/requestUtil'
 
 /**
  * 分页查询
- * @param {*} params 参数
+ * @param params 参数
+ * @param cancel 取消请求的方法
+ * @returns {AxiosPromise}
  */
-export function select(params) {
-  return paperRequestApi('/paper/composition', 'post', params)
+export function select(params, cancel) {
+  return paperRequestApi('/composition/papers', 'post', params, cancel)
+}
+
+/**
+ * 上传试卷为模板
+ * @param params 参数
+ * @returns {AxiosPromise}
+ */
+export function uploadPaper(params) {
+  return paperRequestApi('/upload/template', 'post', params)
+}
+
+/**
+ * 快速组卷
+ * @param params 参数
+ * @param cancel 取消请求的方法
+ * @returns {AxiosPromise}
+ */
+export function startCompositionRequest(params, cancel) {
+  return paperRequestApi('/composition/quick', 'post', params, cancel)
+}
+
+/**
+ * 标准组卷
+ * @param params 参数
+ * @param cancel 取消请求的方法
+ * @returns {AxiosPromise}
+ */
+export function normalCompositionRequest(params, cancel) {
+  return paperRequestApi('/composition/normal', 'post', params, cancel)
 }
 
 /**

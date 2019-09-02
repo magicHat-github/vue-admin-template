@@ -17,7 +17,13 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              v-loading="loading"
+              accordion
+              :data="treeData"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -39,10 +45,11 @@
               <el-select
                 v-model="formInline.orgName"
                 filterable
+                clearable
                 placeholder="请选择"
                 size="mini"
               >
-                <el-option v-for="company in companys" :key="company.orgName" :value="company.orgName" />
+                <el-option v-for="org in treeData" :key="org.label" :value="org.label" />
               </el-select>
             </el-form-item>
 
@@ -81,6 +88,7 @@
             <!-- 数据显示表单 -->
             <el-table
               ref="multipleTable"
+              v-loading="loading"
               :data="companys"
               tooltip-effect="dark"
               stripe
@@ -103,12 +111,12 @@
               <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
                 <template slot-scope="scope">
                   <el-tag
-                    :type="scope.row.status === '1' ? 'primary' : 'info'"
+                    :type="scope.row.status === 1 ? 'primary' : 'info'"
                   >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
                 </template>
               </el-table-column>
               <el-table-column label="操作" width="110" align="center">
-                <template slot-scope="scope">
+                <template slot-scope="{ row }">
                   <el-link
                     class="itemAction"
                     type="primary"
@@ -119,13 +127,13 @@
                     class="itemAction"
                     type="danger"
                     icon="el-icon-delete"
-                    @click="deleteCompany"
+                    @click="deleteSpecificCompany(row)"
                   />
                   <el-link
                     class="itemAction"
                     type="warning"
                     icon="el-icon-edit"
-                    @click="updateCompany(scope.row)"
+                    @click="updateCompany(row)"
                   />
                 </template>
               </el-table-column>
@@ -150,7 +158,7 @@
 <script>
 // 引入分页组件
 import Pagination from '@/components/Pagination'
-import { fetchCompany } from '@/api/system/company'
+import { fetchCompany, dropCompany } from '@/api/system/company'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -190,8 +198,9 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      // 试卷总数
-      total: 0
+      // 公司数据总数
+      total: 0,
+      loading: true
     }
   },
   created() {
@@ -214,12 +223,16 @@ export default {
         console.log(body.tree)
         const tree = body.tree.treeNodeList
         this.treeData = this.transDataToTree(tree)
-        console.log('this is result')
+        console.log('this is treeData')
         console.log(this.treeData)
         // 转换表格数据
         this.companys = body.dataList
+        console.log('this is table data')
+        console.log(this.companys)
         // 分页信息
-        this.total = body.dataCount
+        console.log(body.dataCount)
+        this.total = parseInt(body.dataCount)
+        this.loading = false
       })
     },
     /**
@@ -235,7 +248,7 @@ export default {
      */
     getChildren(element) {
       if (!element.childList) {
-        console.log('this is recall')
+        console.log('this is childNode')
         console.log(element)
         const re = {
           label: element.name,
@@ -244,7 +257,7 @@ export default {
         }
         return re
       } else {
-        console.log('this is call')
+        console.log('this is parentNode')
         console.log(element)
         return {
           label: element.name,
@@ -268,16 +281,22 @@ export default {
     /**
      * 跳转到增加界面
      */
-    addCompany(row) {
+    addCompany() {
       this.$router.push({
         name: 'AddCompany'
       })
     },
+
+    /**
+     * 跳转到修改界面
+     */
     updateCompany(row) {
+      console.log('this is updating-data')
+      console.log(row)
       this.$router.push({
         name: 'UpdateCompany',
         params: {
-          row: row
+          company: row
         }
       })
     },
@@ -299,15 +318,13 @@ export default {
         })
       }
       if (this.multipleSelection.length === 1) {
-        this.$router.push({
-          name: 'UpdateCompany',
-          params: {
-            row: this.multipleSelection[0]
-          }
-        })
+        this.updateCompany(this.multipleSelection[0])
       }
     },
 
+    /**
+     * 删除选中公司
+     */
     deleteSelectedCompany() {
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -316,29 +333,74 @@ export default {
         })
       }
       if (this.multipleSelection.length > 0) {
-        this.deleteCompany()
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            const params = {
+              dataList: []
+            }
+            this.multipleSelection.forEach(item => {
+              const deleteData = {
+                id: item.id,
+                version: item.version
+              }
+              params.dataList.push(deleteData)
+            })
+            this.deleteCompany(params)
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
       }
     },
-
-    /**
-     * 删除信息
-     */
-    deleteCompany() {
+    deleteSpecificCompany(row) {
+      console.log(row)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+          const params = {
+            dataList: []
+          }
+          const deleteData = {
+            id: row.id,
+            version: row.version
+          }
+          params.dataList.push(deleteData)
+          this.deleteCompany(params)
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
+          })
+        })
+    },
+    /**
+     * 删除信息
+     */
+    deleteCompany(params) {
+      console.log(params.idList)
+      dropCompany(params)
+        .then(_ => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.queryData()
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: `错误${err}`
           })
         })
     }

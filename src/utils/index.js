@@ -110,3 +110,35 @@ export function param2Obj(url) {
       '"}'
   )
 }
+
+/**
+ * id转value
+ * @param target
+ * @param targetList
+ * @returns {*}
+ */
+export function idToValueConversionFilter(target, targetList) {
+  let result = null
+  targetList.forEach(item => {
+    if (item.id === target) {
+      result = item.value
+    }
+  })
+  return result
+}
+
+/**
+ * 根据value和集合获取对应的ID
+ * @param list 集合
+ * @param value 值
+ * @returns {*}
+ */
+export function getIdByValue(list, value) {
+  let result = null
+  list.forEach(item => {
+    if (item.value === value) {
+      result = item.id
+    }
+  })
+  return result
+}
