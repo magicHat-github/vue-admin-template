@@ -163,7 +163,7 @@
               :total="total"
               :page.sync="page.pageNumber"
               :limit.sync="page.size"
-              @click="queryData"
+              @pagination="queryData"
             />
           </div>
         </el-card>
@@ -275,7 +275,7 @@ export default {
      */
     getChildren(element) {
       if (!element.childList) {
-        console.log('this is childNode')
+        console.log('this is leafNode')
         console.log(element)
         const re = {
           label: element.name,
@@ -299,6 +299,8 @@ export default {
      * 树结构的点击事件
      */
     handleNodeClick(data) {
+      this.formInline.resourceName = data.label
+      this.queryData()
       console.log(data)
     },
 
@@ -323,7 +325,7 @@ export default {
       this.$router.push({
         name: 'UpdateResource',
         params: {
-          row: row
+          resource: row
         }
       })
     },
@@ -344,12 +346,7 @@ export default {
         })
       }
       if (this.multipleSelection.length === 1) {
-        this.$router.push({
-          name: 'UpdateResource',
-          params: {
-            row: this.multipleSelection[0]
-          }
-        })
+        this.updateCompany(this.multipleSelection[0])
       }
     },
 

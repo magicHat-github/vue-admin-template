@@ -318,12 +318,7 @@ export default {
         })
       }
       if (this.multipleSelection.length === 1) {
-        this.$router.push({
-          name: 'UpdateCompany',
-          params: {
-            row: this.multipleSelection[0]
-          }
-        })
+        this.updateCompany(this.multipleSelection[0])
       }
     },
 

@@ -266,7 +266,6 @@ export default {
           console.log('submit!')
           this.submit()
         } else {
-          console.log(this.userForm.status)
           return false
         }
       })
@@ -292,7 +291,10 @@ export default {
       }
       console.log('this is params')
       console.log(params)
-      updateCompany(params).then(this.close(), this.$message('操作成功'))
+      updateCompany(params).then(result => {
+        this.close()
+        this.$message(result.head.msg)
+      })
     },
     /**
      * 关闭按钮
