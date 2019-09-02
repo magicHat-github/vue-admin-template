@@ -24,6 +24,15 @@ export function uploadPaper(params) {
 }
 
 /**
+ * 下载模板为试卷
+ * @param params 参数
+ * @returns {AxiosPromise}
+ */
+export function downloadPaper(params) {
+  return paperRequestApi('/download/paper', 'post', params)
+}
+
+/**
  * 快速组卷
  * @param params 参数
  * @param cancel 取消请求的方法
@@ -41,6 +50,15 @@ export function startCompositionRequest(params, cancel) {
  */
 export function normalCompositionRequest(params, cancel) {
   return paperRequestApi('/composition/normal', 'post', params, cancel)
+}
+
+/**
+ * 试卷预览
+ * @param params 参数
+ * @returns {AxiosPromise}
+ */
+export function previewRequest(params) {
+  return paperRequestApi('/composition/preview', 'post', params)
 }
 
 /**

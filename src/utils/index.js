@@ -142,3 +142,5 @@ export function getIdByValue(list, value) {
   })
   return result
 }
+
+export const optionList = ['A', 'B', 'C', 'D', 'E', 'F', 'G']

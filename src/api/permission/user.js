@@ -6,11 +6,8 @@ export function login(data) {
     'head': {
     },
     'body': {
-      'username': data.username,
-      'companyId': 234,
-      'companyName': '软件',
-      'orgId': 456,
-      'orgName': '博思'
+      code: data.username,
+      password: data.password
     }
   }
   return request({
@@ -39,7 +36,7 @@ export function logout() {
     'orgId': 456,
     'orgName': '博思'
   }
-  return permissionRequestApi('/logout', 'post', body)
+  return permissionRequestApi('/logout', 'delete', body)
 }
 
 // 可以删除

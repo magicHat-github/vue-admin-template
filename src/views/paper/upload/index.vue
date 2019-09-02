@@ -84,7 +84,7 @@
 
 <script>
 import { select, uploadPaper } from '@/api/paper/composition.js'
-import { parseTime } from '@/utils'
+import { parseTime, getIdByValue } from '@/utils'
 import { code } from '@/utils/code' // 响应码
 import Pagination from '@/components/Pagination'
 
@@ -148,13 +148,14 @@ export default {
      */
     fetchData() {
       this.listLoading = true
-      const difficultId = this.getIdByValue(this.difficultList, this.searchData.difficult)
+      const difficultId = getIdByValue(this.difficultList, this.searchData.difficult)
       const params = {
         pageSize: this.page.size,
         pageNum: this.page.pageNumber,
         name: this.searchData.name,
         combExamMan: this.searchData.createdBy,
         difficult: difficultId,
+        template: 0,
         combExamTimeStart: this.searchData.comTime[0],
         combExamTimeEnd: this.searchData.comTime[1]
       }
@@ -302,18 +303,6 @@ export default {
         message: message,
         duration: 3000
       })
-    },
-    /**
-     * 根据value和集合获取对应的ID
-     */
-    getIdByValue(list, value) {
-      let result = null
-      list.forEach(item => {
-        if (item.value === value) {
-          result = item.id
-        }
-      })
-      return result
     }
   }
 }

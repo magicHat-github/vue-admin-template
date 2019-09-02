@@ -29,8 +29,12 @@ const actions = {
       login({ username: username.trim(), password: password }).then(result => {
         const data = result.body
         commit('SET_TOKEN', data.token)
+        commit('SET_NAME', data.name)
+        // TODO:待解决问题，刷新用户头像不能加载问题
+        commit('SET_AVATAR', JSON.parse(JSON.stringify(data.avatar)))
+
         setToken(data.token)
-        saveHead('version', 'businessType', 'deviceId', 0, 0)
+        saveHead(data.version, data.businessType, data.deviceId, data.deviceType, data.crypt)
         resolve()
       }).catch(error => {
         reject(error)

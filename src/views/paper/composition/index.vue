@@ -256,7 +256,7 @@
 </template>
 
 <script>
-import { select, startCompositionRequest, normalCompositionRequest } from '@/api/paper/composition.js'
+import { select, startCompositionRequest, normalCompositionRequest, previewRequest } from '@/api/paper/composition.js'
 import { cancel } from '@/utils/requestUtil'
 import { selectConfigs, selectItemsByConfigId } from '@/api/basedata/config'
 import { parseTime, idToValueConversionFilter, getIdByValue } from '@/utils'
@@ -418,6 +418,7 @@ export default {
         name: this.searchData.name,
         combExamMan: this.searchData.createdBy,
         difficult: difficultId,
+        template: 0,
         combExamTimeStart: this.searchData.comTime[0],
         combExamTimeEnd: this.searchData.comTime[1]
       }
@@ -605,7 +606,6 @@ export default {
     fillPaperForm(row) {
       this.paperConfigId = row.id
       this.defaultPaperName = row.name
-      console.log(this.defaultPaperName)
       this.paperFormDialog = true
     },
     /**
@@ -829,14 +829,25 @@ export default {
       })
     },
 
-    // 试卷详情
+    // 试卷预览
     /**
      * 查看试卷详情
      */
     paperDetail() {
       if (this.multipleSelection.length === 1) {
-        console.log(this.multipleSelection[0])
-        this.paperDetailDialog = true
+        const params = {
+          id: this.multipleSelection[0].id,
+          name: this.multipleSelection[0].name
+        }
+        previewRequest(params).then(result => {
+          const info = result.body
+          info.subjects.forEach(item => {
+            item.type = idToValueConversionFilter(item.categoryId, this.subjectCategoryList)
+            item.userAnswer = ''
+          })
+          this.paperInfo = info
+          this.paperDetailDialog = true
+        })
       } else {
         this.$message({
           type: 'error',
