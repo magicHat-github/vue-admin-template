@@ -33,8 +33,10 @@
         <!--复选按钮 -->
         <el-form-item label="是否启用" prop="status">
           <el-col :offset="1" :span="8">
-            <el-radio v-model="status" label="1">是</el-radio>
-            <el-radio v-model="status" label="2">否</el-radio>
+            <el-radio-group v-model="form.status">
+              <el-radio :label="1">是</el-radio>
+              <el-radio :label="2">否</el-radio>
+            </el-radio-group>
           </el-col>
         </el-form-item>
 
@@ -63,7 +65,8 @@ export default {
   data() {
     return {
       form: {
-        name: this.$route.params.id,
+        id: this.$route.params.id,
+        name: this.$route.params.name,
         category: this.$route.params.category,
         value: this.$route.params.value,
         remark: this.$route.params.remark,

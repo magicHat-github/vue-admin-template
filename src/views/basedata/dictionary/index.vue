@@ -29,11 +29,10 @@
       <el-table
         ref="multipleTable"
         v-loading="listLoading"
-        border="true"
         element-loading-text="Loading"
         :data="list"
         tooltip-effect="dark"
-        stripe="true"
+        stripe
         height
         fit
         @selection-change="handleSelectionChange"
@@ -54,9 +53,9 @@
         <el-table-column prop="remark" label="备注信息" align="center">
           <template slot-scope="scope">{{ scope.row.remark }}</template>
         </el-table-column>
-        <el-table-column prop="status" label="启用标记" sortable="true" align="center">
+        <el-table-column class-name="status-col" prop="status" label="启用标记" sortable="true" align="center">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.status === '1' ? 'primary' : 'info'">
+            <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
               {{ scope.row.status === 1 ? "是" : "否" }}
             </el-tag>
           </template>
@@ -72,7 +71,7 @@
 
       <!-- 分页部分 -->
       <div>
-        <pagination v-show="dataCount>0" :total="dataCount" :page.sync="page.pageNumber" :limit.sync="page.size" @pagination="fetchData" />
+        <pagination v-show="dataCount>0" :total="dataCount" :page.sync="page.pageNum" :limit.sync="page.pageSize" @pagination="fetchData" />
       </div>
     </el-card>
   </div>
@@ -101,7 +100,7 @@ export default {
       // 分页的页面数据，默认5条一页，默认处于第一页
       page: {
         pageSize: 5,
-        pageNumber: 1
+        pageNum: 1
       },
       // load加载动画标志
       listLoading: false,
@@ -140,15 +139,15 @@ export default {
     fetchData() {
       this.listLoading = true
       const params = {
-        size: this.page.pageSize,
-        page: this.page.pageNumber,
+        pageSize: this.page.pageSize,
+        pageNum: this.page.pageNum,
         name: this.searchData.name,
         category: this.searchData.category
       }
       select(params).then(result => {
         const body = result.body
         this.list = body.dictionaries.dataList
-        this.dataCount = body.dictionaries.dataCount
+        this.dataCount = parseInt(body.dictionaries.dataCount)
         this.listLoading = false
       })
     },
@@ -203,9 +202,11 @@ export default {
           message: '请选择单个修改选项'
         })
       } else {
-        this.$router.push({
-          name: 'UpdateDictionary'
+        let id = null
+        this.multipleSelection.forEach(item => {
+          id = item.id
         })
+        this.updateDictionary(id)
       }
     },
 

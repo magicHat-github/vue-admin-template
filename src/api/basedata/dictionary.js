@@ -25,7 +25,7 @@ export function deleteList(params) {
  * @param {*} params 参数
  */
 export function insert(params) {
-  return baseDataRequestApi('/dictioanry/addRecord', 'post', params)
+  return baseDataRequestApi('/dictionary/addRecord', 'post', params)
 }
 
 /**
@@ -41,5 +41,5 @@ export function searchItem(params) {
  * @param {*} params 参数
  */
 export function updateItem(params) {
-  return baseDataRequestApi('/dictionary/updateRecord', 'put', params)
+  return baseDataRequestApi('/dictionary/modifyRecord', 'put', params)
 }
