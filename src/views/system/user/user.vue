@@ -231,6 +231,7 @@ export default {
      * 查询数据
      */
     queryData() {
+      this.loading = true
       this.roleNames = []
       // 初始化选择的角色名数组
       const roles = []
@@ -267,11 +268,12 @@ export default {
         console.log(this.users)
         // 分页信息
         this.total = parseInt(body.dataCount)
-        this.loading = false
         // 所有角色名称
         body.allRole.map(role => {
           this.roleNames.push(role)
         })
+        // 加载动画
+        this.loading = false
       })
     },
     /**

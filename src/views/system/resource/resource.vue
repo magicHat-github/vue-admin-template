@@ -242,6 +242,7 @@ export default {
      * 查询数据
      */
     queryData() {
+      this.loading = true
       this.resourceNames = []
       this.parentResourceNames = []
       const params = {

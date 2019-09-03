@@ -211,6 +211,7 @@ export default {
      * 查询数据
      */
     queryData() {
+      this.loading = true
       const params = {
         companyName: this.formInline.companyName,
         orgName: this.formInline.orgName,
@@ -240,6 +241,7 @@ export default {
      */
     transDataToTree(arr) {
       return arr.map(element => {
+        // 这里的element是根节点
         return this.getChildren(element)
       })
     },
@@ -248,7 +250,8 @@ export default {
      */
     getChildren(element) {
       if (!element.childList) {
-        console.log('this is childNode')
+        // 这里的element是叶子节点(叶子节点：即不存在子节点的节点)
+        console.log('this is leafNode')
         console.log(element)
         const re = {
           label: element.name,
@@ -257,7 +260,8 @@ export default {
         }
         return re
       } else {
-        console.log('this is parentNode')
+        // 这里的element是非叶子节点(包括根节点)
+        console.log('this is non-leafNode')
         console.log(element)
         return {
           label: element.name,
