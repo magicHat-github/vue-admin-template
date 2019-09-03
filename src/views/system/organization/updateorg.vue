@@ -17,7 +17,7 @@
         size="mini"
         class="demo-ruleForm"
         style="padding-left:30%;"
-        label-position="right"
+        label-org-name="left"
       >
         <el-form-item label="机构名称" prop="name">
           <el-col :span="8">
@@ -84,7 +84,7 @@ export default {
         tel: '',
         address: '',
         version: '',
-        status: ''
+        status: '1'
       },
       rules: {
         name: [
@@ -142,6 +142,7 @@ export default {
         const body = result.body
         // 转换树结构的数据
         this.form = body.dataList[0]
+        this.form.status = body.dataList[0].status + ''
       })
     },
 

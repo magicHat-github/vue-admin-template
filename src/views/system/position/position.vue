@@ -49,7 +49,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="company" label="姓名" width="120" align="center" />
+        <el-table-column prop="company" label="公司" width="120" align="center" />
         <el-table-column prop="name" label="姓名" width="120" align="center" />
         <el-table-column prop="remark" label="备注" show-overflow-tooltip align="center" />
         <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
