@@ -61,7 +61,7 @@
                 size="mini"
               >
                 <el-option
-                  v-for="name in resourceNames"
+                  v-for="name in parentResourceNames"
                   :key="name"
                   :value="name"
                 />
@@ -200,6 +200,11 @@ export default {
       resourceNames: [],
 
       /**
+       * 所有资源的名称
+       */
+      parentResourceNames: [],
+
+      /**
        * 查询字段
        */
       formInline: {
@@ -238,6 +243,7 @@ export default {
      */
     queryData() {
       this.resourceNames = []
+      this.parentResourceNames = []
       const params = {
         resourceName: this.formInline.resourceName,
         parentName: this.formInline.parentName,
@@ -275,8 +281,6 @@ export default {
      */
     getChildren(element) {
       if (!element.childList) {
-        console.log('this is leafNode')
-        console.log(element)
         const re = {
           label: element.name,
           id: element.id,
@@ -285,9 +289,8 @@ export default {
         this.resourceNames.push(element.name)
         return re
       } else {
-        console.log('this is parentNode')
-        console.log(element)
         this.resourceNames.push(element.name)
+        this.parentResourceNames.push(element.name)
         return {
           label: element.name,
           id: element.id,
@@ -416,11 +419,8 @@ export default {
     deleteResource(params) {
       console.log(params.idList)
       dropResource(params)
-        .then(_ => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+        .then(result => {
+          this.$message(result.head.msg)
           this.queryData()
         })
         .catch(err => {
