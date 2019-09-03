@@ -17,7 +17,13 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="resourceTreeVO" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              v-loading="loading"
+              accordion
+              :data="treeData"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -32,32 +38,32 @@
             <!-- 节点名称输入框 -->
             <el-form-item label="节点名称:">
               <el-select
-                v-model="formInline.resourceNames"
+                v-model="formInline.resourceName"
                 filterable
-                multiple
+                clearable
                 placeholder="请选择"
                 size="mini"
               >
                 <el-option
-                  v-for="resource in resources"
-                  :key="resource.name"
-                  :value="resource.name"
+                  v-for="name in resourceNames"
+                  :key="name"
+                  :value="name"
                 />
               </el-select>
             </el-form-item>
             <!-- 父亲节点下拉框 -->
             <el-form-item label="父亲节点:">
               <el-select
-                v-model="formInline.parentResources"
+                v-model="formInline.parentName"
                 filterable
-                multiple
+                clearable
                 placeholder="请选择"
                 size="mini"
               >
                 <el-option
-                  v-for="resource in resources"
-                  :key="resource.parentName"
-                  :value="resource.parentName"
+                  v-for="name in parentResourceNames"
+                  :key="name"
+                  :value="name"
                 />
               </el-select>
             </el-form-item>
@@ -96,6 +102,7 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
+            v-loading="loading"
             :data="resources"
             tooltip-effect="dark"
             stripe
@@ -115,12 +122,19 @@
             <el-table-column class-name="status-col" label="是否叶节点" width="110" align="center">
               <template slot-scope="scope">
                 <el-tag
-                  :type="scope.row.leaf === '1' ? 'primary' : 'info'"
+                  :type="scope.row.leaf === 1 ? 'primary' : 'info'"
                 >{{ scope.row.leaf == 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
+            <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
+                <el-tag
+                  :type="scope.row.status === 1 ? 'primary' : 'info'"
+                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" style="white-space:nowrap" width="110" align="center">
+              <template slot-scope="{ row }">
                 <el-link
                   class="itemAction"
                   type="primary"
@@ -131,13 +145,13 @@
                   class="itemAction"
                   type="danger"
                   icon="el-icon-delete"
-                  @click="deleteResource"
+                  @click="deleteSpecificResource(row)"
                 />
                 <el-link
                   class="itemAction"
                   type="warning"
                   icon="el-icon-edit"
-                  @click="updateResource(scope.row)"
+                  @click="updateResource(row)"
                 />
               </template>
             </el-table-column>
@@ -149,7 +163,7 @@
               :total="total"
               :page.sync="page.pageNumber"
               :limit.sync="page.size"
-              @click="queryData"
+              @pagination="queryData"
             />
           </div>
         </el-card>
@@ -161,6 +175,7 @@
 <script>
 // 引入分页组件
 import Pagination from '@/components/Pagination'
+import { fetchResource, dropResource } from '@/api/system/resource'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -170,27 +185,7 @@ export default {
       /**
        * 树结构数据
        */
-      resourceTreeVO: [
-        {
-          label: '资源树 1',
-          children: [
-            {
-              label: '资源 1-1'
-            }
-          ]
-        },
-        {
-          label: '资源树 2',
-          children: [
-            {
-              label: '资源 2-1'
-            },
-            {
-              label: '资源 2-2'
-            }
-          ]
-        }
-      ],
+      treeData: [],
       /**
        * 树结构的默认属性
        */
@@ -200,38 +195,27 @@ export default {
       },
 
       /**
+       * 所有资源的名称
+       */
+      resourceNames: [],
+
+      /**
+       * 所有资源的名称
+       */
+      parentResourceNames: [],
+
+      /**
        * 查询字段
        */
       formInline: {
-        resourceNames: [],
-        parentResources: []
+        resourceName: '',
+        parentName: ''
       },
 
       /**
        * 资源管理
        */
-      resources: [
-        {
-          name: '节点 1',
-          code: 'code1',
-          parentName: 'null',
-          url: '???不懂该是什么',
-          resourceType: '菜单栏',
-          openImg: '我是打开图标',
-          closeImg: '我是关闭图标',
-          leaf: '0'
-        },
-        {
-          name: '节点 2',
-          code: 'code2',
-          parentName: '节点 1',
-          url: '不懂该是什么',
-          resourceType: '菜单栏',
-          openImg: '我是打开图标',
-          closeImg: '我是关闭图标',
-          leaf: '1'
-        }
-      ],
+      resources: [],
 
       /**
        * 待确认字段
@@ -245,8 +229,9 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      // 试卷总数
-      total: 0
+      // 资源总数
+      total: 0,
+      loading: true
     }
   },
   created() {
@@ -257,12 +242,69 @@ export default {
      * 查询数据
      */
     queryData() {
-      this.total = this.resources.length
+      this.loading = true
+      this.resourceNames = []
+      this.parentResourceNames = []
+      const params = {
+        resourceName: this.formInline.resourceName,
+        parentName: this.formInline.parentName,
+        pageSize: this.page.size,
+        pageNum: this.page.pageNumber
+      }
+      fetchResource(params).then(result => {
+        const body = result.body
+        // 转换树结构的数据
+        console.log(body.tree)
+        const tree = body.tree.treeNodeList
+        this.treeData = this.transDataToTree(tree)
+        console.log('this is treeData')
+        console.log(this.treeData)
+        // 转换表格数据
+        this.resources = body.dataList
+        console.log('this is table data')
+        console.log(this.resources)
+        // 分页信息
+        console.log(body.dataCount)
+        this.total = parseInt(body.dataCount)
+        this.loading = false
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    transDataToTree(arr) {
+      return arr.map(element => {
+        return this.getChildren(element)
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    getChildren(element) {
+      if (!element.childList) {
+        const re = {
+          label: element.name,
+          id: element.id,
+          children: null
+        }
+        this.resourceNames.push(element.name)
+        return re
+      } else {
+        this.resourceNames.push(element.name)
+        this.parentResourceNames.push(element.name)
+        return {
+          label: element.name,
+          id: element.id,
+          children: this.transDataToTree(element.childList)
+        }
+      }
     },
     /**
      * 树结构的点击事件
      */
     handleNodeClick(data) {
+      this.formInline.resourceName = data.label
+      this.queryData()
       console.log(data)
     },
 
@@ -282,10 +324,12 @@ export default {
       })
     },
     updateResource(row) {
+      console.log('this is updating-data')
+      console.log(row)
       this.$router.push({
         name: 'UpdateResource',
         params: {
-          row: row
+          resource: row
         }
       })
     },
@@ -306,12 +350,7 @@ export default {
         })
       }
       if (this.multipleSelection.length === 1) {
-        this.$router.push({
-          name: 'UpdateResource',
-          params: {
-            row: this.multipleSelection[0]
-          }
-        })
+        this.updateCompany(this.multipleSelection[0])
       }
     },
 
@@ -323,29 +362,72 @@ export default {
         })
       }
       if (this.multipleSelection.length > 0) {
-        this.deleteResource()
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            const params = {
+              dataList: []
+            }
+            this.multipleSelection.forEach(item => {
+              const deleteData = {
+                id: item.id,
+                version: item.version
+              }
+              params.dataList.push(deleteData)
+            })
+            this.deleteResource(params)
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
       }
     },
-
-    /**
-     * 删除信息
-     */
-    deleteResource() {
+    deleteSpecificResource(row) {
+      console.log(row)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+          const params = {
+            dataList: []
+          }
+          const deleteData = {
+            id: row.id,
+            version: row.version
+          }
+          params.dataList.push(deleteData)
+          this.deleteResource(params)
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
+          })
+        })
+    },
+
+    /**
+     * 删除信息
+     */
+    deleteResource(params) {
+      console.log(params.idList)
+      dropResource(params)
+        .then(result => {
+          this.$message(result.head.msg)
+          this.queryData()
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: `错误${err}`
           })
         })
     }

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { code } from './code' // 响应码
+import { code } from '@/utils/code' // 响应码
 import { getToken } from '@/utils/auth'
 
 /**
@@ -16,7 +16,7 @@ const exam = 'http://localhost:8726/'
 const service = axios.create({
   baseURL: exam, // url = base url + request url
   // withCredentials: true, // 跨域请求时发送cookie
-  timeout: 5000 // request timeout
+  timeout: 50000 // request timeout
 })
 
 // 请求拦截器
@@ -56,7 +56,7 @@ service.interceptors.response.use(
           type: 'warning'
         }).then(() => { store.dispatch('user/resetToken').then(() => { location.reload() }) })
       }
-      return Promise.reject(new Error(head.msg || '错误'))
+      return Promise.reject(head)
     } else {
       return response.data
     }

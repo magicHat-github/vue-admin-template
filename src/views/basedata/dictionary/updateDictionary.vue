@@ -18,9 +18,9 @@
           </el-col>
         </el-form-item>
 
-        <el-form-item label="字典类型" prop="type">
+        <el-form-item label="字典类型" prop="category">
           <el-col :span="8">
-            <el-input v-model="form.type" />
+            <el-input v-model="form.category" />
           </el-col>
         </el-form-item>
 
@@ -30,17 +30,19 @@
           </el-col>
         </el-form-item>
 
-        <el-form-item label="备注信息">
-          <el-col :span="8">
-            <el-input v-model="form.remark" type="textarea" :rows="3" />
-          </el-col>
-        </el-form-item>
-
         <!--复选按钮 -->
         <el-form-item label="是否启用" prop="status">
           <el-col :offset="1" :span="8">
-            <el-radio v-model="status" label="1">是</el-radio>
-            <el-radio v-model="status" label="2">否</el-radio>
+            <el-radio-group v-model="form.status">
+              <el-radio :label="1">是</el-radio>
+              <el-radio :label="2">否</el-radio>
+            </el-radio-group>
+          </el-col>
+        </el-form-item>
+
+        <el-form-item label="备注信息">
+          <el-col :span="8">
+            <el-input v-model="form.remark" type="textarea" :rows="10" placeholder="请输入内容" />
           </el-col>
         </el-form-item>
 
@@ -58,15 +60,17 @@
 </template>
 
 <script>
+import { updateItem } from '@/api/basedata/dictionary'
 export default {
   data() {
     return {
       form: {
-        name: '',
-        type: '',
-        value: '',
-        remark: '',
-        status: '1'
+        id: this.$route.params.id,
+        name: this.$route.params.name,
+        category: this.$route.params.category,
+        value: this.$route.params.value,
+        remark: this.$route.params.remark,
+        status: this.$route.params.status
       },
       rules: {
         name: [
@@ -92,10 +96,29 @@ export default {
       console.log('submit!')
     },
     save() {
-      this.$router.push({
-        name: 'Dictionary'
+      const params = {
+        id: this.form.id,
+        name: this.form.name,
+        category: this.form.category,
+        value: this.form.value,
+        status: this.form.status,
+        remark: this.form.remark
+      }
+      console.log(params)
+      updateItem(params).then(result => {
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.$router.push({
+          name: 'Dictionary'
+        })
+      }).catch(result => {
+        this.$message({
+          type: 'success',
+          message: '操作失败!'
+        })
       })
-      this.$message('更新成功')
     },
     close() {
       this.$router.push({

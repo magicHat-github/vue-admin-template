@@ -58,15 +58,11 @@ module.exports = {
         // 设置IP和端口的代理
         target: `http://140.143.10.22:8061`,
         // 跨域
-        changeOrigin: true,
-        // 路径重写
-        pathRewrite: {
-          '^/boss/bes/permission': ''
-        }
+        changeOrigin: true
       },
       // 系统微服务路由配置
       '/boss/bes/system': {
-        target: `http://localhost:8080`,
+        target: `http://localhost:8070`,
         changeOrigin: true,
         pathRewrite: {
           '^/boss/bes/system': ''

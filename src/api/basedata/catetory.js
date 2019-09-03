@@ -19,3 +19,19 @@ export function selectByName(params) {
 export function deleteList(params) {
   return baseDataRequestApi('/category', 'delete', params)
 }
+
+export function searchTree() {
+  return baseDataRequestApi('/category/searchTree', 'get')
+}
+
+export function insert(params) {
+  return baseDataRequestApi('/category', 'post', params)
+}
+
+export function searchItem(params) {
+  return baseDataRequestApi('/category/searchById', 'post', params)
+}
+
+export function updateItem(params) {
+  return baseDataRequestApi('/category', 'put', params)
+}

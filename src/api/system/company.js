@@ -10,3 +10,27 @@ import { systemRequestApi } from '@/utils/requestUtil'
 export function addCompany(params) {
   return systemRequestApi('/company', 'POST', params)
 }
+
+/**
+ * 查询公司管理界面要显示的信息
+ * @param {*} params 查询的VO
+ */
+export function fetchCompany(params) {
+  return systemRequestApi('/company/info', 'POST', params)
+}
+
+/**
+ * 删除选定公司
+ * @param {*} params
+ */
+export function dropCompany(params) {
+  return systemRequestApi('/company', 'DELETE', params)
+}
+
+/**
+ * 修改选定公司信息
+ * @param {*} params
+ */
+export function updateCompany(params) {
+  return systemRequestApi('/company', 'PUT', params)
+}

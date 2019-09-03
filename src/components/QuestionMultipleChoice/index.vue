@@ -3,7 +3,7 @@
     <label><span>{{ questionIndex + 1 }}.</span><span style="margin-right: 5px;">({{ questionType }})</span><span>{{ questionDetail }}</span></label>
     <div class="answer">
       <el-checkbox-group v-model="userAnswerCache">
-        <el-checkbox v-for="(answerItem, answerIndex) in questionAnswer" :key="answerIndex" :label="answerItem" />
+        <el-checkbox v-for="(answerItem, answerIndex) in questionAnswer" :key="answerIndex" :label="answerItem.answer" />
       </el-checkbox-group>
     </div>
   </div>

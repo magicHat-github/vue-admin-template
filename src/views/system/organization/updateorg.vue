@@ -19,9 +19,9 @@
         style="padding-left:30%;"
         label-position="right"
       >
-        <el-form-item label="机构名称" prop="orgname">
+        <el-form-item label="机构名称" prop="name">
           <el-col :span="8">
-            <el-input v-model="form.orgname" />
+            <el-input v-model="form.name" />
           </el-col>
         </el-form-item>
 
@@ -72,19 +72,22 @@
 </template>
 
 <script>
+import { queryOrg, updateOrg } from '@/api/system/org'
 export default {
   data() {
     return {
       form: {
-        orgname: '',
+        id: '',
+        name: '',
         code: '',
         master: '',
         tel: '',
         address: '',
-        status: '1'
+        version: '',
+        status: ''
       },
       rules: {
-        orgname: [
+        name: [
           {
             required: true,
             message: '请输入组织机构名称',
@@ -122,39 +125,69 @@ export default {
     }
   },
   created() {
-    this.form = this.$route.params.row
-    console.log(this.form)
+    const org = this.$route.params.org
+    this.queryOrgAndCompanyData(org)
   },
   methods: {
     /**
-		 * 路由跳转
+     * 查询树结构数据，从而获取公司名字和机构数据
+     */
+    queryOrgAndCompanyData(org) {
+      const params = {
+        orgName: org.name,
+        pageSize: 1,
+        pageNum: 1
+      }
+      queryOrg(params).then(result => {
+        const body = result.body
+        // 转换树结构的数据
+        this.form = body.dataList[0]
+      })
+    },
+
+    /**
+		 * 保存操作
 		 */
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$router.push({
-            name: 'Org'
-          })
-          this.$message('操作成功')
-          console.log(this.form)
+          console.log('submit!')
+          this.submit()
         } else {
-          console.log('error submit!!')
           return false
         }
       })
     },
 
-    save() {
-      this.$router.push({
-        name: 'Org'
-      })
-      this.$message('操作成功')
+    submit() {
+      console.log('this is formData')
+      console.log(this.form)
+      const params = {
+        id: this.form.id,
+        name: this.form.name,
+        code: this.form.code,
+        master: this.form.master,
+        tel: this.form.tel,
+        address: this.form.address,
+        version: this.form.version,
+        status: this.form.status
+      }
+      console.log('this is params')
+      console.log(params)
+      updateOrg(params).then(
+        this.$message('操作成功')
+      )
     },
+
+    /**
+     * 关闭按钮
+     */
     close() {
       this.$router.push({
         name: 'Org'
       })
     }
   }
+
 }
 </script>

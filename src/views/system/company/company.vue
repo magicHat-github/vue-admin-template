@@ -17,7 +17,13 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              v-loading="loading"
+              accordion
+              :data="treeData"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -36,7 +42,15 @@
 
             <!-- 组织机构下拉框 -->
             <el-form-item label="组织机构:">
-              <el-select v-model="formInline.orgNames" placeholder="请选择" size="mini" />
+              <el-select
+                v-model="formInline.orgName"
+                filterable
+                clearable
+                placeholder="请选择"
+                size="mini"
+              >
+                <el-option v-for="org in treeData" :key="org.label" :value="org.label" />
+              </el-select>
             </el-form-item>
 
             <el-form-item>
@@ -74,6 +88,7 @@
             <!-- 数据显示表单 -->
             <el-table
               ref="multipleTable"
+              v-loading="loading"
               :data="companys"
               tooltip-effect="dark"
               stripe
@@ -96,12 +111,12 @@
               <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
                 <template slot-scope="scope">
                   <el-tag
-                    :type="scope.row.status === '1' ? 'primary' : 'info'"
+                    :type="scope.row.status === 1 ? 'primary' : 'info'"
                   >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
                 </template>
               </el-table-column>
               <el-table-column label="操作" width="110" align="center">
-                <template slot-scope="scope">
+                <template slot-scope="{ row }">
                   <el-link
                     class="itemAction"
                     type="primary"
@@ -112,13 +127,13 @@
                     class="itemAction"
                     type="danger"
                     icon="el-icon-delete"
-                    @click="deleteCompany"
+                    @click="deleteSpecificCompany(row)"
                   />
                   <el-link
                     class="itemAction"
                     type="warning"
                     icon="el-icon-edit"
-                    @click="updateCompany(scope.row)"
+                    @click="updateCompany(row)"
                   />
                 </template>
               </el-table-column>
@@ -130,7 +145,7 @@
                 :total="total"
                 :page.sync="page.pageNumber"
                 :limit.sync="page.size"
-                @click="queryData"
+                @pagination="queryData"
               />
             </div>
           </div>
@@ -143,6 +158,7 @@
 <script>
 // 引入分页组件
 import Pagination from '@/components/Pagination'
+import { fetchCompany, dropCompany } from '@/api/system/company'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -152,48 +168,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
-        {
-          label: '组织机构 1',
-          children: [
-            {
-              label: '公司 1-1'
-            }
-          ]
-        },
-        {
-          label: '组织机构 2',
-          children: [
-            {
-              label: '公司 2-1'
-            },
-            {
-              label: '公司 2-2'
-            }
-          ]
-        },
-        {
-          label: '组织机构 3',
-          children: [
-            {
-              label: '公司 3-1',
-              children: [
-                {
-                  label: '这是假数据 3-1-1'
-                }
-              ]
-            },
-            {
-              label: '公司 3-2',
-              children: [
-                {
-                  label: '这是假数据 3-2-1'
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      treeData: [],
       /**
        * 树结构的默认属性
        */
@@ -206,78 +181,12 @@ export default {
        */
       formInline: {
         companyName: '',
-        orgNames: []
+        orgName: ''
       },
       /**
        * 公司的表单数据
        */
-      companys: [
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        },
-        {
-          name: '阿里',
-          code: '002',
-          mnemonicCode: '亏钱的濒危企业',
-          master: '马云',
-          orgName: '中国',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '0'
-        },
-        {
-          name: '百度',
-          code: '003',
-          mnemonicCode: '不接广告的搜索引擎',
-          master: '李红艳',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          code: '001',
-          mnemonicCode: '公平的游戏公司',
-          master: '马化腾',
-          orgName: 'China',
-          tax: '123456789012',
-          fax: '123456789012',
-          tel: '13000000000',
-          email: 'test@test.com',
-          website: 'www.test.com',
-          status: '1'
-        }
-      ],
+      companys: [],
       /**
        * 多选事件中的数据
        */
@@ -289,8 +198,9 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      // 试卷总数
-      total: 0
+      // 公司数据总数
+      total: 0,
+      loading: true
     }
   },
   created() {
@@ -301,7 +211,64 @@ export default {
      * 查询数据
      */
     queryData() {
-      this.total = this.companys.length
+      this.loading = true
+      const params = {
+        companyName: this.formInline.companyName,
+        orgName: this.formInline.orgName,
+        pageSize: this.page.size,
+        pageNum: this.page.pageNumber
+      }
+      fetchCompany(params).then(result => {
+        const body = result.body
+        // 转换树结构的数据
+        console.log(body.tree)
+        const tree = body.tree.treeNodeList
+        this.treeData = this.transDataToTree(tree)
+        console.log('this is treeData')
+        console.log(this.treeData)
+        // 转换表格数据
+        this.companys = body.dataList
+        console.log('this is table data')
+        console.log(this.companys)
+        // 分页信息
+        console.log(body.dataCount)
+        this.total = parseInt(body.dataCount)
+        this.loading = false
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    transDataToTree(arr) {
+      return arr.map(element => {
+        // 这里的element是根节点
+        return this.getChildren(element)
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    getChildren(element) {
+      if (!element.childList) {
+        // 这里的element是叶子节点(叶子节点：即不存在子节点的节点)
+        console.log('this is leafNode')
+        console.log(element)
+        const re = {
+          label: element.name,
+          id: element.id,
+          children: null
+        }
+        return re
+      } else {
+        // 这里的element是非叶子节点(包括根节点)
+        console.log('this is non-leafNode')
+        console.log(element)
+        return {
+          label: element.name,
+          id: element.id,
+          children: this.transDataToTree(element.childList)
+        }
+      }
     },
     /**
      * 树结构的点击事件
@@ -318,16 +285,22 @@ export default {
     /**
      * 跳转到增加界面
      */
-    addCompany(row) {
+    addCompany() {
       this.$router.push({
         name: 'AddCompany'
       })
     },
+
+    /**
+     * 跳转到修改界面
+     */
     updateCompany(row) {
+      console.log('this is updating-data')
+      console.log(row)
       this.$router.push({
         name: 'UpdateCompany',
         params: {
-          row: row
+          company: row
         }
       })
     },
@@ -349,15 +322,13 @@ export default {
         })
       }
       if (this.multipleSelection.length === 1) {
-        this.$router.push({
-          name: 'UpdateCompany',
-          params: {
-            row: this.multipleSelection[0]
-          }
-        })
+        this.updateCompany(this.multipleSelection[0])
       }
     },
 
+    /**
+     * 删除选中公司
+     */
     deleteSelectedCompany() {
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -366,29 +337,71 @@ export default {
         })
       }
       if (this.multipleSelection.length > 0) {
-        this.deleteCompany()
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            const params = {
+              dataList: []
+            }
+            this.multipleSelection.forEach(item => {
+              const deleteData = {
+                id: item.id,
+                version: item.version
+              }
+              params.dataList.push(deleteData)
+            })
+            this.deleteCompany(params)
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
       }
     },
-
-    /**
-     * 删除信息
-     */
-    deleteCompany() {
+    deleteSpecificCompany(row) {
+      console.log(row)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+          const params = {
+            dataList: []
+          }
+          const deleteData = {
+            id: row.id,
+            version: row.version
+          }
+          params.dataList.push(deleteData)
+          this.deleteCompany(params)
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
+          })
+        })
+    },
+    /**
+     * 删除信息
+     */
+    deleteCompany(params) {
+      console.log(params.idList)
+      dropCompany(params)
+        .then(result => {
+          this.$message(result.head.msg)
+          this.queryData()
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: `错误${err}`
           })
         })
     }

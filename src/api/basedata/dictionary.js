@@ -1,54 +1,45 @@
 import { baseDataRequestApi } from '@/utils/requestUtil'
-import request from '@/utils/request'
 
 /**
  * 数据字典相关的api
  */
 
 /**
- * 分页查询
+ * 分页查询，主要页面打开时渲染数据和执行查询操作时渲染新的数据
  * @param {*} params 参数
 */
 export function select(params) {
-  return baseDataRequestApi('/dictionary', 'get', params)
+  return baseDataRequestApi('/dictionary/queryRecord', 'post', params)
 }
 
 /**
- * 添加
+ * 删除操作，可以删除一条到多条
  * @param {*} params 参数
  */
-export function save(params) {
-  // console.log(params)
-  return request({
-    url: '/basedata/dictionary',
-    method: 'post',
-    data: params
-  })
+export function deleteList(params) {
+  return baseDataRequestApi('/dictionary/deleteRecord', 'delete', params)
 }
 
 /**
- * 修改
+ * 添加一条记录
  * @param {*} params 参数
  */
-export function update(params) {
-  // console.log(params)
-  return request({
-    url: '/basedata/dictionary',
-    method: 'put',
-    data: params
-  })
+export function insert(params) {
+  return baseDataRequestApi('/dictionary/addRecord', 'post', params)
 }
 
 /**
- * 删除
- * @param {*} ids 删除编号的集合
+ * 按照字典的id查询一条记录，是为了便于执行更新操作时从后台拿到数据先渲染出来再修改
+ * @param {*} params 参数
  */
-export function remove(ids) {
-  // console.log(ids)
-  return request({
-    url: '/basedata/dictionary',
-    method: 'delete',
-    data: ids
-  })
+export function searchItem(params) {
+  return baseDataRequestApi('/dictionary/searchById', 'post', params)
 }
 
+/**
+ * 更新一条记录
+ * @param {*} params 参数
+ */
+export function updateItem(params) {
+  return baseDataRequestApi('/dictionary/modifyRecord', 'put', params)
+}
