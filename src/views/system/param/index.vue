@@ -1,23 +1,27 @@
 <template>
   <el-container>
-    <!-- 左侧边栏 -->
-    <el-aside width="180px">
-      <!-- 树上方的信息 -->
-      <el-container>
-        <el-header>
-          <el-row>
-            <el-col>
-              <h1 style="font-size:20px;" class="el-icon-menu">参数管理</h1>
-            </el-col>
-          </el-row>
-        </el-header>
-        <!-- 树 -->
-        <el-main>
-          <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
-        </el-main>
-      </el-container>
-    </el-aside>
-
+    <el-card class="tableData">
+      <!-- 左侧边栏 -->
+      <el-aside width="180px">
+        <!-- 树上方的信息 -->
+        <el-container>
+          <el-header>
+            <el-row align="center">
+              <el-col>
+                <h1 style="font-size:20px;" class="el-icon-menu">参数管理</h1>
+              </el-col>
+              <el-col span="6">
+                <el-link class="el-image-viewer__actions__inner" type="primary" icon="el-icon-refresh-right" @click="searchTree" />
+              </el-col>
+            </el-row>
+          </el-header>
+          <!-- 树 -->
+          <el-main>
+            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+          </el-main>
+        </el-container>
+      </el-aside>
+    </el-card>
     <!-- 主体部分 -->
     <el-main>
       <div class="app-container allData">
@@ -33,11 +37,10 @@
                 size="mini"
               >
                 <el-option
-                  v-for="item in paramTypes"
-                  :key="item"
-                  :lable="item"
-                  :value="item"
-                  @change="handleFilter"
+                  v-for="item in paramTypeList"
+                  :key="item.id"
+                  :lable="item.value"
+                  :value="item.value"
                 />
               </el-select>
             </el-form-item>
@@ -45,7 +48,7 @@
               <el-input v-model="searchData.paramName" clearable size="mini" @keyup.enter.native="handleFilter" />
             </el-form-item>
             <el-form-item>
-              <el-button icon="el-icon-search" size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -54,8 +57,8 @@
         <el-card class="tableData">
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="update1">修改</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCheck">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCheck">修改</el-link>
             <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="importParam">导入</el-link>
             <el-link class="itemAction" type="primary" icon="el-icon-download" @click="exportParam">导出</el-link>
           </div>
@@ -64,16 +67,22 @@
 
           <el-table
             ref="multipleTable"
-            border="true"
-            :data="params"
+            v-loading="listLoading"
+            element-loading-text="Loading"
+            :data="list"
             tooltip-effect="dark"
             stripe
             height
+            fit
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" />
-            <el-table-column prop="paramType" label="参数类型" sortable="true" align="center" />
-            <el-table-column prop="paramName" label="参数项" align="center" />
+            <el-table-column prop="paramType" label="参数类型" sortable="true" align="center">
+              <template slot-scope="scope">{{ scope.row.paramType }}</template>
+            </el-table-column>
+            <el-table-column prop="paramName" label="参数项" align="center">
+              <template slot-scope="scope">{{ scope.row.paramName }}</template>
+            </el-table-column>
             <el-table-column prop="paramValue" label="参数值" align="center" />
             <el-table-column prop="status" label="启用标记" sortable="true" align="center">
               <template slot-scope="scope"><el-tag>{{ scope.row.status }}</el-tag></template>
@@ -84,6 +93,7 @@
               <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="delete1" />
               <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="importParam" />
               <el-link class="itemAction" type="primary" icon="el-icon-download" @click="exportParam" />
+            </el-table-column>
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
