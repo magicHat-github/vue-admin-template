@@ -441,8 +441,8 @@ export const constantRoutes = [
     meta: { title: '考试管理', icon: 'example' },
     children: [
       {
-        path: 'examPublic',
-        name: 'examPublic',
+        path: 'examPublish',
+        name: 'examPublish',
         component: () => import('@/views/exam/index'),
         meta: { title: '发布试卷管理', icon: 'example' }
       },
@@ -456,7 +456,7 @@ export const constantRoutes = [
         path: 'queryanswer',
         name: 'queryanswer',
         component: () => import('@/views/exam/queryanswer/index'),
-        meta: { title: '答案查询', icon: 'example' }
+        meta: { title: '答卷查询', icon: 'example' }
       },
       {
         path: 'marking',
