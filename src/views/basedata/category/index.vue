@@ -113,7 +113,6 @@
 <script>
 // import { log } from 'util'
 import Pagination from '@/components/Pagination'
-// eslint-disable-next-line no-unused-vars
 import { select, selectByName, deleteList, searchTree, searchItem } from '@/api/basedata/catetory'
 export default {
   name: 'App',

@@ -6,24 +6,11 @@
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
-            <!-- 组织机构下拉框 -->
             <el-form-item label="题目类别:">
-              <el-select
-                v-model="formInline.categories"
-                filterable
-                multiple
-                placeholder="请选择"
-                size="mini"
-              >
-                <el-option
-                  v-for="subject in subjects"
-                  :key="subject.category"
-                  :value="subject.category"
-                />
-              </el-select>
+              <el-input v-model="formInline.categoryName" clearable size="mini" />
             </el-form-item>
             <el-form-item label="选择题型:">
-              <el-input v-model="formInline.type" clearable size="mini" />
+              <el-input v-model="formInline.typeName" clearable size="mini" />
             </el-form-item>
             <el-form-item label="输入题目:">
               <el-input v-model="formInline.name" clearable size="mini" />
@@ -46,7 +33,7 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :data="subjects"
+            :data="dataList"
             tooltip-effect="dark"
             stripe
             height
@@ -60,8 +47,8 @@
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
                 <el-tag
-                  :type="scope.row.status === '1' ? 'primary' : 'info'"
-                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+                  :type="scope.row.status === 1 ? 'primary' : 'info'"
+                >{{ scope.row.status === 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="操作">
@@ -73,10 +60,10 @@
           <!-- 分页部分 -->
           <div class="block">
             <pagination
-              v-show="total>0"
-              :total="total"
-              :page.sync="page.pageNumber"
-              :limit.sync="page.size"
+              v-show="dataCount>0"
+              :total="dataCount"
+              :page.sync="page.pageNum"
+              :limit.sync="page.pageSize"
               @click="queryData"
             />
           </div>
@@ -87,11 +74,10 @@
 </template>
 
 <script>
-// import { log } from 'util'
 import Pagination from '@/components/Pagination'
+import { select } from '@/api/basedata/subject'
 export default {
   name: 'App',
-  // eslint-disable-next-line vue/no-unused-components
   components: { Pagination },
   data() {
     return {
@@ -99,77 +85,21 @@ export default {
          * 查询字段
          */
       formInline: {
-        categories: [],
-        type: '',
+        categoryName: '',
+        typeName: '',
         name: ''
       },
       page: {
-        size: 5,
-        pageNumber: 1
+        pageSize: 5,
+        pageNum: 1
       },
       // 试卷总数
-      total: 0,
+      dataCount: 0,
 
       /**
          * 公司管理
          */
-      subjects: [
-        {
-          name: '腾讯',
-          subjectId: '001',
-          category: '编程',
-          type: '选择',
-          updatedTime: '2019/11/11',
-          status: '1'
-        },
-        {
-          name: '阿里',
-          subjectId: '002',
-          category: '编程',
-          type: '选择',
-          updatedTime: '2019/11/11',
-          status: '0'
-        },
-        {
-          name: '百度',
-          subjectId: '003',
-          category: '编程',
-          type: '选择',
-          updatedTime: '2019/11/11',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          subjectId: '001',
-          category: '编程',
-          type: '选择',
-          updatedTime: '2019/11/11',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          subjectId: '001',
-          category: '编程',
-          type: '选择',
-          updatedTime: '2019/11/11',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          subjectId: '001',
-          category: '编程',
-          type: '选择',
-          updatedTime: '2019/11/11',
-          status: '1'
-        },
-        {
-          name: '腾讯',
-          category: '编程',
-          type: '选择',
-          updatedTime: '2019/11/11',
-          status: '0'
-        }
-      ],
+      dataList: null,
 
       /**
          * 待确认字段
@@ -190,10 +120,27 @@ export default {
   },
   methods: {
     /**
+     * 显示和查询
+     */
+    queryData() {
+      const params = {
+        categoryName: this.formInline.categoryName,
+        typeName: this.formInline.typeName,
+        name: this.formInline.name,
+        pageSize: this.page.pageSize,
+        pageNum: this.page.pageNum
+      }
+      select(params).then(result => {
+        const body = result.body
+        this.dataList = body.dataList
+        this.dataCount = parseInt(body.dataCount)
+      })
+      console.log(this.dataList)
+    },
+    /**
      * 对表格多选项进行判定，成则跳转至修改页面
      */
     updateCheck() {
-      // eslint-disable-next-line eqeqeq
       if (this.multipleSelection.length !== 1) {
         this.$message({
           type: 'warning',
@@ -209,7 +156,6 @@ export default {
      * 对表格多选项进行判定，成功则删除
      */
     deleteCheck() {
-      // eslint-disable-next-line eqeqeq
       if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'warning',
@@ -240,9 +186,6 @@ export default {
        */
     handleSelectionChange(val) {
       this.multipleSelection = val
-    },
-    queryData() {
-      this.total = this.subjects.length
     },
     /**
        * 跳转到增加界面

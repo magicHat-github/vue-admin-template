@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import { insert } from '@/api/basedata/type'
 export default {
   data() {
     return {
@@ -61,22 +62,27 @@ export default {
     }
   },
   methods: {
-    /**
-       * 路由跳转
-       */
-    onSubmit() {
-      console.log('submit!')
-    },
     save() {
-      this.$router.push({
-        name: 'Category'
+      insert(this.form).then(() => {
+        this.$router.push({
+          name: 'Type'
+        })
+        this.$message({
+          type: 'success',
+          message: '操作成功'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '操作失败'
+        })
       })
-      this.$message('操作成功')
     },
     close() {
       this.$router.push({
-        name: 'Category'
+        name: 'Type'
       })
+      this.$message('取消操作')
     }
   }
 }

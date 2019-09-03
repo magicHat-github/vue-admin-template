@@ -98,7 +98,6 @@ export default {
         remark: this.form.remark,
         status: this.form.status
       }
-      console.log(params)
       insert(params).then(result => {
         this.$message({
           type: 'success',

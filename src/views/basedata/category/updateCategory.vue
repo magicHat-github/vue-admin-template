@@ -122,7 +122,7 @@ export default {
         })
       }).catch(result => {
         this.$message({
-          type: 'success',
+          type: 'warning',
           message: '操作失败!'
         })
       })
@@ -130,6 +130,10 @@ export default {
     close() {
       this.$router.push({
         name: 'Category'
+      })
+      this.$message({
+        type: 'warning',
+        message: '操作取消!'
       })
     }
   }
