@@ -1,5 +1,5 @@
 import { addNewRecord } from '@/api/exam'
-import { deleteRecordById, deleteRecordByIdList, updatePublishRecord } from '../../api/exam'
+import { deleteRecordById, deleteRecordByIdList, publishRecordById, updatePublishRecord } from '../../api/exam'
 /**
  * service 层,用来调用接口的api
  */
@@ -69,6 +69,18 @@ export default {
   updatePublishRecord(formData) {
     return new Promise((resolve, reject) => {
       updatePublishRecord(formData)
+        .then(rsp => resolve(rsp))
+        .catch(err => reject(err))
+    })
+  },
+  /**
+   * 根据记录的id发布该场考试
+   * @param id
+   * @returns {Promise<any>}
+   */
+  publishExamById(id) {
+    return new Promise((resolve, reject) => {
+      publishRecordById(id)
         .then(rsp => resolve(rsp))
         .catch(err => reject(err))
     })

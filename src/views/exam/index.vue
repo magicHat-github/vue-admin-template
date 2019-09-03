@@ -247,7 +247,7 @@
 // import qs from 'qs'
 import { layout, pageSizes, pageSize, markOptions } from './common'
 import { rules, DialogType } from './common'
-import { getExamRecordById, publishRecordById, getRecordList, getPapers, getJudgeList } from '@/api/exam'
+import { getExamRecordById, getRecordList, getPapers, getJudgeList } from '@/api/exam'
 import { filters } from './common'
 import service from './service'
 
@@ -434,7 +434,7 @@ export default {
      * 可能是重新发布新的记录
      * 如果是重新发布就要获得已发布的数据
      */
-    handlePublishEvent(row) {
+    async handlePublishEvent(row) {
       const published = 1
       const id = row.id
       if (!id) {
@@ -603,19 +603,29 @@ export default {
      * 效果是该条记录的状态从 未发布 => 已发布
      */
     async publishRecord(id) {
-      await publishRecordById(id)
-        .then(rsp => {
-          this.$message({
-            type: 'success',
-            message: '该场考试已经发布了,注意考试时间'
+      this.$confirm(
+        '是否要发布该场考试?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }
+      ).then(() => {
+        service.publishExamById(id)
+          .then(rsp => {
+            if (rsp.head.code === '0000') {
+              this.showMessage('success', '考试已经发布，注意时间')
+            } else {
+              this.showMessage('error', rsp.head.msg)
+            }
+            this.freshIndex()
+          }).catch(err => {
+            this.$message({
+              type: 'error',
+              message: `发布错误${err}`
+            })
           })
-        }).catch(err => {
-          this.$message({
-            type: 'error',
-            message: `发布错误${err}`
-          })
-        })
-      // TODO 刷新页面数据
+      }).catch(() => this.showMessage('info', '取消发布'))
     },
     /**
      * 处理删除事件
@@ -710,12 +720,14 @@ export default {
       console.log(`sizechange`)
       this.pageSize = val
       // 获得数据
+      this.search()
     },
     /**
      * 处理分页页面跳转
      */
     handleCurrentChange(val) {
       this.currentPage = val
+      this.search()
     },
     /**
      * 打开选择试卷弹窗

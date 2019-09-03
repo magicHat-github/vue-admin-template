@@ -72,7 +72,7 @@ export function deleteRecordByIdList(idList) {
  */
 export function publishRecordById(id) {
   return examRequestApi(
-    '/publish',
+    '/publishExam',
     'post',
     id
   )
