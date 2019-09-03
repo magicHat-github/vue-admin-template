@@ -15,7 +15,7 @@
         :rules="departmentRules"
         label-width="100px"
         class="user-add-Form"
-        label-position="right"
+        label-org-name="left"
       >
         <!-- 第一行 -->
         <el-row>
