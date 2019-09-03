@@ -112,7 +112,11 @@
             <el-table-column prop="password" label="初始密码" align="center" />
             <el-table-column prop="name" label="用户名" align="center" />
             <el-table-column prop="roles" label="角色" align="center" />
-            <el-table-column prop="sex" label="性别" align="center" />
+            <el-table-column prop="sex" label="性别" align="center">
+              <template slot-scope="scope">
+                {{ scope.row.sex == 0 ? "男" : "女" }}
+              </template>
+            </el-table-column>
             <el-table-column prop="birthday" label="生日" align="center" />
             <el-table-column prop="position" label="职位" align="center" />
             <el-table-column prop="tel" label="电话" align="center" />
