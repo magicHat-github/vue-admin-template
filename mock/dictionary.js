@@ -1,8 +1,8 @@
 
 export default [
   {
-    url: '/boss/bes/basedata/dictionary',
-    type: 'get',
+    url: '/boss/bes/basedata/dictionary/queryRecord',
+    type: 'post',
     response: config => {
       // console.log(config.body)
       return {
@@ -13,9 +13,9 @@ export default [
           crypt: '123'
         },
         body: {
-          data: {
-            list: dictionaryList,
-            total: 5
+          dictionaries: {
+            dataList: dictionaryList,
+            dataCount: 5
           }
         }
       }

@@ -18,11 +18,10 @@
           <!-- 树 -->
           <el-main>
             <el-tree
+              v-loading="loading"
+              accordion
               :data="treeData"
               :props="defaultProps"
-              node-key="id"
-              default-expanded-keys="1"
-              accordion
               @node-click="handleNodeClick"
             />
           </el-main>
@@ -42,11 +41,11 @@
             </el-form-item>
             <!-- 部门等级下拉框 -->
             <el-form-item label="部门等级:">
-              <el-select v-model="formInline.departmentLevels" placeholder="请选择" size="mini">
+              <el-select v-model="formInline.level" placeholder="请选择" size="mini">
                 <el-option
-                  v-for="department in departments"
-                  :key="department.level"
-                  :value="department.level"
+                  v-for="department in formInline.departmentLevels"
+                  :key="department"
+                  :value="department"
                 />
               </el-select>
             </el-form-item>
@@ -104,7 +103,7 @@
               <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
                 <template slot-scope="scope">
                   <el-tag
-                    :type="scope.row.status === '1' ? 'primary' : 'info'"
+                    :type="scope.row.status === 1 ? 'primary' : 'info'"
                   >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
                 </template>
               </el-table-column>
@@ -120,7 +119,7 @@
                     class="itemAction"
                     type="danger"
                     icon="el-icon-delete"
-                    @click="deleteDepartment"
+                    @click="deleteSpecificDepartment(scope.row)"
                   />
                   <el-link
                     class="itemAction"
@@ -133,13 +132,14 @@
             </el-table>
           </div>
           <!-- 分页部分 -->
+
           <div class="block">
             <pagination
               v-show="total>0"
               :total="total"
               :page.sync="page.pageNumber"
               :limit.sync="page.size"
-              @click="queryData"
+              @pagination="queryData"
             />
           </div>
         </el-card>
@@ -152,7 +152,7 @@
 // 引入分页组件
 import Pagination from '@/components/Pagination'
 // 引入方法
-import { queryAsideTree } from '@/api/system/department'
+import { queryDepartment, deleteDepartment } from '@/api/system/department'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -162,32 +162,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
-        {
-          id: 1,
-          label: '公司 1',
-          children: [
-            {
-              id: 11,
-              label: '部门 1-1'
-            }
-          ]
-        },
-        {
-          id: 2,
-          label: '公司 2',
-          children: [
-            {
-              id: 21,
-              label: '部门 2-1'
-            },
-            {
-              id: 22,
-              label: '部门 2-2'
-            }
-          ]
-        }
-      ],
+      treeData: [],
       /**
        * 树结构的默认属性
        */
@@ -201,71 +176,17 @@ export default {
        */
       formInline: {
         departmentName: '',
-        departmentLevels: []
+        level: '',
+        departmentLevels: ['', 1, 2, 3, 4, 5]
       },
 
       /**
-       * 部门管理
+       * 部门管理的表单数据
        */
-      departments: [
-        {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '1',
-          status: '1',
-          companyName: 'boss'
-        },
-        {
-          name: '技术部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '5',
-          status: '1',
-          companyName: 'boss'
-        },
-        {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '2',
-          status: '0',
-          companyName: 'boss'
-        },
-        {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '4',
-          status: '1',
-          companyName: 'boss'
-        },
-        {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '3',
-          status: '1',
-          companyName: 'boss'
-        },
-        {
-          name: '人资部',
-          parentName: 'parentDep',
-          code: 'hrCode',
-          master: 'hrMaster',
-          level: '0',
-          status: '1',
-          companyName: 'boss'
-        }
-      ],
+      departments: [],
 
       /**
-       * 待确认字段
+       * 多选被选中的数组字段
        */
       multipleSelection: [],
 
@@ -277,37 +198,73 @@ export default {
         pageNumber: 1
       },
       // 试卷总数
-      total: 0
+      total: 0,
+      loading: true
     }
   },
   created() {
     this.queryData()
-    this.fetchAsideTree()
   },
   methods: {
-    /**
-     * 查询树结构数据
-     */
-    fetchAsideTree() {
-      const params = {
-        name: 'test'
-      }
-      queryAsideTree(params).then(result => {
-        const body = result.body
-        this.treeData = body.TreeVO
-      })
-    },
+
     /**
      * 查询数据
      */
     queryData() {
-      this.total = this.departments.length
+      const params = {
+        departmentName: this.formInline.departmentName,
+        level: this.formInline.level,
+        pageSize: this.page.size,
+        pageNum: this.page.pageNumber
+      }
+      queryDepartment(params).then(result => {
+        const body = result.body
+        // 转换树结构的数据
+        console.log(body)
+        const tree = body.tree.treeNodeList
+        this.treeData = this.transDataToTree(tree)
+        console.log('this is result')
+        console.log(this.treeData)
+        // 转换表格数据
+        this.departments = body.dataList
+        console.log('this is table data')
+        console.log(this.companys)
+        // 分页信息
+        console.log(body.dataCount)
+        this.total = parseInt(body.dataCount)
+        this.loading = false
+      })
     },
     /**
-     * 树结构的点击事件
+     * 查询树结构的方法
      */
-    handleNodeClick(data) {
-      console.log(data)
+    transDataToTree(arr) {
+      return arr.map(element => {
+        return this.getChildren(element)
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    getChildren(element) {
+      if (!element.childList) {
+        console.log('this is recall')
+        console.log(element)
+        const re = {
+          label: element.name,
+          id: element.id,
+          children: null
+        }
+        return re
+      } else {
+        console.log('this is call')
+        console.log(element)
+        return {
+          label: element.name,
+          id: element.id,
+          children: this.transDataToTree(element.childList)
+        }
+      }
     },
 
     /**
@@ -318,6 +275,13 @@ export default {
     },
 
     /**
+     * 树结构的点击事件
+     */
+    handleNodeClick(data) {
+      console.log(data)
+    },
+
+    /**
      * 跳转到增加界面
      */
     addDepartment() {
@@ -325,6 +289,9 @@ export default {
         name: 'AddDepartment'
       })
     },
+    /**
+		 * 跳转到更新界面
+		 */
     updateDepartment(row) {
       this.$router.push({
         name: 'UpdateDepartment',
@@ -334,7 +301,7 @@ export default {
       })
     },
     /**
-     * 顶层的菜单栏事件函数
+     * 顶层的菜单栏更新事件函数
      */
     updateSelectedDepartment() {
       if (this.multipleSelection.length === 0) {
@@ -359,6 +326,9 @@ export default {
       }
     },
 
+    /**
+     * 删除选中组织机构
+     */
     deleteSelectedDepartment() {
       if (this.multipleSelection.length === 0) {
         this.$message({
@@ -367,29 +337,76 @@ export default {
         })
       }
       if (this.multipleSelection.length > 0) {
-        this.deleteDepartment()
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            const params = {
+              dataList: []
+            }
+            this.multipleSelection.forEach(item => {
+              const deleteData = {
+                id: item.id,
+                version: item.version
+              }
+              params.dataList.push(deleteData)
+            })
+            this.deleteDepartment(params)
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
       }
     },
-
     /**
-     * 删除信息
+     * 删除指定部门
      */
-    deleteDepartment() {
+    deleteSpecificDepartment(row) {
+      console.log(row)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+          const params = {
+            dataList: []
+          }
+          const deleteData = {
+            id: row.id,
+            version: row.version
+          }
+          params.dataList.push(deleteData)
+          this.deleteDepartment(params)
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
+          })
+        })
+    },
+    /**
+     * 删除信息
+     */
+    deleteDepartment(params) {
+      console.log(params.idList)
+      deleteDepartment(params)
+        .then(_ => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: `错误${err}`
           })
         })
     }

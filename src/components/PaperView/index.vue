@@ -4,20 +4,20 @@
     <el-drawer title="试卷详情" :size="size" :visible.sync="pageShowCache" :wrapper-closable="closable">
       <div class="paper-drawer">
         <el-card class="paper-card">
-          <div class="paper-title">{{ paper.title }}</div>
+          <div class="paper-title">{{ paperInfoCache.name }}</div>
           <div class="paper-question">
-            <div v-for="(question, index) in paper.quest" :key="index" class="quest">
-              <div v-if="question.type === '单选题'">
-                <question-single-choice :question-index="index" :question-type="question.type" :question-detail="question.question" :user-answer="question.userAnswer" :question-id="question.id" :question-answer="question.answer" @userAnswerAction="userAnswerAction" />
+            <div v-for="(question, index) in paperInfoCache.subjects" :key="index" class="quest">
+              <div v-if="question.type === '单选'">
+                <question-single-choice :question-index="index" :question-type="question.type" :question-detail="question.subject" :user-answer="question.userAnswer" :question-id="question.id" :question-answer="question.answers" @userAnswerAction="userAnswerAction" />
               </div>
-              <div v-if="question.type === '多选题'">
-                <question-multiple-choice :question-index="index" :question-type="question.type" :question-detail="question.question" :user-answer="question.userAnswer" :question-id="question.id" :question-answer="question.answer" @userAnswerAction="userAnswerAction" />
+              <div v-if="question.type === '多选'">
+                <question-multiple-choice :question-index="index" :question-type="question.type" :question-detail="question.subject" :user-answer="question.userAnswer" :question-id="question.id" :question-answer="question.answers" @userAnswerAction="userAnswerAction" />
               </div>
-              <div v-else-if="question.type === '填空题'">
-                <question-fill-blank :question-index="index" :question-type="question.type" :question-detail="question.question" :user-answer="question.userAnswer" :question-id="question.id" @userAnswerAction="userAnswerAction" />
+              <div v-else-if="question.type === '填空'">
+                <question-fill-blank :question-index="index" :question-type="question.type" :question-detail="question.subject" :user-answer="question.userAnswer" :question-id="question.id" @userAnswerAction="userAnswerAction" />
               </div>
-              <div v-else-if="question.type === '编程题'">
-                <question-subjective :question-index="index" :question-type="question.type" :question-detail="question.question" :user-answer="question.userAnswer" :question-id="question.id" @userAnswerAction="userAnswerAction" />
+              <div v-else-if="question.type === '主观'">
+                <question-subjective :question-index="index" :question-type="question.type" :question-detail="question.subject" :user-answer="question.userAnswer" :question-id="question.id" @userAnswerAction="userAnswerAction" />
               </div>
             </div>
           </div>
@@ -109,9 +109,7 @@ export default {
           }
         ]
       },
-      userAnswer: [],
-      answer: '',
-      answer2: ''
+      userAnswer: []
     }
   },
   watch: {
@@ -120,12 +118,14 @@ export default {
     },
     pageShowCache(val) {
       this.$emit('show-change', val)
+    },
+    paperInfo(val) {
+      this.paperInfoCache = this.paperInfo
     }
   },
   methods: {
     userAnswerAction(val) {
       this.pushAnswer(val)
-      console.log(this.userAnswer)
     },
     /**
      * 缓存答案

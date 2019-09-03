@@ -38,8 +38,9 @@ router.beforeEach(async(to, from, next) => {
         next()
       } else {
         try {
-          // 获取用户信息
-          await store.dispatch('user/getInfo')
+          // 获取用户信息，已经不需要获取用户信息
+          // await store.dispatch('user/getInfo')
+          store.dispatch('user/getInfo')
           // 获取菜单
           // const menu = await store.dispatch('user/getMenu')
           // router.addRoutes(menu)

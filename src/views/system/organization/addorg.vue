@@ -72,6 +72,7 @@
 </template>
 
 <script>
+import { addOrg } from '@/api/system/org'
 export default {
   data() {
     return {
@@ -124,29 +125,39 @@ export default {
 
   methods: {
     /**
-		 * 路由跳转
-		 */
+     * 保存按钮
+     */
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$router.push({
-            name: 'Org'
-          })
-          this.$message('操作成功')
-          console.log(this.form)
+          console.log('submit!')
+          this.submit()
         } else {
-          console.log('error submit!!')
+          console.log(this.userForm.status)
           return false
         }
       })
     },
-
-    save() {
-      this.$router.push({
-        name: 'Org'
-      })
-      this.$message('操作成功')
+    submit() {
+      console.log('this is formData')
+      console.log(this.companyForm)
+      const params = {
+        name: this.form.name,
+        code: this.form.code,
+        master: this.form.master,
+        tel: this.form.tel,
+        address: this.form.address,
+        status: this.form.status
+      }
+      console.log('this is params')
+      console.log(params)
+      addOrg(params).then(
+        this.$message('操作成功')
+      )
     },
+    /**
+     * 关闭按钮
+     */
     close() {
       this.$router.push({
         name: 'Org'

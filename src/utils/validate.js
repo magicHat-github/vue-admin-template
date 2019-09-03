@@ -15,6 +15,17 @@ export function isExternal(path) {
  * @returns {Boolean}
  */
 export function validUsername(str) {
-  const valid_map = ['admin', 'editor']
+  const valid_map = ['admin', 'root']
   return valid_map.indexOf(str.trim()) >= 0
+}
+
+export function isNumber(rule, value, callback) {
+  if (!value) {
+    return callback(new Error('不能为空'))
+  }
+  if (!Number.isInteger(value)) {
+    callback(new Error('请输入数字值'))
+  } else {
+    callback()
+  }
 }
