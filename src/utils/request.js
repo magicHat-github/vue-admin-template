@@ -11,7 +11,7 @@ import { getToken } from '@/utils/auth'
  */
 
 // 创建一个 axios 实例
-//  const exam = 'http://localhost:8726/'
+// const exam = 'http://localhost:8726/'
 // const exam = ''
 const service = axios.create({
   baseURL: '', // url = base url + request url
