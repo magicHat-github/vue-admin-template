@@ -241,7 +241,9 @@ export default {
       },
       // 资源总数
       total: 0,
-      loading: true
+      loading: true,
+      // 用于判断节点下拉框
+      flag: 0
     }
   },
   created() {
@@ -255,23 +257,42 @@ export default {
     computeResourceNames() {
       console.log('computing resource')
       this.computedResourceNames = []
+      // 父节点表单为空
       if (!this.formInline.parentName || this.formInline.parentName === '') {
         this.resourceNodes.map(element => {
           this.computedResourceNames.push(element.name)
         })
+      // 父节点表单不为空
       } else {
-        var flag = 0
-        this.resourceNodes.map(element => {
-          if (element.parentName === this.formInline.parentName) {
-            if (this.formInline.resourceName && this.formInline.resourceName === element.name) {
-              flag = flag + 1
-            }
-            this.computedResourceNames.push(element.name)
+        this.flag = 0
+        // 将父节点为表单中父节点的节点名称写入资源下拉框
+        this.parentNames.map(element => {
+          if (element.name === this.formInline.parentName && element.childList) {
+            // 遍历父节点的所有子节点
+            element.childList.map(child => {
+              this.autoFillResourceName(child, element.name)
+            })
           }
         })
-        if (flag === 0) {
+        debugger
+        console.log(this.flag)
+        if (this.flag === 0) {
           this.formInline.resourceName = ''
         }
+      }
+    },
+    autoFillResourceName(element, name) {
+      if (element.name === name) {
+        console.log('this is flag change')
+        console.log(element.name)
+        console.log(name)
+        this.flag = this.flag + 1
+      }
+      this.computedResourceNames.push(element.name)
+      if (element.childList) {
+        element.childList.map(child => {
+          this.autoFillResourceName(child, name)
+        })
       }
     },
     /**
@@ -281,20 +302,17 @@ export default {
     computeParentNames() {
       console.log('computing parent')
       this.computedParentNames = []
-      if (!this.formInline.resourceName || this.formInline.resourceName === '') {
-        this.parentNames.map(element => {
-          this.computedParentNames.push(element)
-        })
-      } else {
-        this.parentNames.map(element => {
-          this.computedParentNames.push(element)
-        })
+      // 资源表单为空
+      if (this.formInline.resourceName && this.formInline.resourceName === '') {
         this.resourceNodes.map(element => {
           if (element.parentName && element.name === this.formInline.resourceName) {
             this.formInline.parentName = element.parentName
           }
         })
       }
+      this.parentNames.map(element => {
+        this.computedParentNames.push(element.name)
+      })
     },
     /**
      * 查询数据
@@ -309,6 +327,10 @@ export default {
         pageNum: this.page.pageNumber
       }
       fetchResource(params).then(result => {
+        this.computedResourceNames = []
+        this.computedParentNames = []
+        this.parentNames = []
+        this.resourceNodes = []
         const body = result.body
         // 转换树结构的数据
         console.log(body.tree)
@@ -325,8 +347,12 @@ export default {
         this.total = parseInt(body.dataCount)
         this.loading = false
         // 填充下拉框
-        this.computeResourceNames()
+        this.formInline.resourceName = ''
+        this.formInline.parentName = ''
+        console.log('this is parent names')
+        console.log(this.parentNames)
         this.computeParentNames()
+        this.computeResourceNames()
       })
     },
     /**
@@ -358,7 +384,7 @@ export default {
           name: element.name,
           parentName: parent
         }
-        this.parentNames.push(element.name)
+        this.parentNames.push(element)
         this.resourceNodes.push(resourceNode)
         return {
           label: element.name,
