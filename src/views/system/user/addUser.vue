@@ -15,7 +15,7 @@
         :rules="userRules"
         label-width="100px"
         class="user-add-Form"
-        label-position="right"
+        label-position="left"
       >
         <!-- 第一行 -->
         <el-row>
@@ -43,13 +43,20 @@
           </el-col>
           <!-- 职位下拉框 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="职位" prop="position">
-              <el-select v-model="userForm.position" filterable placeholder="请选择">
+            <el-form-item label="职位" prop="positionName">
+              <el-select
+                v-model="userForm.position"
+                value-key="id"
+                clearable
+                filterable
+                placeholder="请选择"
+                @visible-change="$forceUpdate()"
+              >
                 <el-option
-                  v-for="position in positions"
-                  :key="position.name"
+                  v-for="position in computedPositions"
+                  :key="position.id"
                   :label="position.name"
-                  :value="position.name"
+                  :value="position"
                 />
               </el-select>
             </el-form-item>
@@ -57,29 +64,6 @@
         </el-row>
 
         <!-- 第三行 -->
-        <el-row>
-          <!-- 性别输入框 -->
-          <el-col :span="7" :offset="3">
-            <el-form-item label="性别" prop="sex">
-              <el-input v-model="userForm.sex" placeholder="请输入内容" clearable />
-            </el-form-item>
-          </el-col>
-          <!-- 生日输入框 -->
-          <el-col :span="7" :offset="2">
-            <el-form-item label="生日">
-
-              <div class="block">
-                <el-date-picker
-                  v-model="userForm.birthday"
-                  type="date"
-                  placeholder="选择日期"
-                />
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <!-- 第四行 -->
         <el-row>
           <!-- 电话输入框 -->
           <el-col :span="7" :offset="3">
@@ -95,56 +79,109 @@
           </el-col>
         </el-row>
 
-        <!-- 第五行 -->
-        <!-- 其它/微信输入框 -->
+        <!-- 第四行 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="其它/微信">
-              <el-input v-model="userForm.other" placeholder="请输入内容" clearable />
+            <el-form-item label="所属公司" prop="companyName">
+              <el-select
+                v-model="userForm.company"
+                value-key="id"
+                clearable
+                filterable
+                placeholder="请选择"
+                @visible-change="$forceUpdate()"
+                @change="computeCompany"
+              >
+                <el-option
+                  v-for="company in computedCompanys"
+                  :key="company.id"
+                  :label="company.name"
+                  :value="company"
+                />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="7" :offset="2">
-            <el-form-item label="拥有角色" prop="roles">
-              <el-select v-model="userForm.roles" filterable multiple placeholder="请选择">
-                <el-option v-for="role in roles" :key="role.name" :value="role.name" />
+            <el-form-item label="所属部门" prop="departmentName">
+              <el-select
+                v-model="userForm.departmentName"
+                value-key="id"
+                filterable
+                clearable
+                placeholder="请选择"
+                @visible-change="$forceUpdate()"
+                @change="computeDepartment"
+              >
+                <el-option
+                  v-for="department in computedDepartments"
+                  :key="department.id"
+                  :label="department.name"
+                  :value="department"
+                />
               </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- 第五行 -->
+        <el-row>
+          <!-- 拥有角色下拉框 -->
+          <el-col :span="7" :offset="3">
+            <el-form-item label="拥有角色" prop="roles">
+              <el-select
+                v-model="userForm.roles"
+                value-key="name"
+                filterable
+                multiple
+                placeholder="请选择"
+                @visible-change="$forceUpdate()"
+              >
+                <el-option
+                  v-for="role in roles"
+                  :key="role.name"
+                  :label="role.name"
+                  :value="role.name"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <!-- 其它/微信输入框 -->
+          <el-col :span="7" :offset="2">
+            <el-form-item label="其它/微信">
+              <el-input v-model="userForm.other" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
         </el-row>
 
         <!-- 第六行 -->
-        <!-- 其它/微信输入框 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="所属部门" prop="departmentName">
-              <el-select v-model="userForm.departmentName" filterable placeholder="请选择">
-                <el-option v-for="department in departments" :key="department.name" :value="department.name" />
-              </el-select>
+            <!-- 生日输入框 -->
+            <el-form-item label="生日">
+              <div class="block">
+                <el-date-picker v-model="userForm.birthday" type="date" placeholder="选择日期" />
+              </div>
             </el-form-item>
           </el-col>
+          <!-- 备注栏 -->
           <el-col :span="7" :offset="2">
-            <el-form-item label="所属公司" prop="companyName">
-              <el-select v-model="userForm.companyName" filterable placeholder="请选择">
-                <el-option v-for="company in companys" :key="company.name" :value="company.name" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <!-- 第七行 -->
-        <!-- 备注栏 -->
-        <el-row>
-          <el-col :span="7" :offset="3">
             <el-form-item label="备注">
               <el-input v-model="userForm.remark" type="textarea" :rows="2" placeholder="请输入内容" />
             </el-form-item>
           </el-col>
         </el-row>
 
-        <!-- 第八行 -->
-        <!--复选按钮 -->
+        <!-- 第七行 -->
+        <!-- 性别输入框 -->
         <el-row>
           <el-col :span="7" :offset="3">
+            <el-form-item label="性别">
+              <el-radio v-model="userForm.sex" label="0">男</el-radio>
+              <el-radio v-model="userForm.sex" label="1">女</el-radio>
+            </el-form-item>
+          </el-col>
+          <!--复选按钮 -->
+          <el-col :span="7" :offset="2">
             <el-form-item label="是否启用">
               <el-radio v-model="userForm.status" label="1">是</el-radio>
               <el-radio v-model="userForm.status" label="0">否</el-radio>
@@ -173,8 +210,8 @@
 export default {
   data() {
     /**
-       * 手机验证
-       */
+     * 手机验证
+     */
     var checkPhone = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('手机号不能为空'))
@@ -189,8 +226,8 @@ export default {
       }
     }
     /**
-       * 邮箱验证
-       */
+     * 邮箱验证
+     */
     var validateEmail = (rule, value, callback) => {
       if (value === '') {
         return callback(new Error('请正确填写邮箱'))
@@ -211,16 +248,16 @@ export default {
       userForm: {
         code: '',
         name: '',
-        password: '',
+        password: '123456',
         position: '',
         birthday: '',
         tel: '',
-        sex: '',
+        sex: '0',
         email: '',
         other: '',
         remark: '',
-        departmentName: '',
-        companyName: '',
+        department: '',
+        company: '',
         roles: [],
         status: '1'
       },
@@ -229,18 +266,15 @@ export default {
        */
       userRules: {
         code: [
-          { required: true, message: '请输入工号', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入工号', trigger: 'blur' }
         ],
         name: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入姓名', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输入密码', trigger: 'blur' }
         ],
-        position: [
+        positionName: [
           { required: true, message: '请选择职位', trigger: 'change' }
         ],
         companyName: [
@@ -250,8 +284,7 @@ export default {
           { required: true, message: '请选择部门', trigger: 'change' }
         ],
         sex: [
-          { required: true, message: '请输入性别', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请选择性别', trigger: 'blur' }
         ],
         roles: [
           { required: true, message: '请选择角色', trigger: 'blur' }
@@ -266,21 +299,33 @@ export default {
         ]
       },
       /**
-       * 职位下拉框选项
+       * 所有职位下拉框选项
        */
-      positions: [{ name: '鼓励师' }, { name: '搬砖人' }],
+      positions: [],
       /**
-       * 公司下拉框选项
+       * 计算过后的职位选项
        */
-      companys: [{ name: 'boss' }, { name: 'school' }],
+      computedPositions: [],
+      /**
+       * 所有公司下拉框选项
+       */
+      companys: [],
+      /**
+       * 计算过后的公司选项
+       */
+      computedCompanys: [],
       /**
        * 部门下拉框选项
        */
-      departments: [{ name: 'hr' }, { name: 'test' }],
+      departments: [],
       /**
-       * 角色下拉框选项
+       * 计算过后的部门选项
        */
-      roles: [{ name: '鼓励师' }, { name: '搬砖人' }]
+      computedDepartments: [],
+      /**
+       * 所有角色下拉框选项
+       */
+      roles: []
     }
   },
   methods: {
@@ -310,7 +355,6 @@ export default {
         name: 'User'
       })
     }
-
   }
 }
 </script>

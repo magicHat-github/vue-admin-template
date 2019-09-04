@@ -20,6 +20,14 @@ export function fetchUser(params) {
 }
 
 /**
+ * 查询用户增加/修改界面要显示的信息
+ * @param {*} params 查询的VO
+ */
+export function fetchUserRelated(params) {
+  return systemRequestApi('/user/related', 'POST', params)
+}
+
+/**
  * 删除选定用户
  * @param {*} params
  */
