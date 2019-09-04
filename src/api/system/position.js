@@ -1,69 +1,33 @@
-import request from '@/utils/request'
-/**
- * 职位管理的相关API
- */
-
-/**
- * 分页查询
- * @param {*} params 参数
- */
-export function select(params) {
-  console.log(params)
-  return request({
-    url: '/system/position',
-    method: 'get',
-    params
-  })
-}
+import { systemRequestApi } from '@/utils/requestUtil'
 
 /**
  * 添加
  * @param {*} params 参数
  */
-export function insert(params) {
-  console.log(params)
-  return request({
-    url: '/system/position',
-    method: 'post',
-    data: params
-  })
+export function insertPosition(params) {
+  return systemRequestApi('/position/add', 'POST', params)
 }
 
 /**
- * 修改
+ * 新增职位
  * @param {*} params 参数
  */
-export function update(params) {
-  console.log(params)
-  return request({
-    url: '/system/position',
-    method: 'put',
-    data: params
-  })
+export function queryPosition(params) {
+  return systemRequestApi('/position/query', 'POST', params)
 }
 
 /**
- * 删除
- * @param {*} ids 删除编号的集合
+ * 删除职位
+ * @param {*} params 参数
  */
-export function remove(ids) {
-  console.log(ids)
-  return request({
-    url: '/system/position',
-    method: 'delete',
-    data: ids
-  })
+export function deletePosition(params) {
+  return systemRequestApi('/position/delete', 'POST', params)
 }
 
 /**
- * 禁用
- * @param {*} id 禁用编号
+ * 更新职位信息
+ * @param {*} params 参数
  */
-export function disable(id) {
-  console.log(id)
-  return request({
-    url: '/system/position/status',
-    method: 'put',
-    data: id
-  })
+export function updatePosition(params) {
+  return systemRequestApi('/position/update', 'POST', params)
 }
