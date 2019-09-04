@@ -1,3 +1,4 @@
+<!-- 用户管理，只能维护当前组织机构的用户 -->
 <template>
   <el-container>
     <el-card class="aside">
@@ -45,12 +46,13 @@
             <el-form-item label="角色:">
               <el-select
                 v-model="formInline.roles"
+                value-key="roleId"
                 filterable
                 multiple
                 placeholder="请选择"
                 size="mini"
               >
-                <el-option v-for="name in roleNames" :key="name" :value="name" />
+                <el-option v-for="role in roles" :key="role.roleId" :label="role.roleName" :value="role" />
               </el-select>
             </el-form-item>
             <!-- 查询按钮 -->
@@ -114,7 +116,7 @@
             <el-table-column prop="roles" label="角色" align="center" />
             <el-table-column prop="sex" label="性别" align="center" />
             <el-table-column prop="birthday" label="生日" align="center" />
-            <el-table-column prop="position" label="职位" align="center" />
+            <el-table-column prop="positionName" label="职位" align="center" />
             <el-table-column prop="tel" label="电话" align="center" />
             <el-table-column prop="email" label="邮箱" align="center" />
             <el-table-column prop="other" label="其它/微信" width="105" align="center" />
@@ -188,9 +190,9 @@ export default {
       },
 
       /**
-       * 所有角色的名称
+       * 所有角色的名称和ID
        */
-      roleNames: [],
+      roles: [],
 
       /**
        * 查询字段
@@ -232,11 +234,11 @@ export default {
      */
     queryData() {
       this.loading = true
-      this.roleNames = []
+      this.roles = []
       // 初始化选择的角色名数组
       const roles = []
       this.formInline.roles.map(role => {
-        roles.push(role)
+        roles.push(role.roleName)
       })
       // 填入表单参数
       const params = {
@@ -270,7 +272,7 @@ export default {
         this.total = parseInt(body.dataCount)
         // 所有角色名称
         body.allRole.map(role => {
-          this.roleNames.push(role)
+          this.roles.push(role)
         })
         // 加载动画
         this.loading = false

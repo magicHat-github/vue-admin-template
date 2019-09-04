@@ -199,13 +199,13 @@ export default {
       },
 
       /**
-       * 所有资源的名称
+       * 所有资源
        */
       resourceNodes: [],
       /**
-       * 所有父节点的名称
+       * 所有父节点
        */
-      parentNames: [],
+      parentNodes: [],
       /**
        * 计算过后的资源名称
        */
@@ -264,7 +264,7 @@ export default {
       } else {
         var flag = 0
         // 将父节点为表单中父节点的节点名称写入资源下拉框
-        this.parentNames.map(element => {
+        this.parentNodes.map(element => {
           if (element.name === this.formInline.parentName && element.childList) {
             // 遍历父节点的所有子节点
             element.childList.map(child => {
@@ -306,7 +306,7 @@ export default {
           }
         })
       }
-      this.parentNames.map(element => {
+      this.parentNodes.map(element => {
         this.computedParentNames.push(element.name)
       })
     },
@@ -325,7 +325,7 @@ export default {
       fetchResource(params).then(result => {
         this.computedResourceNames = []
         this.computedParentNames = []
-        this.parentNames = []
+        this.parentNodes = []
         this.resourceNodes = []
         const body = result.body
         // 转换树结构的数据
@@ -346,7 +346,7 @@ export default {
         this.formInline.resourceName = ''
         this.formInline.parentName = ''
         console.log('this is parent names')
-        console.log(this.parentNames)
+        console.log(this.parentNodes)
         this.computeParentNames()
         this.computeResourceNames()
       })
@@ -380,7 +380,7 @@ export default {
           name: element.name,
           parentName: parent
         }
-        this.parentNames.push(element)
+        this.parentNodes.push(element)
         this.resourceNodes.push(resourceNode)
         return {
           label: element.name,

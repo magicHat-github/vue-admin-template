@@ -41,7 +41,7 @@
               <el-input v-model="companyForm.mnemonicCode" placeholder="请输入内容" clearable />
             </el-form-item>
           </el-col>
-          <!-- 法人下拉框 -->
+          <!-- 法人输入框 -->
           <el-col :span="7" :offset="2">
             <el-form-item label="法人" prop="master">
               <el-input v-model="companyForm.master" placeholder="请输入内容" clearable />
@@ -82,7 +82,7 @@
         </el-row>
 
         <!-- 第五行 -->
-        <!-- 所属机构输入框 -->
+        <!-- 所属机构下拉框 -->
         <el-row>
           <el-col :span="7" :offset="3">
             <el-form-item label="所属机构" prop="org">
