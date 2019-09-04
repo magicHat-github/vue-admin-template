@@ -241,9 +241,7 @@ export default {
       },
       // 资源总数
       total: 0,
-      loading: true,
-      // 用于判断节点下拉框
-      flag: 0
+      loading: true
     }
   },
   created() {
@@ -264,36 +262,34 @@ export default {
         })
       // 父节点表单不为空
       } else {
-        this.flag = 0
+        var flag = 0
         // 将父节点为表单中父节点的节点名称写入资源下拉框
         this.parentNames.map(element => {
           if (element.name === this.formInline.parentName && element.childList) {
             // 遍历父节点的所有子节点
             element.childList.map(child => {
-              this.autoFillResourceName(child, element.name)
+              flag = this.autoFillResourceName(child, element.name, flag)
             })
           }
         })
-        debugger
-        console.log(this.flag)
-        if (this.flag === 0) {
+        if (flag === 0) {
           this.formInline.resourceName = ''
         }
       }
     },
-    autoFillResourceName(element, name) {
+    autoFillResourceName(element, name, num) {
       if (element.name === name) {
-        console.log('this is flag change')
-        console.log(element.name)
-        console.log(name)
-        this.flag = this.flag + 1
+        num = num + 1
       }
       this.computedResourceNames.push(element.name)
       if (element.childList) {
+        var childNum = 0
         element.childList.map(child => {
-          this.autoFillResourceName(child, name)
+          childNum = this.autoFillResourceName(child, name, 0)
+          num = childNum + num
         })
       }
+      return num
     },
     /**
      * 计算父节点下拉框
@@ -302,8 +298,8 @@ export default {
     computeParentNames() {
       console.log('computing parent')
       this.computedParentNames = []
-      // 资源表单为空
-      if (this.formInline.resourceName && this.formInline.resourceName === '') {
+      // 资源表单不为空
+      if (this.formInline.resourceName && this.formInline.resourceName !== '') {
         this.resourceNodes.map(element => {
           if (element.parentName && element.name === this.formInline.resourceName) {
             this.formInline.parentName = element.parentName
