@@ -64,7 +64,7 @@
           <template slot-scope="{row}">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDictionary" />
             <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDictionary(row.id)" />
-            <el-link class="itemAction" type="danger" :disabled="row.status===1 " icon="el-icon-delete" @click="deleteDictionary(row.id)" />
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDictionary(row.id)" />
           </template>
         </el-table-column>
       </el-table>

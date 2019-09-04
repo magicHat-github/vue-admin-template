@@ -47,5 +47,5 @@ export function updateItem(params) {
  * @param {*} params 参数
  */
 export function searchTree() {
-  return systemRequestApi('/category/searchTree', 'get')
+  return systemRequestApi('/param/searchTree', 'get')
 }

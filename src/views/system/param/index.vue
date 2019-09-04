@@ -72,7 +72,10 @@
               <template slot-scope="scope">{{ scope.row.paramName }}</template>
             </el-table-column>
             <el-table-column prop="paramValue" label="参数值" align="center">
-              <template slot-scope="scope">{{ scope.row.paramValue }}</template>
+              <template slot-scope="scope">{{ scope.row.value }}</template>
+            </el-table-column>
+            <el-table-column prop="updatedTime" label="更新时间" align="center">
+              <template slot-scope="scope">{{ scope.row.updatedTime }}</template>
             </el-table-column>
             <el-table-column class-name="status-col" prop="status" label="启用标记" sortable="true" align="center">
               <template slot-scope="scope">
@@ -85,7 +88,7 @@
               <template slot-scope="{row}">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addParam" />
                 <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateParam(row.id)" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteParam(row.id)" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteParam(row)" />
               </template>
             </el-table-column>
           </el-table>
@@ -102,7 +105,7 @@
 <script>
 // import { log } from 'util'
 import Pagination from '@/components/Pagination'
-import { select, searchItem, deleteList } from '@/api/system/param'
+import { select, searchItem, searchTree, deleteList } from '@/api/system/param'
 export default {
   name: 'Param',
   components: { Pagination },
@@ -160,85 +163,38 @@ export default {
      * 页面刚开始加载数据时，即还未在查询框中输入查询条件时，分页查询参数数据
      */
     fetchData() {
-      this.Loading = true
+      this.listLoading = true
       const params = {
-        paramType: this.searchData.paramType,
-        paramName: this.searchData.paramType,
         pageSize: this.page.pageSize,
-        pageNum: this.page.pageNum
+        pageNum: this.page.pageNum,
+        paramType: this.searchData.paramType,
+        paramName: this.searchData.paramName
       }
       select(params).then(result => {
         const body = result.body
-        // 转换树结构的数据
-        console.log(body.tree)
-        const tree = body.tree.treeNodeList
-        this.treeData = this.transDataToTree(tree)
-        console.log('this is treeData')
-        console.log(this.treeData)
-        // 转换表格数据
-        this.list = body.dataList
-        console.log('this is table data')
-        console.log(this.companys)
-        // 分页信息
-        console.log(body.dataCount)
-        this.total = parseInt(body.dataCount)
-        this.loading = false
+        this.list = body.params.dataList
+        this.dataCount = parseInt(body.params.dataCount)
+        this.listLoading = false
       })
     },
-
-    /**
-     * 查询树结构的方法
-     */
-    transDataToTree(arr) {
-      return arr.map(element => {
-        // 这里的element是根节点
-        return this.getChildren(element)
-      })
-    },
-    /**
-     * 查询树结构的方法
-     */
-    getChildren(element) {
-      if (!element.childList) {
-        // 这里的element是叶子节点(叶子节点：即不存在子节点的节点)
-        console.log('this is leafNode')
-        console.log(element)
-        const re = {
-          label: element.name,
-          id: element.id,
-          children: null
-        }
-        return re
-      } else {
-        // 这里的element是非叶子节点(包括根节点)
-        console.log('this is non-leafNode')
-        console.log(element)
-        return {
-          label: element.name,
-          id: element.id,
-          children: this.transDataToTree(element.childList)
-        }
-      }
-    },
-
     /**
      * 树的上方区域点击事件
      */
-    // searchTree() {
-    //   searchTree().then(result => {
-    //     const body = result.body
-    //     this.treeData = body.treeData
-    //     console.log(this.treeData)
-    //   })
-    // },
+    searchTree() {
+      searchTree().then(result => {
+        const body = result.body
+        this.treeData = body.treeData
+        console.log(this.treeData)
+      })
+    },
     /**
        * 树结构的点击事件
        */
-    // handleNodeClick(data) {
-    //   console.log(data)
-    //   this.formInline.name = data.label
-    //   this.fetchByName()
-    // },
+    handleNodeClick(data) {
+      console.log(data)
+      this.formInline.name = data.label
+      this.fetchByName()
+    },
 
     /**
        * 勾选事件触发的函数,即多选操作
@@ -269,7 +225,8 @@ export default {
             paramName: body.paramName,
             value: body.value,
             remark: body.remark,
-            status: body.status
+            status: body.status,
+            version: body.version
           }
         })
       })
@@ -295,7 +252,7 @@ export default {
     /**
        * 删除信息
        */
-    deleteParam(id) {
+    deleteParam(row) {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -303,8 +260,15 @@ export default {
       })
         .then(() => {
           //  确认之后执行删除操作
-          const idList = { idList: [id] }
-          deleteList(idList).then(result => {
+          const params = {
+            dataList: []
+          }
+          const deleteData = {
+            id: row.id,
+            version: row.version
+          }
+          params.dataList.push(deleteData)
+          this.deleteList(params).then(result => {
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -334,9 +298,13 @@ export default {
           message: '请选择删除选项'
         })
       } else {
-        const idList = { idList: [] }
+        const params = { dataList: [] }
         this.multipleSelection.forEach(item => {
-          idList.idList.push(item.id)
+          const deleteData = {
+            id: item.id,
+            version: item.version
+          }
+          params.dataList.push(deleteData)
         })
         this.$confirm('是否要删除选定信息', '提示', {
           confirmButtonText: '确定',
@@ -344,15 +312,15 @@ export default {
           type: 'warning'
         })
           .then(() => {
-            deleteList(idList).then(result => {
-              console.log(idList)
+            deleteList(params).then(result => {
+              console.log(params)
               this.$message({
                 type: 'success',
                 message: '删除成功!'
               })
               this.fetchData()
             }).catch(result => {
-              console.log(idList)
+              console.log(params)
               this.$message({
                 type: 'success',
                 message: '删除失败!'

@@ -70,7 +70,8 @@ export default {
         paramType: this.$route.params.paramType,
         value: this.$route.params.value,
         remark: this.$route.params.remark,
-        status: this.$route.params.status
+        status: this.$route.params.status,
+        version: this.$route.params.version
       },
       rules: {
         paramType: [
@@ -98,11 +99,12 @@ export default {
     save() {
       const params = {
         id: this.form.id,
-        name: this.form.name,
-        category: this.form.category,
+        paramType: this.form.paramType,
+        paramName: this.form.paramName,
         value: this.form.value,
         status: this.form.status,
-        remark: this.form.remark
+        remark: this.form.remark,
+        version: this.form.version
       }
       console.log(params)
       updateItem(params).then(result => {
