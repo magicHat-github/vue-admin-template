@@ -241,6 +241,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
+    <publish-dialog :record-id="111111" :dialog-type="1" :dialog-visible="true" @dialog-save="handleDialogSave" />
   </div>
 </template>
 <script>
@@ -249,11 +250,15 @@ import { layout, pageSizes, pageSize, markOptions } from './common'
 import { rules, DialogType } from './common'
 import { getExamRecordById, getRecordList, getPapers, getJudgeList } from '@/api/exam'
 import { filters } from './common'
+import PublishDialog from './components/publish-dialog'
 import service from './service'
 
 export default {
   name: 'Exam',
   filters: filters,
+  components: {
+    PublishDialog
+  },
   data() {
     return {
       // 查询数据的表单数据
@@ -823,6 +828,9 @@ export default {
         type: type,
         message: message
       })
+    },
+    handleDialogSave(form) {
+      console.log(form)
     }
   }
 }
