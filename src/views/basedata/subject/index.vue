@@ -6,17 +6,17 @@
         <!--查询框 -->
         <div>
           <el-form :inline="true" :model="formInline" class="demo-form-inline">
+            <el-form-item label="题目:">
+              <el-input v-model="formInline.name" clearable size="mini" />
+            </el-form-item>
             <el-form-item label="题目类别:">
               <el-input v-model="formInline.categoryName" clearable size="mini" />
             </el-form-item>
-            <el-form-item label="选择题型:">
+            <el-form-item label="题型:">
               <el-input v-model="formInline.typeName" clearable size="mini" />
             </el-form-item>
-            <el-form-item label="输入题目:">
-              <el-input v-model="formInline.name" clearable size="mini" />
-            </el-form-item>
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -33,17 +33,20 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
+            v-loading="listLoading"
             :data="dataList"
             tooltip-effect="dark"
             stripe
-            height
+            highlight-current-row
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" />
             <el-table-column prop="name" label="题目" />
-            <el-table-column prop="category" label="题目类型" sortable="true" />
-            <el-table-column prop="type" label="题目分类" />
-            <el-table-column prop="updatedTime" label="更新时间" />
+            <el-table-column prop="categoryName" label="题目类别" sortable="true" />
+            <el-table-column prop="subjectTypeName" label="题型" />
+            <el-table-column label="更新时间">
+              <template slot-scope="scope">{{ scope.row.updatedTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
+            </el-table-column>
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
                 <el-tag
@@ -52,9 +55,11 @@
               </template>
             </el-table-column>
             <el-table-column label="操作">
-              <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-              <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
-              <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />
+              <template slot-scope="scope">
+                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem(scope.row.id)" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem(scope.row.id,scope.row.version)" />
+              </template>
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
@@ -64,7 +69,7 @@
               :total="dataCount"
               :page.sync="page.pageNum"
               :limit.sync="page.pageSize"
-              @click="queryData"
+              @pagination="queryData"
             />
           </div>
         </el-card>
@@ -74,11 +79,20 @@
 </template>
 
 <script>
+import { parseTime, idToValueConversionFilter } from '@/utils'
 import Pagination from '@/components/Pagination'
-import { select } from '@/api/basedata/subject'
+import { select, deleteList, searchById } from '@/api/basedata/subject'
 export default {
   name: 'App',
   components: { Pagination },
+  filters: {
+    parseUserTime(time, cFormat) {
+      return parseTime(time, cFormat)
+    },
+    userIdToValueConversionFilter(target, targetList) {
+      return idToValueConversionFilter(target, targetList)
+    }
+  },
   data() {
     return {
       /**
@@ -97,22 +111,14 @@ export default {
       dataCount: 0,
 
       /**
-         * 公司管理
+         * 数据List
          */
       dataList: null,
-
+      listLoading: false,
       /**
-         * 待确认字段
+         * 多选
          */
-      multipleSelection: [],
-      /**
-         * 初始显示的页数
-         */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
+      multipleSelection: []
     }
   },
   created() {
@@ -123,6 +129,7 @@ export default {
      * 显示和查询
      */
     queryData() {
+      this.listLoading = true
       const params = {
         categoryName: this.formInline.categoryName,
         typeName: this.formInline.typeName,
@@ -134,8 +141,9 @@ export default {
         const body = result.body
         this.dataList = body.dataList
         this.dataCount = parseInt(body.dataCount)
+        this.listLoading = false
+        console.log(this.dataList)
       })
-      console.log(this.dataList)
     },
     /**
      * 对表格多选项进行判定，成则跳转至修改页面
@@ -162,15 +170,30 @@ export default {
           message: '请选择删除选项'
         })
       } else {
+        const params = { dataList: [] }
+        this.multipleSelection.forEach(item => {
+          const data = { id: item.id,
+            version: item.version }
+          params.dataList.push(data)
+        })
         this.$confirm('是否要删除选定信息', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
           .then(() => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
+            console.log(params)
+            deleteList(params).then(() => {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.queryData()
+            }).catch(() => {
+              this.$message({
+                type: 'warning',
+                message: '删除失败!'
+              })
             })
           })
           .catch(() => {
@@ -195,25 +218,52 @@ export default {
         name: 'AddSubject'
       })
     },
-    updateItem() {
-      this.$router.push({
-        name: 'UpdateSubject'
+    updateItem(id) {
+      searchById(id).then(result => {
+        const body = result.body
+        this.$router.push({
+          name: 'UpdateSubject',
+          params: {
+            id: body.id,
+            name: body.name,
+            categoryId: body.categoryId,
+            dictionaryId: body.dictionaryId,
+            subjectTypeId: body.subjectTypeId,
+            status: body.status,
+            version: body.version,
+            remark: body.remark,
+            answerList: body.answerList
+          }
+        })
       })
     },
 
     /**
-       * 删除信息
-       */
-    deleteItem() {
+     * 删除信息
+     */
+    deleteItem(id, version) {
+      const params = { dataList: [] }
+      const data = { id: id,
+        version: version }
+      params.dataList.push(data)
+      console.log(params)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+          deleteList(params).then(() => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.queryData()
+          }).catch(() => {
+            this.$message({
+              type: 'success',
+              message: '删除失败!'
+            })
           })
         })
         .catch(() => {

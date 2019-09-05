@@ -81,7 +81,6 @@
 </template>
 
 <script>
-// import { log } from 'util'
 import Pagination from '@/components/Pagination'
 import { select, deleteList, selectById } from '@/api/basedata/type'
 export default {
@@ -261,7 +260,6 @@ export default {
       const data = { id: id,
         version: version }
       params.dataList.push(data)
-      console.log(params)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

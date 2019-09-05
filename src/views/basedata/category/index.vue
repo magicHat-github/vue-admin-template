@@ -32,7 +32,7 @@
               <el-input v-model="formInline.name" clearable size="mini" />
             </el-form-item>
             <el-form-item>
-              <el-button size="mini" type="primary" @click="fetch">查询</el-button>
+              <el-button size="mini" type="primary" @click="select">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -53,7 +53,7 @@
             :data="dataList"
             tooltip-effect="dark"
             stripe
-            height
+            highlight-current-row
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" />
@@ -83,25 +83,18 @@
               <template slot-scope="scope">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
                 <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem(scope.row.id)" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem(scope.row.id)" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem(scope.row.id,scope.row.version)" />
               </template>
             </el-table-column>
           </el-table>
           <!-- 分页部分 -->
           <div>
             <pagination
-              v-show="dataCount>0 && formInline.name === ''"
+              v-show="dataCount>0"
               :total="dataCount"
               :page.sync="page.pageNum"
               :limit.sync="page.pageSize"
-              @pagination="fetchData"
-            />
-            <pagination
-              v-show="dataCount>0 && formInline.name !== ''"
-              :total="dataCount"
-              :page.sync="page.pageNumSearch"
-              :limit.sync="page.pageSize"
-              @pagination="fetchByName"
+              @pagination="select"
             />
           </div>
         </el-card>
@@ -111,16 +104,13 @@
 </template>
 
 <script>
-// import { log } from 'util'
 import Pagination from '@/components/Pagination'
-import { select, selectByName, deleteList, searchTree, searchItem } from '@/api/basedata/catetory'
+import { select, deleteList, searchTree, searchItem } from '@/api/basedata/catetory'
 export default {
   name: 'App',
-  // eslint-disable-next-line vue/no-unused-components
   components: { Pagination },
   data() {
     return {
-      dataList: null,
       /**
          * 树结构数据
          */
@@ -133,46 +123,38 @@ export default {
         label: 'label',
         id: 'id'
       },
-
       /**
-         * 查询字段
+         * 查询框字段
          */
       formInline: {
         name: ''
       },
+      dataList: null,
       page: {
         pageSize: 5,
-        pageNum: 1,
-        pageNumSearch: 1
+        pageNum: 1
       },
       listLoading: false,
       // 试卷总数
       dataCount: 0,
       /**
-         * 待确认字段
+         * 多选栏数据
          */
-      multipleSelection: [],
-      /**
-         * 初始显示的页数
-         */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
+      multipleSelection: []
     }
   },
   created() {
-    this.fetchData()
+    this.select()
     this.searchTree()
   },
-
   methods: {
+    /**
+     * 查询题目类别树
+     */
     searchTree() {
       searchTree().then(result => {
         const body = result.body
         this.treeData = body.treeData
-        console.log(this.treeData)
       })
     },
     /**
@@ -181,14 +163,15 @@ export default {
     handleNodeClick(data) {
       console.log(data)
       this.formInline.name = data.label
-      this.fetchByName()
+      this.select()
     },
     /**
-     * 分页查询数据字典数据
+     * 模糊查询
      */
-    fetchData() {
+    select() {
       this.listLoading = true
       const params = {
+        name: this.formInline.name,
         pageSize: this.page.pageSize,
         pageNum: this.page.pageNum
       }
@@ -198,27 +181,6 @@ export default {
         this.dataCount = body.categories.dataCount
         this.listLoading = false
       })
-    },
-    fetch() {
-      this.page.pageNumSearch = 1
-      this.fetchByName()
-    },
-    fetchByName(id) {
-      this.listLoading = true
-      const params = {
-        name: this.formInline.name,
-        pageSize: this.page.pageSize,
-        pageNum: this.page.pageNumSearch
-      }
-      selectByName(params).then(result => {
-        const body = result.body
-        this.dataList = body.categories.dataList
-        this.dataCount = body.categories.dataCount
-        this.listLoading = false
-      })
-    },
-    queryData() {
-      this.dataCount = this.categories.length
     },
     /**
        * 勾选事件触发的函数
@@ -258,7 +220,6 @@ export default {
      * 对表格多选项进行判定，成则跳转至修改页面
      */
     updateCheck() {
-      // eslint-disable-next-line eqeqeq
       if (this.multipleSelection.length !== 1) {
         this.$message({
           type: 'warning',
@@ -274,28 +235,30 @@ export default {
     /**
        * 删除信息
        */
-    deleteItem(id) {
+    deleteItem(id, version) {
       this.treeData.forEach(item => {
         if (item.id === id) {
           console.log(id)
         }
       })
-
+      const params = { dataList: [] }
+      const data = { id: id,
+        version: version }
+      params.dataList.push(data)
+      console.log(params)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          // eslint-disable-next-line no-unused-vars
-          const idList = { idList: [id] }
-          deleteList(idList).then(result => {
+          deleteList(params).then(() => {
             this.$message({
               type: 'success',
               message: '删除成功!'
             })
-            this.fetchByName()
-          }).catch(result => {
+            this.select()
+          }).catch(() => {
             this.$message({
               type: 'success',
               message: '删除失败!'
@@ -313,14 +276,12 @@ export default {
      * 对表格多选项进行判定，成功则删除
      */
     deleteCheck() {
-      // eslint-disable-next-line eqeqeq
       if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'warning',
           message: '请选择删除选项'
         })
       } else {
-        // eslint-disable-next-line no-unused-vars
         const params = { idList: [] }
         this.multipleSelection.forEach(item => {
           params.idList.push(item.id)
@@ -336,7 +297,7 @@ export default {
                 type: 'success',
                 message: '删除成功!'
               })
-              this.fetchData()
+              this.select()
             }).catch(result => {
               this.$message({
                 type: 'success',

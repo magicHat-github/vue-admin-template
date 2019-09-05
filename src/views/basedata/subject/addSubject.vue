@@ -13,22 +13,21 @@
         <el-form ref="form" :label-position="left" :rules="rules" :model="form" label-width="80px" size="mini">
           <el-row>
             <el-col :span="8">
-              <el-form-item label="题目类别" prop="category">
-                <el-select v-model="form.category" placeholder="请选择">
-                  <el-option
-                    v-for="category in categories"
-                    :key="category.name"
-                    :label="category.name"
-                    :value="category.id"
-                  />
-                </el-select>
+              <el-form-item label="题目类别">
+                <el-cascader
+                  v-model="form.category"
+                  :options="categoryList"
+                  :props="{ checkStrictly: true }"
+                  :show-all-levels="false"
+                  clearable
+                />
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="题型" prop="type">
-                <el-select v-model="form.type" placeholder="请选择">
+              <el-form-item label="题型">
+                <el-select v-model="form.type" filterable placeholder="请选择">
                   <el-option
-                    v-for="type in types"
+                    v-for="type in typeList"
                     :key="type.name"
                     :label="type.name"
                     :value="type.id"
@@ -37,12 +36,12 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="难度" prop="difficult">
-                <el-select v-model="form.difficult" placeholder="请选择">
+              <el-form-item label="难度">
+                <el-select v-model="form.difficult" filterable placeholder="请选择">
                   <el-option
-                    v-for="difficult in difficults"
-                    :key="difficult.name"
-                    :label="difficult.name"
+                    v-for="difficult in difficultList"
+                    :key="difficult.value"
+                    :label="difficult.value"
                     :value="difficult.id"
                   />
                 </el-select>
@@ -50,10 +49,9 @@
             </el-col>
           </el-row>
           <el-row>
-
-            <el-form-item label="题目" prop="subject">
+            <el-form-item label="题目">
               <el-input
-                v-model="form.remark"
+                v-model="form.name"
                 type="textarea"
                 :rows="6"
                 placeholder="请输入内容"
@@ -61,47 +59,43 @@
             </el-form-item>
           </el-row>
           <el-row>
-            <el-col span="12">
-              <el-form-item label="选项：">
+            <el-col span="24">
+              <el-form-item label="题目答案">
                 <el-row>
-                  <el-col :offset="8">
-                    <el-button type="primary" @click="addOption">新增选项</el-button>
+                  <el-col :offset="11">
+                    <el-button type="warning" @click="addAnswer">新增</el-button>
                   </el-col>
                 </el-row>
               </el-form-item>
-              <el-form-item
-                v-for="(option, index) in form.options"
-                :key="option.key"
-                :label="'选项' + index"
-                :prop="'options.' + index + '.value'"
-              >
-                <el-col :span="20">
-                  <el-input v-model="option.value" />
-                </el-col>
-                <el-button type="danger" @click.prevent="removeOption(option)">删除</el-button>
-              </el-form-item>
-            </el-col>
-            <el-col span="12">
-              <el-form-item label="答案：">
-                <el-row>
-                  <el-col :offset="8">
-                    <el-button type="warning" @click="addAnswer">新增答案</el-button>
+              <el-col span="24">
+                <el-form-item
+                  v-for="(answer, index) in form.answers"
+                  :key="answer.key"
+                  :label="'答案' + index"
+                  :prop="'answers.' + index + '.value'"
+                >
+                  <el-col :span="16">
+                    <el-input
+                      v-model="answer.answer"
+                      type="textarea"
+                      :rows="2"
+                      placeholder="请输入答案内容"
+                    />
                   </el-col>
-                </el-row>
-              </el-form-item>
-              <el-form-item
-                v-for="(answer, index) in form.answers"
-                :key="answer.key"
-                :label="'答案' + index"
-                :prop="'answers.' + index + '.value'"
-              >
-                <el-col :span="20">
-                  <el-input v-model="answer.value" />
-                </el-col>
-                <el-button type="danger" @click.prevent="removeAnswer(answer)">删除</el-button>
-              </el-form-item>
+                  <el-col :span="4" offset="1">
+                    <el-switch
+                      v-model="answer.rightAnswer"
+                      style="display: block"
+                      active-color="#13ce66"
+                      inactive-color="#ff4949"
+                      active-text="正 确"
+                      inactive-text="错 误"
+                    />
+                  </el-col>
+                  <el-button type="danger" @click.prevent="removeAnswer(answer)">删除</el-button>
+                </el-form-item>
+              </el-col>
             </el-col>
-
           </el-row>
           <el-row>
             <el-col :span="12">
@@ -160,6 +154,7 @@
 </template>
 
 <script>
+import { searchCategoryTree, selectType, selectDifficult, insert } from '@/api/basedata/subject'
 export default {
   data() {
     return {
@@ -173,28 +168,13 @@ export default {
         difficult: '',
         answers: [{
           key: '',
-          value: ''
-        }],
-        options: [{
-          key: '',
-          value: ''
+          answer: '',
+          rightAnswer: false
         }]
       },
-      categories: [
-        { id: '1',
-          name: '2222'
-        }
-      ],
-      types: [
-        { id: '1',
-          name: '2222'
-        }
-      ],
-      difficults: [
-        { id: '1',
-          name: '2222'
-        }
-      ],
+      categoryList: null,
+      typeList: null,
+      difficultList: null,
       rules: {
         category: [
           { required: true, message: '请输入题目类别', trigger: 'blur' }
@@ -220,35 +200,67 @@ export default {
       }
     }
   },
+  created() {
+    this.searchInline()
+  },
   methods: {
-    /**
-       * 路由跳转
-       */
-    onSubmit() {
-      console.log('submit!')
+    searchInline() {
+      searchCategoryTree().then(result => {
+        const body = result.body
+        this.categoryList = body.treeData
+      })
+      const params = {
+        name: '',
+        pageSize: 1000000,
+        pageNum: 1
+      }
+      selectType(params).then(result => {
+        const body = result.body
+        this.typeList = body.dataList
+      })
+      const params2 = {
+        name: '题目难度',
+        category: '题目难度',
+        pageSize: 1000000,
+        pageNum: 1
+      }
+      selectDifficult(params2).then(result => {
+        const body = result.body
+        this.difficultList = body.dictionaries.dataList
+        console.log(this.difficultList)
+      })
     },
     save() {
-      this.$router.push({
-        name: 'Category'
+      const params = {
+        name: this.form.name,
+        status: this.form.status,
+        dictionaryId: this.form.difficult,
+        subjectTypeId: this.form.type,
+        categoryId: this.form.category.pop(),
+        remark: this.form.remark,
+        answerList: this.form.answers
+      }
+      console.log(params)
+      insert(params).then(() => {
+        this.$router.push({
+          name: 'Subject'
+        })
+        this.$message({
+          type: 'success',
+          message: '操作成功'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '操作失败'
+        })
       })
-      this.$message('操作成功')
     },
     close() {
       this.$router.push({
-        name: 'Category'
+        name: 'Subject'
       })
-    },
-    removeOption(item) {
-      const index = this.form.options.indexOf(item)
-      if (index !== -1) {
-        this.form.options.splice(index, 1)
-      }
-    },
-    addOption() {
-      this.form.options.push({
-        value: '',
-        key: Date.now()
-      })
+      this.$message('取消操作')
     },
     submitUpload() {
       this.$refs.upload.submit()
@@ -267,8 +279,9 @@ export default {
     },
     addAnswer() {
       this.form.answers.push({
-        value: '',
-        key: Date.now()
+        id: '',
+        answer: '',
+        rightAnswer: false
       })
     }
   }
