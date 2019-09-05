@@ -72,11 +72,18 @@ export const markOptions = [
 /**
  * 校验规则
  */
-var checkJudges = (rule, value, callback) => {
+const checkJudges = (rule, value, callback) => {
   if (value.length <= 0) {
     return callback(new Error('必须选择一个阅卷官'))
   } else {
     callback()
+  }
+}
+const numberValid = (rule, value, callback) => {
+  if (value > 0 && value < 65535) {
+    callback()
+  } else {
+    callback(new Error('不是有效的数字范围'))
   }
 }
 export const rules = {
@@ -94,7 +101,8 @@ export const rules = {
   ],
   planPeopleNum: [
     { required: true, message: '必须输入计划参加人数', trigger: 'blur' },
-    { type: 'number', message: '必须输入数字' }
+    { type: 'number', message: '必须输入数字' },
+    { validator: numberValid, trigger: 'blur' }
   ],
   examLimitTime: [
     { required: true, message: '必须输入考试时长', trigger: 'blur' },

@@ -1,6 +1,5 @@
 <template>
   <div id="publish-dialog">
-    <h2>发布弹窗</h2>
     <!-- 发布弹窗 -->
     <el-dialog :title="dialogTitle" :visible.sync="visible">
       <div style="text-align:center">
@@ -141,8 +140,8 @@
   </div>
 </template>
 <script>
-import { filters, rules, DialogType, markOptions } from '../../views/exam/common'
-import service from '../../views/exam/service'
+import { filters, rules, DialogType, markOptions } from '../../common'
+import service from '../../service'
 
 export default {
   name: 'PublishDialog',
@@ -165,7 +164,6 @@ export default {
       default: ''
     }
   },
-
   data() {
     return {
       /**
@@ -235,7 +233,9 @@ export default {
   },
   watch: {
     dialogVisible(val) {
-      console.log('数值改变')
+      if (val) {
+        this.dispatch()
+      }
       this.visible = val
     },
     visible(val) {
@@ -245,28 +245,40 @@ export default {
     }
   },
   mounted() {
-    // 对编辑、新发布、重新发布进行相应的处理
-    if (this.dialogType === DialogType.NEWPUBLISH) {
-      this.initNewPublishDialog()
-    } else if (this.dialogType === DialogType.REPUBLISH) {
-      this.initRePublishDialog()
-    } else if (this.dialogType === DialogType.EDITRECORD) {
-      this.initEditPublishDialog()
-    } else {
-      this.showMessage('error', '未知操作')
-      this.closeDialog()
-    }
-    this.visible = this.dialogVisible
   },
   methods: {
+    /**
+     * 内容分发器
+     */
+    dispatch() {
+      // 对编辑、新发布、重新发布进行相应的处理
+      if (this.dialogType === DialogType.NEWPUBLISH) {
+        this.initNewPublishDialog()
+      } else if (this.dialogType === DialogType.REPUBLISH) {
+        this.initRePublishDialog()
+      } else if (this.dialogType === DialogType.EDITRECORD) {
+        this.initEditPublishDialog()
+      } else {
+        this.showMessage('error', '未知操作')
+        this.closeDialog()
+        return
+      }
+      // 显示弹窗
+      this.visible = true
+    },
     /**
      * 保存按钮处理对象
      * 激活dialog-save事件
      * 返回表单数据
      */
     handleSaveEvent() {
-      this.closeDialog()
-      this.$emit('dialog-save', this.dialogForm)
+      if (this.formValid()) {
+        // 数据校验之后
+        this.closeDialog()
+        this.$emit('dialog-save', this.dialogForm)
+      } else {
+        this.showMessage('warning', '请正确填写数据')
+      }
     },
     /**
      * 取消事件处理
@@ -367,6 +379,7 @@ export default {
      */
     initNewPublishDialog() {
       this.dialogTitle = '新发布记录'
+      this.visible = true
     },
     /**
      * 初始化编辑记录弹窗
@@ -395,11 +408,48 @@ export default {
         this.closeDialog()
         return
       }
-      this.dialogTitle = '重新发布考试记录'
+      service.getExamRecordById(this.recordId)
+        .then(rsp => {
+          this.dialogForm = rsp.body
+          this.dialogTitle = '重新发布考试记录'
+        })
+        .catch(err => {
+          this.showMessage('error', err.body)
+          this.closeDialog()
+        })
+    },
+    formValid() {
+      if (this.valueNoEmpty(this.dialogForm.paperName) && this.valueNoEmpty(this.dialogForm.paperId) &&
+        this.valueNoEmpty(this.dialogForm.title) && this.valueNoEmpty(this.dialogForm.examStartTime) &&
+        this.valueNoEmpty(this.dialogForm.examEndTime) && this.valueNoEmpty(this.dialogForm.planPeopleNum) &&
+        this.valueNoEmpty(this.dialogForm.examLimitTime) && (this.dialogForm.judges.length > 0) &&
+        this.valueNoEmpty(this.dialogForm.markingEndTime)) {
+        return true
+      } else {
+        return false
+      }
+    },
+    /**
+     * 判断值是不是为空
+     * @param val
+     * @returns {boolean}
+     */
+    valueNoEmpty(val) {
+      if (val !== null && val !== undefined && val !== '') {
+        return true
+      }
+      return false
     }
   }
 }
 </script>
 <style scoped>
-
+.judges {
+  padding:0%;
+  /* margin: 0%; */
+  text-align:left;
+  border-radius: 4px;
+  border: 1px solid #DCDFE6;
+  min-height: 32px;
+}
 </style>
