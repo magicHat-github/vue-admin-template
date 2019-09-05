@@ -1,74 +1,44 @@
-import request from '@/utils/request'
 import { systemRequestApi } from '@/utils/requestUtil'
 /**
  * 用户管理的相关API
  */
 
 /**
- * 对用户分页查询
+ * 新增用户
  * @param {*} params 参数
  */
-export function selectTable(params) {
-  return systemRequestApi('/system/user', 'get', params)
+export function addUser(params) {
+  return systemRequestApi('/user', 'POST', params)
 }
 
 /**
- * 根据试卷配置项编号获取配置项详情
- * @param params
- * @returns {AxiosPromise}
+ * 查询用户管理界面要显示的信息
+ * @param {*} params 查询的VO
  */
-export function selectConfigItemById(params) {
-  return systemRequestApi('/paper/config/item', 'get', params)
+export function fetchUser(params) {
+  return systemRequestApi('/user/info', 'POST', params)
 }
 
 /**
- * 添加
- * @param {*} params 参数
+ * 查询用户增加/修改界面要显示的信息
+ * @param {*} params 查询的VO
  */
-export function save(params) {
-  // console.log(params)
-  return request({
-    url: '/paper/composition',
-    method: 'post',
-    data: params
-  })
+export function fetchUserRelated(params) {
+  return systemRequestApi('/user/related', 'POST', params)
 }
 
 /**
- * 修改
- * @param {*} params 参数
+ * 删除选定用户
+ * @param {*} params
  */
-export function update(params) {
-  // console.log(params)
-  return request({
-    url: '/paper/composition',
-    method: 'put',
-    data: params
-  })
+export function dropUser(params) {
+  return systemRequestApi('/user', 'DELETE', params)
 }
 
 /**
- * 删除
- * @param {*} ids 删除编号的集合
+ * 修改选定用户信息
+ * @param {*} params
  */
-export function remove(ids) {
-  // console.log(ids)
-  return request({
-    url: '/paper/composition',
-    method: 'delete',
-    data: ids
-  })
-}
-
-/**
- * 禁用
- * @param {*} id 禁用编号
- */
-export function disable(id) {
-  // console.log(id)
-  return request({
-    url: '/paper/composition/status',
-    method: 'put',
-    data: id
-  })
+export function updateUser(params) {
+  return systemRequestApi('/user', 'PUT', params)
 }

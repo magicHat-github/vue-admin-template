@@ -1,5 +1,5 @@
 <template>
-  <div id="phoneanswer">
+  <div v-if="visible" id="phoneanswer">
     <h4>手机答卷</h4>
     <!-- <el-image class="qrcode" :src="qrImage" :preview-src-list="[qrImage]" /> -->
     <img v-bind="{src:''+qrImage }" class="qrcode">
@@ -15,77 +15,54 @@ export default {
   name: 'PhoneAnswer',
   data() {
     return {
+      visible: false,
       qrImage: '',
       qrCodeUrl: 'http://long95288.github.io/'
     }
   },
   mounted() {
     this.$nextTick(() => {
-      // this.qrcode()
-      this.qrcode()
+      const reQrCodeUrl = this.$route.params.qrCodeUrl
+      console.log(reQrCodeUrl)
+      if (!reQrCodeUrl) {
+        this.goBack()
+      } else {
+        this.qrCodeUrl = reQrCodeUrl
+        this.qrcode()
+      }
     })
   },
   methods: {
-    // qrcode() {
-    //   const qrcode = new QRCode('qrCode', {
-    //     text: `${this.qrCodeUrl}`,
-    //     render: 'canvas',
-    //     width: 400,
-    //     height: 400,
-    //     colorDark: '#000',
-    //     colorLight: '#fff'
-    //   })
-    //   console.log(qrcode)
-    // },
+    goBack() {
+      this.$confirm(
+        '请选择已发布的考试生成二维码',
+        '警告',
+        {
+          confirmButtonText: '确定'
+        }
+      ).then(() => {
+        this.$router.push({ name: 'examPublish' })
+      }).catch(() => {
+        this.$router.push({ name: 'examPublish' })
+      })
+    },
     async qrcode() {
       // 配置文件
       const opts = {
         errorCorrectionLevel: 'H',
         type: 'image/jpeg'
       }
-
-      // const canva = this.$refs.canva
-      // QRCode.toCanvas(canva,`${this.qrCodeUrl}`,error => {
-      //   if (error) {
-      //     this.$message({
-      //       type: 'error',
-      //       message: '生成二维码失败'
-      //     })
-      //   } else {
-      //     this.$message({
-      //       type: 'success',
-      //       message: '生成二维码成功'
-      //     })
-      //   }
-      // })
       // 获得二维码的图片
       await QRCode.toDataURL(this.qrCodeUrl, opts)
         .then(url => {
-          console.log(url)
-          // alert('生成成功')
           this.qrImage = url
+          this.visible = true
         }).catch(err => {
-          console.log(err)
+          this.$message({
+            type: 'error',
+            message: `生成二维码失败${err}`
+          })
         })
-      // QRCode.toDataURL(
-      //   'text',
-      //   opts,
-      //   function (err, url) {
-      //     // if (err) {
-      //     //   this.$message({
-      //     //     type: 'error',
-      //     //     message: '生成二维码失败'
-      //     //   })
-      //     // } else {
-      //     //   this.$message({
-      //     //     type: 'success',
-      //     //     message: '生成二维码成功'
-      //     //   })
-      //       console.log(url)
-      //       this.qrImage = url;
-      //   // }
-      //   }
-      // )
     }
   }
 }

@@ -43,9 +43,11 @@
                 clearable
                 placeholder="请选择"
                 size="mini"
+                @visible-change="$forceUpdate()"
+                @change="computeParentNames"
               >
                 <el-option
-                  v-for="name in resourceNames"
+                  v-for="name in computedResourceNames"
                   :key="name"
                   :value="name"
                 />
@@ -59,9 +61,11 @@
                 clearable
                 placeholder="请选择"
                 size="mini"
+                @visible-change="$forceUpdate()"
+                @change="computeResourceNames"
               >
                 <el-option
-                  v-for="name in resourceNames"
+                  v-for="name in computedParentNames"
                   :key="name"
                   :value="name"
                 />
@@ -195,10 +199,21 @@ export default {
       },
 
       /**
-       * 所有资源的名称
+       * 所有资源
        */
-      resourceNames: [],
-
+      resourceNodes: [],
+      /**
+       * 所有父节点
+       */
+      parentNodes: [],
+      /**
+       * 计算过后的资源名称
+       */
+      computedResourceNames: [],
+      /**
+       * 计算过后的父节点名称
+       */
+      computedParentNames: [],
       /**
        * 查询字段
        */
@@ -234,10 +249,73 @@ export default {
   },
   methods: {
     /**
+     * 计算资源下拉框
+     * 暂定输入父节点信息后自动修改下拉框
+     */
+    computeResourceNames() {
+      console.log('computing resource')
+      this.computedResourceNames = []
+      // 父节点表单为空
+      if (!this.formInline.parentName || this.formInline.parentName === '') {
+        this.resourceNodes.map(element => {
+          this.computedResourceNames.push(element.name)
+        })
+      // 父节点表单不为空
+      } else {
+        var flag = 0
+        // 将父节点为表单中父节点的节点名称写入资源下拉框
+        this.parentNodes.map(element => {
+          if (element.name === this.formInline.parentName && element.childList) {
+            // 遍历父节点的所有子节点
+            element.childList.map(child => {
+              flag = this.autoFillResourceName(child, element.name, flag)
+            })
+          }
+        })
+        if (flag === 0) {
+          this.formInline.resourceName = ''
+        }
+      }
+    },
+    autoFillResourceName(element, name, num) {
+      if (element.name === name) {
+        num = num + 1
+      }
+      this.computedResourceNames.push(element.name)
+      if (element.childList) {
+        var childNum = 0
+        element.childList.map(child => {
+          childNum = this.autoFillResourceName(child, name, 0)
+          num = childNum + num
+        })
+      }
+      return num
+    },
+    /**
+     * 计算父节点下拉框
+     * 暂定输入资源信息后自动填充父节点信息
+     */
+    computeParentNames() {
+      console.log('computing parent')
+      this.computedParentNames = []
+      // 资源表单不为空
+      if (this.formInline.resourceName && this.formInline.resourceName !== '') {
+        this.resourceNodes.map(element => {
+          if (element.parentName && element.name === this.formInline.resourceName) {
+            this.formInline.parentName = element.parentName
+          }
+        })
+      }
+      this.parentNodes.map(element => {
+        this.computedParentNames.push(element.name)
+      })
+    },
+    /**
      * 查询数据
      */
     queryData() {
-      this.resourceNames = []
+      this.loading = true
+      this.resourceNodes = []
       const params = {
         resourceName: this.formInline.resourceName,
         parentName: this.formInline.parentName,
@@ -245,11 +323,15 @@ export default {
         pageNum: this.page.pageNumber
       }
       fetchResource(params).then(result => {
+        this.computedResourceNames = []
+        this.computedParentNames = []
+        this.parentNodes = []
+        this.resourceNodes = []
         const body = result.body
         // 转换树结构的数据
         console.log(body.tree)
         const tree = body.tree.treeNodeList
-        this.treeData = this.transDataToTree(tree)
+        this.treeData = this.transDataToTree(tree, null)
         console.log('this is treeData')
         console.log(this.treeData)
         // 转换表格数据
@@ -260,38 +342,50 @@ export default {
         console.log(body.dataCount)
         this.total = parseInt(body.dataCount)
         this.loading = false
+        // 填充下拉框
+        this.formInline.resourceName = ''
+        this.formInline.parentName = ''
+        console.log('this is parent names')
+        console.log(this.parentNodes)
+        this.computeParentNames()
+        this.computeResourceNames()
       })
     },
     /**
      * 查询树结构的方法
      */
-    transDataToTree(arr) {
+    transDataToTree(arr, parent) {
       return arr.map(element => {
-        return this.getChildren(element)
+        return this.getChildren(element, parent)
       })
     },
     /**
      * 查询树结构的方法
      */
-    getChildren(element) {
+    getChildren(element, parent) {
       if (!element.childList) {
-        console.log('this is leafNode')
-        console.log(element)
         const re = {
           label: element.name,
           id: element.id,
           children: null
         }
-        this.resourceNames.push(element.name)
+        const resourceNode = {
+          name: element.name,
+          parentName: parent
+        }
+        this.resourceNodes.push(resourceNode)
         return re
       } else {
-        console.log('this is parentNode')
-        console.log(element)
-        this.resourceNames.push(element.name)
+        const resourceNode = {
+          name: element.name,
+          parentName: parent
+        }
+        this.parentNodes.push(element)
+        this.resourceNodes.push(resourceNode)
         return {
           label: element.name,
           id: element.id,
-          children: this.transDataToTree(element.childList)
+          children: this.transDataToTree(element.childList, element.name)
         }
       }
     },
@@ -416,11 +510,8 @@ export default {
     deleteResource(params) {
       console.log(params.idList)
       dropResource(params)
-        .then(_ => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+        .then(result => {
+          this.$message(result.head.msg)
           this.queryData()
         })
         .catch(err => {

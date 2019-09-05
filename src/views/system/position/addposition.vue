@@ -17,13 +17,17 @@
         size="mini"
         class="demo-ruleForm"
         style="padding-left:30%;"
-        label-position="right"
+        label-org-name="left"
       >
         <el-form-item label="公司" prop="company">
           <el-col :span="8">
-            <el-select v-model="form.company" filterable placeholder="请选择">
-              <el-option label="博思软件" value="shanghai" />
-              <el-option label="阿里巴巴" value="beijing" />
+            <el-select v-model="form.company" value-key="name" filterable placeholder="请选择">
+              <el-option
+                v-for="company in companys"
+                :key="company.id"
+                :label="company.name"
+                :value="company"
+              />
             </el-select>
           </el-col>
         </el-form-item>
@@ -64,6 +68,8 @@
 </template>
 
 <script>
+import { queryDepartment } from '@/api/system/department'
+import { insertPosition } from '@/api/system/position'
 export default {
   data() {
     return {
@@ -89,9 +95,9 @@ export default {
             trigger: 'change'
           },
           {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
+            min: 4,
+            max: 8,
+            message: '长度在 4 到 8 个字符',
             trigger: 'blur'
           }
         ],
@@ -102,34 +108,116 @@ export default {
             message: '请选择启用标记',
             trigger: 'change'
           }
+        ],
+        remark: [
+          {
+            min: 5,
+            max: 30,
+            message: '长度在 5 到 30 个字符',
+            trigger: 'blur'
+          }
         ]
-      }
+      },
+      companys: []
     }
   },
+  created() {
+    this.queryData()
+  },
   methods: {
+
     /**
-		 * 路由跳转
+		 * 查询数据 并填充下拉框
+		 */
+    queryData() {
+      const params = {
+        departmentName: '',
+        level: '',
+        pageSize: 1,
+        pageNum: 1
+      }
+      queryDepartment(params)
+        .then(result => {
+          const body = result.body
+          // 转换树结构的数据
+          const tree = body.tree.treeNodeList
+          this.transDataToTree(tree)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+
+    /**
+		 * 查询树结构的方法
+		 */
+    transDataToTree(arr) {
+      return arr.map(element => {
+        return this.getChildren(element)
+      })
+    },
+
+    /**
+		 * 查询树结构中的数据
+		 */
+    getChildren(element) {
+      if (!element.childList) {
+        // 这里可以用于判断公司名是否为空
+        console.log('this is departments')
+        console.log(element)
+        const re = {
+          label: element.name,
+          id: element.id,
+          children: null
+        }
+        return re
+      } else {
+        // 填充公司选项下拉框数据
+        const company = {
+          name: element.name,
+          id: element.id
+        }
+        this.companys.push(company)
+        return {
+          children: this.transDataToTree(element.childList)
+        }
+      }
+    },
+
+    /**
+		 * 保存操作
 		 */
     submitForm(formName) {
+      console.log('this is formData orgs')
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$router.push({
-            name: 'position'
-          })
-          this.$message('操作成功')
-          console.log(this.form)
+          console.log('submit!')
+          this.submit()
         } else {
-          console.log('error submit!!')
           return false
         }
       })
     },
-    save() {
-      this.$router.push({
-        name: 'position'
+    submit() {
+      console.log('this is formData')
+      const params = {
+        name: this.form.name,
+        // code: this.departmentForm.code,
+        status: this.form.status,
+        remark: this.form.remark,
+        companyId: this.form.company.id,
+        companyName: this.form.company.name
+      }
+      console.log('this is params')
+      console.log(params)
+      insertPosition(params).then(result => {
+        this.close()
+        this.$message(result.head.msg)
       })
-      this.$message('操作成功')
     },
+    /**
+		 * 关闭按钮
+		 */
     close() {
       this.$router.push({
         name: 'position'

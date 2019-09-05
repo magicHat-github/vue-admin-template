@@ -1,3 +1,4 @@
+<!-- 用户管理，只能维护当前组织机构的用户 -->
 <template>
   <el-container>
     <el-card class="aside">
@@ -17,7 +18,7 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree v-loading="loading" accordion :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
           </el-main>
         </el-container>
       </el-aside>
@@ -35,7 +36,7 @@
             </el-form-item>
             <!-- 用户工号输入框 -->
             <el-form-item label="工号:">
-              <el-input v-model="formInline.userCode" clearable size="mini" />
+              <el-input v-model="formInline.code" clearable size="mini" />
             </el-form-item>
             <!-- 用户手机号输入框 -->
             <el-form-item label="手机号:">
@@ -44,18 +45,18 @@
             <!-- 角色下拉框 -->
             <el-form-item label="角色:">
               <el-select
-                v-model="formInline.roles"
+                v-model="formInline.role"
+                value-key="id"
                 filterable
-                multiple
                 placeholder="请选择"
                 size="mini"
               >
-                <el-option v-for="user in users" :key="user.role" :value="user.role" />
+                <el-option v-for="role in roles" :key="role.id" :label="role.name" :value="role" />
               </el-select>
             </el-form-item>
             <!-- 查询按钮 -->
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -75,7 +76,7 @@
               size="mini"
               type="danger"
               icon="el-icon-delete"
-              @click="deleteUser"
+              @click="deleteSelectedUser"
             >删除</el-link>
             <el-link
               class="itemAction"
@@ -96,6 +97,7 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
+            v-loading="loading"
             :data="users"
             tooltip-effect="dark"
             stripe
@@ -110,34 +112,34 @@
             <el-table-column prop="companyName" label="所属公司" align="center" />
             <el-table-column prop="password" label="初始密码" align="center" />
             <el-table-column prop="name" label="用户名" align="center" />
-            <el-table-column prop="role" label="角色" align="center" />
+            <el-table-column prop="roles" label="角色" align="center" />
             <el-table-column prop="sex" label="性别" align="center" />
             <el-table-column prop="birthday" label="生日" align="center" />
-            <el-table-column prop="position" label="职位" align="center" />
+            <el-table-column prop="positionName" label="职位" align="center" />
             <el-table-column prop="tel" label="电话" align="center" />
             <el-table-column prop="email" label="邮箱" align="center" />
             <el-table-column prop="other" label="其它/微信" width="105" align="center" />
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
                 <el-tag
-                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                  :type="scope.row.status === 1 ? 'primary' : 'info'"
                 >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="操作" width="130" align="center">
-              <template slot-scope="scope">
+              <template slot-scope="{ row }">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addUser" />
                 <el-link
                   class="itemAction"
                   type="danger"
                   icon="el-icon-delete"
-                  @click="deleteUser"
+                  @click="deleteSpecificUser(row)"
                 />
                 <el-link
                   class="itemAction"
                   type="warning"
                   icon="el-icon-edit"
-                  @click="updateUser(scope.row)"
+                  @click="updateUser(row)"
                 />
               </template>
               <el-link
@@ -155,7 +157,7 @@
               :total="total"
               :page.sync="page.pageNumber"
               :limit.sync="page.size"
-              @click="queryData"
+              @pagination="queryData"
             />
           </div>
         </el-card>
@@ -167,6 +169,7 @@
 <script>
 // 引入分页组件
 import Pagination from '@/components/Pagination'
+import { fetchUser, dropUser } from '@/api/system/user'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -176,38 +179,7 @@ export default {
       /**
        * 树结构数据
        */
-      treeData: [
-        {
-          label: '公司 1',
-          children: [
-            {
-              label: '部门 1-1'
-            }
-          ]
-        },
-        {
-          label: '公司 2',
-          children: [
-            {
-              label: '部门 2-1'
-            },
-            {
-              label: '部门 2-2'
-            }
-          ]
-        },
-        {
-          label: '公司 3',
-          children: [
-            {
-              label: '部门 3-1'
-            },
-            {
-              label: '部门 3-2'
-            }
-          ]
-        }
-      ],
+      treeData: [],
       /**
        * 树结构的默认属性
        */
@@ -217,80 +189,24 @@ export default {
       },
 
       /**
+       * 所有角色的名称和ID
+       */
+      roles: [],
+
+      /**
        * 查询字段
        */
       formInline: {
         userName: '',
-        userCode: '',
+        code: '',
         tel: '',
-        roles: []
+        role: ''
       },
 
       /**
-       * 用户管理
+       * 所有用户的信息
        */
-      users: [
-        {
-          code: '9527',
-          departmentName: 'hr',
-          companyName: 'boss',
-          password: '123456',
-          name: '傻瓜许林瑜',
-          role: '鼓励师',
-          sex: '男',
-          birthday: '1949-10-01',
-          position: '码农',
-          tel: '13000000000',
-          email: 'test@test.com',
-          other: '无',
-          status: '1'
-        },
-        {
-          code: '9527',
-          departmentName: 'hr',
-          companyName: 'boss',
-          password: '123456',
-          name: '傻瓜许林瑜',
-          role: '鼓励师',
-          sex: '男',
-          birthday: '1949-10-01',
-          position: '码农',
-          tel: '13000000000',
-          email: 'test@test.com',
-          other: '无',
-          status: '0'
-        },
-        {
-          code: '9527',
-          departmentName: 'hr',
-          companyName: 'boss',
-          password: '123456',
-          name: '傻瓜许林瑜',
-          role: '鼓励师',
-          sex: '男',
-          birthday: '1949-10-01',
-          position: '码农',
-          tel: '13000000000',
-          email: 'test@test.com',
-          other: '无',
-          status: '0'
-        },
-        {
-          code: '9527',
-          departmentName: 'hr',
-          companyName: 'boss',
-          password: '123456',
-          name: '傻瓜许林瑜',
-          role: '鼓励师',
-          sex: '男',
-          birthday: '1949-10-01',
-          position: '码农',
-          tel: '13000000000',
-          email: 'test@test.com',
-          other: '无',
-          status: '0'
-        }
-      ],
+      users: [],
 
       /**
        * 待确认字段
@@ -304,7 +220,8 @@ export default {
         pageNumber: 1
       },
       // 试卷总数
-      total: 0
+      total: 0,
+      loading: true
     }
   },
   created() {
@@ -315,7 +232,73 @@ export default {
      * 查询数据
      */
     queryData() {
-      this.total = this.users.length
+      this.loading = true
+      this.roles = []
+      // 填入表单参数
+      const params = {
+        userName: this.formInline.userName,
+        code: this.formInline.code,
+        tel: this.formInline.tel,
+        owingRoleId: this.formInline.role.id,
+        pageSize: this.page.size,
+        pageNum: this.page.pageNumber
+      }
+      console.log('this is params')
+      console.log(params)
+      fetchUser(params).then(result => {
+        const body = result.body
+        console.log('this is response data')
+        console.log(body)
+        // 转换树结构的数据
+        const tree = body.tree.treeNodeList
+        this.treeData = this.transDataToTree(tree)
+        console.log('this is treeData')
+        console.log(this.treeData)
+        // 转换表格数据
+        const users = []
+        body.dataList.map(user => {
+          user.roles = user.roles.join(',')
+          users.push(user)
+        })
+        this.users = users
+        console.log('this is table data')
+        console.log(this.users)
+        // 分页信息
+        this.total = parseInt(body.dataCount)
+        // 所有角色名称和id
+        body.allPermittedRole.map(role => {
+          this.roles.push(role)
+        })
+        // 加载动画
+        this.loading = false
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    transDataToTree(arr) {
+      return arr.map(element => {
+        return this.getChildren(element)
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    getChildren(element) {
+      if (!element.childList) {
+        const re = {
+          label: element.name,
+          id: element.id,
+          children: null
+        }
+        return re
+      } else {
+        return {
+          label: element.name,
+          id: element.id,
+          children: this.transDataToTree(element.childList)
+        }
+      }
     },
     /**
      * 树结构的点击事件
@@ -340,11 +323,16 @@ export default {
       })
     },
 
+    /**
+     * 跳转到修改界面
+     */
     updateUser(row) {
+      console.log('this is updating-data')
+      console.log(row)
       this.$router.push({
         name: 'UpdateUser',
         params: {
-          row: row
+          user: row
         }
       })
     },
@@ -366,12 +354,7 @@ export default {
         })
       }
       if (this.multipleSelection.length === 1) {
-        this.$router.push({
-          name: 'UpdateUser',
-          params: {
-            row: this.multipleSelection[0]
-          }
-        })
+        this.updateUser(this.multipleSelection[0])
       }
     },
 
@@ -383,29 +366,72 @@ export default {
         })
       }
       if (this.multipleSelection.length > 0) {
-        this.deleteUser()
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            const params = {
+              dataList: []
+            }
+            this.multipleSelection.forEach(item => {
+              const deleteData = {
+                id: item.id,
+                version: item.version
+              }
+              params.dataList.push(deleteData)
+            })
+            this.deleteUser(params)
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
       }
     },
-
-    /**
-     * 删除信息
-     */
-    deleteUser() {
+    deleteSpecificUser(row) {
+      console.log(row)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+          const params = {
+            dataList: []
+          }
+          const deleteData = {
+            id: row.id,
+            version: row.version
+          }
+          params.dataList.push(deleteData)
+          this.deleteUser(params)
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
+          })
+        })
+    },
+
+    /**
+     * 删除信息
+     */
+    deleteUser(params) {
+      console.log(params.idList)
+      dropUser(params)
+        .then(result => {
+          this.$message(result.head.msg)
+          this.queryData()
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: `错误${err}`
           })
         })
     },

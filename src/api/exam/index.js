@@ -14,7 +14,7 @@ export function getExamRecordById(id) {
  */
 export function addNewRecord(record) {
   return examRequestApi(
-    '/',
+    '/publish',
     'post',
     record
   )
@@ -23,9 +23,9 @@ export function addNewRecord(record) {
  * 更新发布记录
  * @param {更新后的数据} record Object
  */
-export function updateRecord(record) {
+export function updatePublishRecord(record) {
   return examRequestApi(
-    '/',
+    '/publish',
     'put',
     record
   )
@@ -37,7 +37,7 @@ export function updateRecord(record) {
  */
 export function deleteRecordById(id) {
   return examRequestApi(
-    '/',
+    '/publish',
     'delete',
     id
   )
@@ -67,6 +67,18 @@ export function deleteRecordByIdList(idList) {
   )
 }
 /**
+ * 根据id发布考试记录，这条记录的状态只能是未发布的
+ * @param {要发布的记录的id} id
+ */
+export function publishRecordById(id) {
+  return examRequestApi(
+    '/publishExam',
+    'post',
+    id
+  )
+}
+
+/**
  * 根据查询条件用来查询记录
  * @param {查询的条件} queryForm Object
  */
@@ -81,25 +93,17 @@ export function queryRecord(queryForm) {
  * 获得阅卷官的列表
  */
 export function getJudgeList() {
-  const param = {
-    queryType: 'judge'
-  }
   return examRequestApi(
-    '/extra',
-    'post',
-    param
+    '/judge',
+    'post'
   )
 }
 /**
  * 获得试卷的列表
  */
 export function getPapers() {
-  const param = {
-    queryType: 'paper'
-  }
   return examRequestApi(
-    '/extra',
-    'post',
-    param
+    '/paper',
+    'post'
   )
 }
