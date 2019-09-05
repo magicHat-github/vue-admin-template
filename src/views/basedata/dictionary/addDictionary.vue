@@ -35,7 +35,7 @@
           <el-col :offset="1" :span="8">
             <el-radio-group v-model="form.status">
               <el-radio label="1">是</el-radio>
-              <el-radio label="2">否</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-col>
         </el-form-item>

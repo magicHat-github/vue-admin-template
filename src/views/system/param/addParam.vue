@@ -18,9 +18,9 @@
           </el-col>
         </el-form-item>
 
-        <el-form-item label="参数项" prop="paramName">
+        <el-form-item label="参数项" prop="name">
           <el-col :span="8">
-            <el-input v-model="form.paramName" placeholder="请输入参数项" />
+            <el-input v-model="form.name" placeholder="请输入参数项" />
           </el-col>
         </el-form-item>
 
@@ -35,7 +35,7 @@
           <el-col :offset="1" :span="8">
             <el-radio-group v-model="form.status">
               <el-radio label="1">是</el-radio>
-              <el-radio label="2">否</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-col>
         </el-form-item>
@@ -66,7 +66,7 @@ export default {
     return {
       form: {
         paramType: '',
-        paramName: '',
+        name: '',
         value: '',
         remark: '',
         status: '1'
@@ -75,7 +75,7 @@ export default {
         paramType: [
           { required: true, message: '请输入参数类型', trigger: 'blur' }
         ],
-        paramName: [
+        name: [
           { required: true, message: '请输入参数项', trigger: 'blur' }
         ],
         value: [
@@ -96,8 +96,8 @@ export default {
     },
     save() {
       const params = {
-        paramType: this.form.paramTye,
-        paramName: this.form.paramName,
+        paramType: this.form.paramType,
+        name: this.form.name,
         value: this.form.value,
         remark: this.form.remark,
         status: this.form.status

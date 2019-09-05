@@ -33,7 +33,7 @@
               <el-input v-model="searchData.paramType" placeholder="参数类型" clearable size="mini" @keyup.enter.native="handleFilter" />
             </el-form-item>
             <el-form-item label="参数项:">
-              <el-input v-model="searchData.paramName" placeholder="参数项" clearable size="mini" @keyup.enter.native="handleFilter" />
+              <el-input v-model="searchData.name" placeholder="参数项" clearable size="mini" @keyup.enter.native="handleFilter" />
             </el-form-item>
             <el-form-item>
               <el-button size="mini" type="primary" icon="el-icon-search" @click="fetchData">查询</el-button>
@@ -68,10 +68,10 @@
             <el-table-column prop="paramType" label="参数类型" sortable="true" align="center">
               <template slot-scope="scope">{{ scope.row.paramType }}</template>
             </el-table-column>
-            <el-table-column prop="paramName" label="参数项" align="center">
-              <template slot-scope="scope">{{ scope.row.paramName }}</template>
+            <el-table-column prop="name" label="参数项" align="center">
+              <template slot-scope="scope">{{ scope.row.name }}</template>
             </el-table-column>
-            <el-table-column prop="paramValue" label="参数值" align="center">
+            <el-table-column prop="value" label="参数值" align="center">
               <template slot-scope="scope">{{ scope.row.value }}</template>
             </el-table-column>
             <el-table-column prop="updatedTime" label="更新时间" align="center">
@@ -120,7 +120,7 @@ export default {
        */
       searchData: {
         paramType: '',
-        paramName: ''
+        name: ''
       },
       // 分页的页面数据，默认5条一页，默认处于第一页
       page: {
@@ -155,7 +155,7 @@ export default {
   },
   created() {
     this.fetchData()
-    this.searchTree()
+    // this.searchTree()
   },
 
   methods: {
@@ -168,7 +168,7 @@ export default {
         pageSize: this.page.pageSize,
         pageNum: this.page.pageNum,
         paramType: this.searchData.paramType,
-        paramName: this.searchData.paramName
+        name: this.searchData.name
       }
       select(params).then(result => {
         const body = result.body
@@ -197,6 +197,14 @@ export default {
     },
 
     /**
+     * 输入框响应enter查询
+     */
+    handleFilter() {
+      this.page.pageNumber = 1
+      this.fetchData()
+    },
+
+    /**
        * 勾选事件触发的函数,即多选操作
        */
     handleSelectionChange(val) {
@@ -222,7 +230,7 @@ export default {
           params: {
             id: body.id,
             paramType: body.paramType,
-            paramName: body.paramName,
+            name: body.name,
             value: body.value,
             remark: body.remark,
             status: body.status,
@@ -268,7 +276,7 @@ export default {
             version: row.version
           }
           params.dataList.push(deleteData)
-          this.deleteList(params).then(result => {
+          deleteList(params).then(result => {
             this.$message({
               type: 'success',
               message: '删除成功!'
