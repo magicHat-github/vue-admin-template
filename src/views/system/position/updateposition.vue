@@ -20,7 +20,14 @@
       >
         <el-form-item label="公司" prop="company">
           <el-col :span="8">
-            <el-select v-model="form.company" value-key="name" filterable placeholder="请选择">
+            <el-select
+              v-model="form.company"
+              value-key="name"
+              filterable
+              placeholder="请选择"
+              clearable
+              @visible-change="$forceUpdate()"
+            >
               <el-option
                 v-for="company in companys"
                 :key="company.id"
@@ -97,9 +104,9 @@ export default {
             trigger: 'change'
           },
           {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
+            min: 4,
+            max: 8,
+            message: '长度在 4 到 8 个字符',
             trigger: 'blur'
           }
         ],
@@ -109,6 +116,14 @@ export default {
             required: true,
             message: '请选择启用标记',
             trigger: 'change'
+          }
+        ],
+        remark: [
+          {
+            min: 5,
+            max: 30,
+            message: '长度在 5 到 30 个字符',
+            trigger: 'blur'
           }
         ]
       },

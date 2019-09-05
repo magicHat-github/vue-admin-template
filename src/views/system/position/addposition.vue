@@ -95,9 +95,9 @@ export default {
             trigger: 'change'
           },
           {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
+            min: 4,
+            max: 8,
+            message: '长度在 4 到 8 个字符',
             trigger: 'blur'
           }
         ],
@@ -107,6 +107,14 @@ export default {
             required: true,
             message: '请选择启用标记',
             trigger: 'change'
+          }
+        ],
+        remark: [
+          {
+            min: 5,
+            max: 30,
+            message: '长度在 5 到 30 个字符',
+            trigger: 'blur'
           }
         ]
       },
@@ -202,14 +210,17 @@ export default {
       }
       console.log('this is params')
       console.log(params)
-      insertPosition(params).then(this.$message('操作成功'))
+      insertPosition(params).then(result => {
+        this.close()
+        this.$message(result.head.msg)
+      })
     },
     /**
 		 * 关闭按钮
 		 */
     close() {
       this.$router.push({
-        name: 'Department'
+        name: 'position'
       })
     }
   }

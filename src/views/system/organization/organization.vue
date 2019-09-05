@@ -269,11 +269,9 @@ export default {
     deleteOrg(params) {
       console.log(params.idList)
       deleteOrg(params)
-        .then(_ => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+        .then(result => {
+          this.$message(result.head.msg)
+          this.queryData()
         })
         .catch(err => {
           this.$message({

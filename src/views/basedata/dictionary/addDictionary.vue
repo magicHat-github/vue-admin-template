@@ -4,7 +4,7 @@
     <hr>
     <br>
     <el-col :span="5" :offset="1">
-      <font style="font-size:15px;" color="blue">基本信息</font>
+      <span style="font-size:15px; color: blue; ">基本信息</span>
     </el-col>
 
     <!--表单输入 -->
