@@ -45,14 +45,13 @@
             <!-- 角色下拉框 -->
             <el-form-item label="角色:">
               <el-select
-                v-model="formInline.roles"
-                value-key="roleId"
+                v-model="formInline.role"
+                value-key="id"
                 filterable
-                multiple
                 placeholder="请选择"
                 size="mini"
               >
-                <el-option v-for="role in roles" :key="role.roleId" :label="role.roleName" :value="role" />
+                <el-option v-for="role in roles" :key="role.id" :label="role.name" :value="role" />
               </el-select>
             </el-form-item>
             <!-- 查询按钮 -->
@@ -201,7 +200,7 @@ export default {
         userName: '',
         code: '',
         tel: '',
-        roles: []
+        role: ''
       },
 
       /**
@@ -235,26 +234,22 @@ export default {
     queryData() {
       this.loading = true
       this.roles = []
-      // 初始化选择的角色名数组
-      const roles = []
-      this.formInline.roles.map(role => {
-        roles.push(role.roleName)
-      })
       // 填入表单参数
       const params = {
         userName: this.formInline.userName,
         code: this.formInline.code,
         tel: this.formInline.tel,
+        owingRoleId: this.formInline.role.id,
         pageSize: this.page.size,
-        roles: roles,
         pageNum: this.page.pageNumber
       }
       console.log('this is params')
       console.log(params)
       fetchUser(params).then(result => {
         const body = result.body
+        console.log('this is response data')
+        console.log(body)
         // 转换树结构的数据
-        console.log(body.tree)
         const tree = body.tree.treeNodeList
         this.treeData = this.transDataToTree(tree)
         console.log('this is treeData')
@@ -270,8 +265,8 @@ export default {
         console.log(this.users)
         // 分页信息
         this.total = parseInt(body.dataCount)
-        // 所有角色名称
-        body.allRole.map(role => {
+        // 所有角色名称和id
+        body.allPermittedRole.map(role => {
           this.roles.push(role)
         })
         // 加载动画
@@ -291,8 +286,6 @@ export default {
      */
     getChildren(element) {
       if (!element.childList) {
-        console.log('this is childNode')
-        console.log(element)
         const re = {
           label: element.name,
           id: element.id,
@@ -300,8 +293,6 @@ export default {
         }
         return re
       } else {
-        console.log('this is parentNode')
-        console.log(element)
         return {
           label: element.name,
           id: element.id,
