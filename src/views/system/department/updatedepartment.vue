@@ -81,7 +81,7 @@
         <!--选择所偶公司按钮 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="所属公司">
+            <el-form-item label="所属公司" prop="company">
               <el-select
                 v-model="departmentForm.company"
                 value-key="name"
@@ -161,33 +161,25 @@ export default {
 			 */
       departmentRules: {
         name: [
+          { required: true, message: '请输入部门名称', trigger: 'blur' },
           {
-            required: true,
-            message: '请输入部门名称',
-            trigger: 'blur'
-          },
-          {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
+            min: 4,
+            max: 8,
+            message: '长度在 4 到 8 个字符',
             trigger: 'blur'
           }
         ],
         code: [
-          { required: true, message: '请输入编号', trigger: 'blur' },
+          { required: true, message: '请输部门编号', trigger: 'blur' },
           {
-            min: 3,
-            max: 5,
+            min: 4,
+            max: 6,
             message: '长度在 3 到 5 个字符',
             trigger: 'blur'
           }
         ],
         mnemonicCode: [
-          {
-            required: true,
-            message: '请输入助记码',
-            trigger: 'blur'
-          },
+          { required: true, message: '请输入助记码', trigger: 'blur' },
           {
             min: 3,
             max: 5,
@@ -196,31 +188,31 @@ export default {
           }
         ],
         level: [
-          {
-            required: true,
-            message: '请选择部门等级',
-            trigger: 'change'
-          }
-        ],
-        parent: [
-          {
-            required: true,
-            message: '请选择上级部门',
-            trigger: 'change'
-          }
+          { required: true, message: '请选择部门等级', trigger: 'change' }
         ],
         master: [
-          {
-            required: true,
-            message: '请输入部门负责人',
-            trigger: 'blur'
-          },
+          { required: true, message: '请输负责人', trigger: 'blur' },
           {
             min: 3,
             max: 5,
             message: '长度在 3 到 5 个字符',
             trigger: 'blur'
           }
+        ],
+        descript: [
+          { required: true, message: '请输入相关描述', trigger: 'blur' },
+          {
+            min: 5,
+            max: 15,
+            message: '长度在 5 到 15 个字符',
+            trigger: 'blur'
+          }
+        ],
+        parent: [
+          { required: true, message: '请选择上级部门', trigger: 'blur' }
+        ],
+        company: [
+          { required: true, message: '请选择所属公司', trigger: 'blur' }
         ]
       },
       /**
@@ -244,6 +236,7 @@ export default {
 		 */
     queryData(department) {
       const params = {
+        departmentId: department.id,
         departmentName: department.name,
         level: department.level,
         pageSize: 1,
