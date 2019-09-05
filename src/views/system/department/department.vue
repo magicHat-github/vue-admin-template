@@ -96,8 +96,8 @@
               <el-table-column type="selection" width="55" align="center" />
               <el-table-column prop="name" label="部门名称" align="center" />
               <el-table-column prop="code" label="部门编号" align="center" />
-              <el-table-column prop="level" label="部门等级" sortable="true" align="center" />
-              <el-table-column prop="parentName" label="上级部门" sortable="true" align="center" />
+              <el-table-column prop="level" label="部门等级" align="center" />
+              <el-table-column prop="parentName" label="上级部门" align="center" />
               <el-table-column prop="companyName" label="所属公司" align="center" />
               <el-table-column prop="master" label="负责人" align="center" />
               <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
@@ -397,11 +397,9 @@ export default {
     deleteDepartment(params) {
       console.log(params.idList)
       deleteDepartment(params)
-        .then(_ => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+        .then(result => {
+          this.$message(result.head.msg)
+          this.queryData()
         })
         .catch(err => {
           this.$message({

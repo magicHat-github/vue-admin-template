@@ -222,7 +222,7 @@ export default {
       /**
 			 * 上级部门下拉框选项
 			 */
-      parents: [{ name: '无', id: 328089633686659072 }],
+      parents: [{ name: '无', id: 1 }],
       companys: []
     }
   },
@@ -246,7 +246,6 @@ export default {
         .then(result => {
           const body = result.body
           const tree = body.tree.treeNodeList
-          this.transDataToTree(tree)
           console.log('this is result')
           this.departmentForm = body.dataList[0]
           const parent = {
@@ -261,6 +260,7 @@ export default {
           this.departmentForm.company = company
           this.departmentForm.status = body.dataList[0].status + ''
           console.log(this.departmentForm)
+          this.transDataToTree(tree)
         })
         .catch(err => {
           console.log(err)
@@ -293,7 +293,11 @@ export default {
           name: element.name,
           id: element.id
         }
-        this.parents.push(parent)
+        console.log(parent.id)
+        console.log(this.departmentForm.id)
+        if (parent.id !== this.departmentForm.id) {
+          this.parents.push(parent)
+        }
         return re
       } else {
         // 填充公司选项下拉框数据

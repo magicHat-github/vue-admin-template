@@ -220,7 +220,7 @@ export default {
 		 */
     close() {
       this.$router.push({
-        name: 'Department'
+        name: 'position'
       })
     }
   }

@@ -278,11 +278,9 @@ export default {
     deletePosition(params) {
       console.log(params.idList)
       deletePosition(params)
-        .then(_ => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+        .then(result => {
+          this.$message(result.head.msg)
+          this.queryData()
         })
         .catch(err => {
           this.$message({

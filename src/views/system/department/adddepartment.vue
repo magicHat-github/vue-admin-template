@@ -157,7 +157,7 @@ export default {
           {
             min: 4,
             max: 6,
-            message: '长度在 3 到 5 个字符',
+            message: '长度在 4 到 6 个字符',
             trigger: 'blur'
           }
         ],
@@ -205,7 +205,7 @@ export default {
       /**
 			 * 上级部门下拉框选项
 			 */
-      parents: [{ name: '无', id: 328089633686659072 }],
+      parents: [{ name: '无', id: 1 }],
       companys: []
     }
   },
