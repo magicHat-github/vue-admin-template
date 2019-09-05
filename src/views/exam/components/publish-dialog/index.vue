@@ -2,7 +2,7 @@
   <div id="publish-dialog">
     <h2>发布弹窗</h2>
     <!-- 发布弹窗 -->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
+    <el-dialog :title="dialogTitle" :visible.sync="visible">
       <div style="text-align:center">
         <!-- <h3>{{ dialogForm.dialogTitle }}</h3> -->
         <el-form :model="dialogForm" :rules="rules" size="small" label-position="left" label-width="120px">
@@ -141,19 +141,14 @@
   </div>
 </template>
 <script>
-import { filters, rules, DialogType, markOptions } from '../../common'
-import service from '../../service'
+import { filters, rules, DialogType, markOptions } from '../../views/exam/common'
+import service from '../../views/exam/service'
 
 export default {
   name: 'PublishDialog',
   filters: filters,
   // 弹窗的属性值
   props: {
-    // 弹窗的标题
-    dialogTitle: {
-      type: String,
-      default: ''
-    },
     // 弹窗可见
     dialogVisible: {
       type: Boolean,
@@ -166,10 +161,11 @@ export default {
     },
     // 记录的id
     recordId: {
-      type: Number,
-      default: 0
+      type: String,
+      default: ''
     }
   },
+
   data() {
     return {
       /**
@@ -180,6 +176,14 @@ export default {
        * 表单校验规则
        */
       rules: rules,
+      /**
+       * 弹窗可见
+       */
+      visible: false,
+      /**
+       * 弹窗的标题
+       */
+      dialogTitle: '',
       /**
        * 表单数据
        */
@@ -229,6 +233,17 @@ export default {
       }
     }
   },
+  watch: {
+    dialogVisible(val) {
+      console.log('数值改变')
+      this.visible = val
+    },
+    visible(val) {
+      if (val === false) {
+        this.closeDialog()
+      }
+    }
+  },
   mounted() {
     // 对编辑、新发布、重新发布进行相应的处理
     if (this.dialogType === DialogType.NEWPUBLISH) {
@@ -241,7 +256,7 @@ export default {
       this.showMessage('error', '未知操作')
       this.closeDialog()
     }
-    this.dialogVisible = true
+    this.visible = this.dialogVisible
   },
   methods: {
     /**
@@ -258,6 +273,7 @@ export default {
      */
     handleCancelEvent() {
       this.closeDialog()
+      this.$emit('close-dialog', false)
     },
     /**
      * 消息提示框
@@ -272,7 +288,7 @@ export default {
      * 关闭弹窗
      */
     closeDialog() {
-      this.dialogVisible = false
+      this.$emit('close-dialog', false)
     },
     /**
      * 打开选择试卷弹窗
