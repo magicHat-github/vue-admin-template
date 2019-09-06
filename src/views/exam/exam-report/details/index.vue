@@ -1,7 +1,6 @@
 <template>
   <!--报表详情-->
   <div id="report-detail">
-    <h2>考试报表详情</h2>
     <!-- 发布记录的表格 -->
     <div class="table">
       <el-table
@@ -13,15 +12,15 @@
         style="width:100%"
       >
         <el-table-column type="index" label="序号" />
-        <el-table-column label="姓名" />
-        <el-table-column label="性别" />
-        <el-table-column label="考试名" />
-        <el-table-column label="主观题" />
-        <el-table-column label="客观题" />
-        <el-table-column label="总分" />
-        <el-table-column label="排名" />
-        <el-table-column label="考试耗时" />
-        <el-table-column label="能力标签" />
+        <el-table-column prop="examiner" label="姓名" />
+        <el-table-column prop="sex" label="性别" />
+        <el-table-column prop="examName" label="考试名" />
+        <el-table-column prop="subjectiveSubjectScore" label="主观题" />
+        <el-table-column prop="objectiveSubjectScore" label="客观题" />
+        <el-table-column prop="score" label="总分" />
+        <el-table-column prop="range" label="排名" />
+        <el-table-column prop="consumTime" label="考试耗时" />
+        <el-table-column prop="systemEvaluate" label="能力标签" />
       </el-table>
 
     </div>
@@ -48,7 +47,22 @@ export default {
   data() {
     return {
       recordId: '',
-      tableData: [],
+      tableData: [
+        {
+          id: '11',
+          examinerCode: '112',
+          examiner: 'GG',
+          sex: 1,
+          examName: '秋招第一场',
+          objectiveSubjectScore: '44',
+          subjectiveSubjectScore: '44',
+          score: '88',
+          range: '1/220',
+          consumTime: '30分钟',
+          systemEvaluate: 'A'
+
+        }
+      ],
       total: 12,
       layout: layout,
       pageSizes: pageSizes,
