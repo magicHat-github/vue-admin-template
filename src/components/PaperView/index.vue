@@ -1,23 +1,73 @@
 <template>
   <div>
     <!-- 试卷详情 -->
-    <el-drawer title="试卷详情" :size="size" :visible.sync="pageShowCache" :wrapper-closable="closable">
+    <el-drawer :size="size" :visible.sync="pageShowCache" :wrapper-closable="closable">
+      <template slot="title">
+        <span>试卷详情</span>
+        <el-switch
+          v-if="showAnswerSwitch"
+          v-model="showAnswer"
+          style="display: block;margin-right: 10px;"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          active-text="显示答案"
+          inactive-text="不显示答案"
+        />
+      </template>
       <div class="paper-drawer">
         <el-card class="paper-card">
           <div class="paper-title">{{ paperInfoCache.name }}</div>
           <div class="paper-question">
             <div v-for="(question, index) in paperInfoCache.subjects" :key="index" class="quest">
-              <div v-if="question.type === '单选'">
-                <question-single-choice :question-index="index" :question-type="question.type" :question-detail="question.subject" :user-answer="question.userAnswer" :question-id="question.id" :question-answer="question.answers" @userAnswerAction="userAnswerAction" />
+              <div v-if="question.type === questionType.QUESTION_SINGLE_CHOICE">
+                <question-single-choice
+                  :question-index="index"
+                  :question-type="question.typeName"
+                  :question-detail="question.subject"
+                  :user-answer="question.userAnswer"
+                  :question-id="question.id"
+                  :question-answer="question.answers"
+                  :show-answer="showAnswer"
+                  :subject-disable="subjectDisable"
+                  @userAnswerAction="userAnswerAction"
+                />
               </div>
-              <div v-if="question.type === '多选'">
-                <question-multiple-choice :question-index="index" :question-type="question.type" :question-detail="question.subject" :user-answer="question.userAnswer" :question-id="question.id" :question-answer="question.answers" @userAnswerAction="userAnswerAction" />
+              <div v-if="question.type === questionType.QUESTION_MULTIPLE_CHOICE">
+                <question-multiple-choice
+                  :question-index="index"
+                  :question-type="question.typeName"
+                  :question-detail="question.subject"
+                  :user-answer="question.userAnswer"
+                  :question-id="question.id"
+                  :question-answer="question.answers"
+                  :show-answer="showAnswer"
+                  :subject-disable="subjectDisable"
+                  @userAnswerAction="userAnswerAction"
+                />
               </div>
-              <div v-else-if="question.type === '填空'">
-                <question-fill-blank :question-index="index" :question-type="question.type" :question-detail="question.subject" :user-answer="question.userAnswer" :question-id="question.id" @userAnswerAction="userAnswerAction" />
+              <div v-if="question.type === questionType.QUESTION_FILL_BLANK">
+                <question-fill-blank
+                  :question-index="index"
+                  :question-type="question.typeName"
+                  :question-detail="question.subject"
+                  :user-answer="question.userAnswer"
+                  :question-id="question.id"
+                  :show-answer="showAnswer"
+                  :subject-disable="subjectDisable"
+                  @userAnswerAction="userAnswerAction"
+                />
               </div>
-              <div v-else-if="question.type === '主观'">
-                <question-subjective :question-index="index" :question-type="question.type" :question-detail="question.subject" :user-answer="question.userAnswer" :question-id="question.id" @userAnswerAction="userAnswerAction" />
+              <div v-if="question.type === questionType.QUESTION_SUBJECTIVE">
+                <question-subjective
+                  :question-index="index"
+                  :question-type="question.typeName"
+                  :question-detail="question.subject"
+                  :user-answer="question.userAnswer"
+                  :question-id="question.id"
+                  :show-answer="showAnswer"
+                  :subject-disable="subjectDisable"
+                  @userAnswerAction="userAnswerAction"
+                />
               </div>
             </div>
           </div>
@@ -27,6 +77,7 @@
   </div>
 </template>
 <script>
+import { questionType } from '@/utils/subjectType'
 import QuestionFillBlank from '@/components/QuestionFillBlank'
 import QuestionSingleChoice from '@/components/QuestionSingleChoice'
 import QuestionMultipleChoice from '@/components/QuestionMultipleChoice'
@@ -54,61 +105,24 @@ export default {
     paperInfo: {
       type: Object,
       required: true
+    },
+    showAnswerSwitch: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    subjectDisable: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
     return {
       pageShowCache: this.pageShow,
       paperInfoCache: this.paperInfo,
-      paper: {
-        title: 'Java 基础题',
-        quest: [
-          {
-            id: '123',
-            type: '单选题',
-            question: '请问今年EDG是否能进总决赛?',
-            answer: ['A.能', 'B.不可能', 'C.可能', 'D.绝无希望'],
-            userAnswer: ''
-          },
-          {
-            id: '123123',
-            type: '单选题',
-            question: '请问今年EDG是否能进总决赛?',
-            answer: ['A.能', 'B.不可能', 'C.可能', 'D.绝无希望'],
-            userAnswer: ''
-          },
-          {
-            id: '12',
-            type: '单选题',
-            question: '请问今年EDG是否能进总决赛?',
-            answer: ['A.能', 'B.不可能', 'C.可能', 'D.绝无希望'],
-            userAnswer: ''
-          },
-          {
-            id: '12',
-            type: '多选题',
-            question: '请问今年EDG是否能进总决赛?',
-            answer: ['A.能', 'B.不可能', 'C.可能', 'D.绝无希望'],
-            userAnswer: ''
-          },
-          {
-            id: '123465789',
-            type: '填空题',
-            question: '请问今年总决赛的冠军是',
-            userAnswer: ''
-          },
-          {
-            type: '编程题',
-            question: '写一个雪花算法',
-            userAnswer: ''
-          },
-          {
-            type: '编程题',
-            question: '写一个雪花算法',
-            userAnswer: ''
-          }
-        ]
-      },
+      questionType: questionType,
+      showAnswer: false,
       userAnswer: []
     }
   },

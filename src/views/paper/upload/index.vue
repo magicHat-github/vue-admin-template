@@ -48,10 +48,10 @@
           </template>
         </el-table-column>
         <el-table-column label="卷子类型" align="center">
-          <template slot-scope="scope">{{ scope.row.paperType | paperTypeFiler(paperTypeList) }}</template>
+          <template slot-scope="scope">{{ scope.row.paperType | userIdToValueConversionFilter(paperTypeList) }}</template>
         </el-table-column>
         <el-table-column label="卷子难度" align="center">
-          <template slot-scope="scope">{{ scope.row.difficult | paperDifficultFilter(difficultList) }}</template>
+          <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(difficultList) }}</template>
         </el-table-column>
         <el-table-column label="组卷时间" align="center">
           <template slot-scope="scope">{{ scope.row.combExamTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
@@ -84,7 +84,7 @@
 
 <script>
 import { select, uploadPaper } from '@/api/paper/composition.js'
-import { parseTime, getIdByValue } from '@/utils'
+import { parseTime, idToValueConversionFilter, getIdByValue } from '@/utils'
 import { code } from '@/utils/code' // 响应码
 import Pagination from '@/components/Pagination'
 
@@ -95,23 +95,8 @@ export default {
     parseUserTime(time, cFormat) {
       return parseTime(time, cFormat)
     },
-    paperTypeFiler(type, paperTypeList) {
-      let result = null
-      paperTypeList.forEach(item => {
-        if (item.id === type) {
-          result = item.value
-        }
-      })
-      return result
-    },
-    paperDifficultFilter(difficult, difficultList) {
-      let result = null
-      difficultList.forEach(item => {
-        if (item.id === difficult) {
-          result = item.value
-        }
-      })
-      return result
+    userIdToValueConversionFilter(target, targetList) {
+      return idToValueConversionFilter(target, targetList)
     }
   },
   data() {
@@ -161,8 +146,8 @@ export default {
       }
       select(params).then(result => {
         const body = result.body
-        this.list = body.list
-        this.total = body.total
+        this.list = body.dataList
+        this.total = body.dataCount * 1
         this.listLoading = false
       })
     },

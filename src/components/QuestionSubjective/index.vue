@@ -1,7 +1,16 @@
 <template>
   <div>
     <label for="answerCode"><span>{{ questionIndex + 1 }}.</span><span>({{ questionType }})</span><span>{{ questionDetail }}</span></label>
-    <div><textarea id="answerCode" v-model="userAnswerCache" class="code-quest-answer" rows="8" cols="50" /></div>
+    <div>
+      <textarea
+        id="answerCode"
+        v-model="userAnswerCache"
+        :disabled="subjectDisable"
+        class="code-quest-answer"
+        rows="8"
+        cols="50"
+      />
+    </div>
   </div>
 </template>
 <script>
@@ -35,6 +44,22 @@ export default {
       type: String,
       require: true,
       default: ''
+    },
+    /**
+     * 是否显示正确答案
+     */
+    showAnswer: {
+      type: Boolean,
+      require: false,
+      default: false
+    },
+    /**
+     * 试题禁止操作
+     */
+    subjectDisable: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
@@ -51,6 +76,9 @@ export default {
         questionId: this.questionId,
         userAnswer: val
       })
+    },
+    showAnswer(val) {
+      this.userAnswerCache = val ? this.userAnswer : null
     }
   }
 }

@@ -3,7 +3,14 @@
     <label><span>{{ questionIndex + 1 }}.</span><span style="margin-right: 5px;">({{ questionType }})</span><span>{{ questionDetail }}</span></label>
     <div class="answer">
       <el-radio-group v-model="userAnswerCache">
-        <el-radio v-for="(answerItem, answerIndex) in questionAnswer" :key="answerIndex" :label="answerItem.id">{{ optionList[answerIndex] }}.{{ answerItem.answer }}</el-radio>
+        <el-radio
+          v-for="(answerItem, answerIndex) in questionAnswer"
+          :key="answerIndex"
+          :label="answerItem.id"
+          :disabled="subjectDisable"
+        >
+          {{ optionList[answerIndex] }}.{{ answerItem.answer }}
+        </el-radio>
       </el-radio-group>
     </div>
   </div>
@@ -63,6 +70,22 @@ export default {
       type: Array,
       require: true,
       default: null
+    },
+    /**
+     * 是否显示正确答案
+     */
+    showAnswer: {
+      type: Boolean,
+      require: false,
+      default: false
+    },
+    /**
+     * 试题禁止操作
+     */
+    subjectDisable: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
@@ -80,6 +103,9 @@ export default {
         questionId: this.questionId,
         userAnswer: val
       })
+    },
+    showAnswer(val) {
+      this.userAnswerCache = val ? this.userAnswer : null
     }
   }
 }
