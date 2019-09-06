@@ -95,6 +95,7 @@
     </div>
     <!-- 分页框 -->
     <el-pagination
+      v-show="total > 0"
       background
       :layout="layout"
       :total="total"
