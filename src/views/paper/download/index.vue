@@ -160,8 +160,8 @@ export default {
       }
       select(params).then(result => {
         const body = result.body
-        this.list = body.list
-        this.total = body.total
+        this.list = body.dataList
+        this.total = body.dataCount * 1
         this.listLoading = false
       })
     },

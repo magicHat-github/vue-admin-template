@@ -76,7 +76,7 @@
     </el-card>
 
     <!-- 快速组卷 -->
-    <el-drawer title="快速组卷" size="80%" :visible.sync="fastDialog" :wrapper-closable="false">
+    <el-drawer title="快速组卷" size="80%" :visible.sync="fastDialog" :wrapper-closable="false" :before-close="handleCloseDrawer">
       <div class="drawerClass">
         <!-- 配置项的查询框 -->
         <el-form ref="form" :model="searchConfigData" size="mini" label-width="70px" inline>
@@ -102,14 +102,21 @@
             highlight-current-row
           >
             <el-table-column align="center" property="name" label="配置项" />
-            <el-table-column align="center" property="difficult" label="难度" />
+            <el-table-column align="center" property="difficult" label="难度">
+              <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(subjectDifficultList) }}</template>
+            </el-table-column>
             <el-table-column align="center" property="updatedBy" label="修改人" />
             <el-table-column align="center" property="company" label="公司" />
             <el-table-column align="center" property="updatedTime" label="修改时间">
               <template slot-scope="scope">{{ scope.row.updatedTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
             </el-table-column>
             <el-table-column align="center" show-overflow-tooltip property="remark" label="备注" />
-            <el-table-column align="center" property="status" label="启用标志" />
+            <el-table-column align="center" property="status" label="启用标志">
+              <template slot-scope="scope">
+                <el-tag v-if="scope.row.status === 0" type="warning">禁用</el-tag>
+                <el-tag v-else>启用</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column align="center" label="操作" width="160">
               <template slot-scope="scope">
                 <el-button size="mini" type="primary" @click="findCombConfigItem(scope.row)">查看</el-button>
@@ -424,8 +431,8 @@ export default {
       }
       select(params).then(result => {
         const body = result.body
-        this.list = body.list
-        this.total = body.total
+        this.list = body.dataList
+        this.total = body.dataCount * 1
         this.listLoading = false
       })
     },
@@ -811,6 +818,13 @@ export default {
     cancelCompositionRequest() {
       cancel(this.cancelId, '取消组卷请求')
       // TODO: 这里要取消后端的请求
+    },
+    /**
+     * 关闭弹窗抽屉的回调
+     */
+    handleCloseDrawer(done) {
+      this.fetchData()
+      done()
     },
 
     // 模板组卷

@@ -1,4 +1,3 @@
-import request from '@/utils/request'
 import { paperRequestApi } from '@/utils/requestUtil'
 /**
  * 组卷管理的相关API
@@ -62,70 +61,19 @@ export function previewRequest(params) {
 }
 
 /**
- * 分页查询
- * @param {*} params 参数
- */
-export function selectConfigList(params) {
-  return paperRequestApi('/paper/config/list', 'get', params)
-}
-
-/**
- * 根据试卷配置项编号获取配置项详情
+ * 根据试卷ID集合删除试卷
  * @param params
  * @returns {AxiosPromise}
  */
-export function selectConfigItemById(params) {
-  return paperRequestApi('/paper/config/item', 'get', params)
+export function deletePaperRequest(params) {
+  return paperRequestApi('/maintain/papers', 'delete', params)
 }
 
 /**
- * 添加
- * @param {*} params 参数
+ * 维护试卷，包括试卷本体加上试题和答案
+ * @param params
+ * @returns {AxiosPromise}
  */
-export function save(params) {
-  // console.log(params)
-  return request({
-    url: '/paper/composition',
-    method: 'post',
-    data: params
-  })
-}
-
-/**
- * 修改
- * @param {*} params 参数
- */
-export function update(params) {
-  // console.log(params)
-  return request({
-    url: '/paper/composition',
-    method: 'put',
-    data: params
-  })
-}
-
-/**
- * 删除
- * @param {*} ids 删除编号的集合
- */
-export function remove(ids) {
-  // console.log(ids)
-  return request({
-    url: '/paper/composition',
-    method: 'delete',
-    data: ids
-  })
-}
-
-/**
- * 禁用
- * @param {*} id 禁用编号
- */
-export function disable(id) {
-  // console.log(id)
-  return request({
-    url: '/paper/composition/status',
-    method: 'put',
-    data: id
-  })
+export function maintainPaperRequest(params) {
+  return paperRequestApi('/maintain/paper', 'put', params)
 }

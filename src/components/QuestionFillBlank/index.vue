@@ -1,7 +1,7 @@
 <template>
   <div>
     <label for="answerFill"><span>{{ questionIndex + 1 }}.</span><span>({{ questionType }})</span><span>{{ questionDetail }}</span></label>
-    <input id="answerFill" v-model="userAnswerCache" class="fill-quest-answer">
+    <input id="answerFill" v-model="userAnswerCache" :disabled="subjectDisable" class="fill-quest-answer">
   </div>
 </template>
 <script>
@@ -35,6 +35,22 @@ export default {
       type: String,
       require: true,
       default: ''
+    },
+    /**
+     * 是否显示正确答案
+     */
+    showAnswer: {
+      type: Boolean,
+      require: false,
+      default: false
+    },
+    /**
+     * 试题禁止操作
+     */
+    subjectDisable: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
@@ -51,6 +67,9 @@ export default {
         questionId: this.questionId,
         userAnswer: val
       })
+    },
+    showAnswer(val) {
+      this.userAnswerCache = val ? this.userAnswer : null
     }
   }
 }
