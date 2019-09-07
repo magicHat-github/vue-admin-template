@@ -3,7 +3,16 @@
     <!-- 试卷详情 -->
     <el-drawer :size="size" :visible.sync="pageShowCache" :wrapper-closable="closable">
       <template slot="title">
-        <span>试卷详情</span>
+        <span>{{ pageTitle }}</span>
+        <el-switch
+          v-if="showDisableSwitch"
+          v-model="subjectDisable"
+          style="display: block;margin-right: 10px;"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          active-text="允许操作"
+          inactive-text="禁止操作"
+        />
         <el-switch
           v-if="showAnswerSwitch"
           v-model="showAnswer"
@@ -18,58 +27,65 @@
         <el-card class="paper-card">
           <div class="paper-title">{{ paperInfoCache.name }}</div>
           <div class="paper-question">
-            <div v-for="(question, index) in paperInfoCache.subjects" :key="index" class="quest">
-              <div v-if="question.type === questionType.QUESTION_SINGLE_CHOICE">
-                <question-single-choice
-                  :question-index="index"
-                  :question-type="question.typeName"
-                  :question-detail="question.subject"
-                  :user-answer="question.userAnswer"
-                  :question-id="question.id"
-                  :question-answer="question.answers"
-                  :show-answer="showAnswer"
-                  :subject-disable="subjectDisable"
-                  @userAnswerAction="userAnswerAction"
-                />
-              </div>
-              <div v-if="question.type === questionType.QUESTION_MULTIPLE_CHOICE">
-                <question-multiple-choice
-                  :question-index="index"
-                  :question-type="question.typeName"
-                  :question-detail="question.subject"
-                  :user-answer="question.userAnswer"
-                  :question-id="question.id"
-                  :question-answer="question.answers"
-                  :show-answer="showAnswer"
-                  :subject-disable="subjectDisable"
-                  @userAnswerAction="userAnswerAction"
-                />
-              </div>
-              <div v-if="question.type === questionType.QUESTION_FILL_BLANK">
-                <question-fill-blank
-                  :question-index="index"
-                  :question-type="question.typeName"
-                  :question-detail="question.subject"
-                  :user-answer="question.userAnswer"
-                  :question-id="question.id"
-                  :show-answer="showAnswer"
-                  :subject-disable="subjectDisable"
-                  @userAnswerAction="userAnswerAction"
-                />
-              </div>
-              <div v-if="question.type === questionType.QUESTION_SUBJECTIVE">
-                <question-subjective
-                  :question-index="index"
-                  :question-type="question.typeName"
-                  :question-detail="question.subject"
-                  :user-answer="question.userAnswer"
-                  :question-id="question.id"
-                  :show-answer="showAnswer"
-                  :subject-disable="subjectDisable"
-                  @userAnswerAction="userAnswerAction"
-                />
-              </div>
-            </div>
+            <el-row v-for="(question, index) in paperInfoCache.subjects" :key="index" class="quest">
+              <el-col :span="paperEdit?18:24">
+                <div v-if="question.type === questionType.QUESTION_SINGLE_CHOICE">
+                  <question-single-choice
+                    :question-index="index"
+                    :question-type="question.typeName"
+                    :question-detail="question.subject"
+                    :user-answer="question.userAnswer"
+                    :question-id="question.id"
+                    :question-answer="question.answers"
+                    :show-answer="showAnswer"
+                    :subject-disable="subjectDisable"
+                    @userAnswerAction="userAnswerAction"
+                  />
+                </div>
+                <div v-if="question.type === questionType.QUESTION_MULTIPLE_CHOICE">
+                  <question-multiple-choice
+                    :question-index="index"
+                    :question-type="question.typeName"
+                    :question-detail="question.subject"
+                    :user-answer="question.userAnswer"
+                    :question-id="question.id"
+                    :question-answer="question.answers"
+                    :show-answer="showAnswer"
+                    :subject-disable="subjectDisable"
+                    @userAnswerAction="userAnswerAction"
+                  />
+                </div>
+                <div v-if="question.type === questionType.QUESTION_FILL_BLANK">
+                  <question-fill-blank
+                    :question-index="index"
+                    :question-type="question.typeName"
+                    :question-detail="question.subject"
+                    :user-answer="question.userAnswer"
+                    :question-id="question.id"
+                    :show-answer="showAnswer"
+                    :subject-disable="subjectDisable"
+                    @userAnswerAction="userAnswerAction"
+                  />
+                </div>
+                <div v-if="question.type === questionType.QUESTION_SUBJECTIVE">
+                  <question-subjective
+                    :question-index="index"
+                    :question-type="question.typeName"
+                    :question-detail="question.subject"
+                    :user-answer="question.userAnswer"
+                    :question-id="question.id"
+                    :show-answer="showAnswer"
+                    :subject-disable="subjectDisable"
+                    @userAnswerAction="userAnswerAction"
+                  />
+                </div>
+              </el-col>
+              <el-col v-if="paperEdit" :span="6">
+                <el-button type="primary" icon="el-icon-plus" circle />
+                <el-button type="success" icon="el-icon-edit" circle />
+                <el-button type="danger" icon="el-icon-delete" circle />
+              </el-col>
+            </el-row>
           </div>
         </el-card>
       </div>
@@ -87,6 +103,11 @@ export default {
   name: 'PaperView',
   components: { QuestionFillBlank, QuestionSingleChoice, QuestionMultipleChoice, QuestionSubjective },
   props: {
+    pageTitle: {
+      type: String,
+      required: false,
+      default: '试卷预览'
+    },
     pageShow: {
       type: Boolean,
       required: true,
@@ -107,6 +128,16 @@ export default {
       required: true
     },
     showAnswerSwitch: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    showDisableSwitch: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    paperEdit: {
       type: Boolean,
       required: false,
       default: false

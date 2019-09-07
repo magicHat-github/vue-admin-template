@@ -84,7 +84,8 @@
 
 <script>
 import { select, uploadPaper } from '@/api/paper/composition.js'
-import { parseTime, idToValueConversionFilter, getIdByValue } from '@/utils'
+import { searchByCategory } from '@/api/basedata/dictionary'
+import { parseTime, idToValueConversionFilter, getIdByValue, constants } from '@/utils'
 import { code } from '@/utils/code' // 响应码
 import Pagination from '@/components/Pagination'
 
@@ -110,7 +111,7 @@ export default {
       searchData: {
         name: '',
         createdBy: '',
-        difficult: '简单',
+        difficult: '',
         comTime: ''
       },
       page: {
@@ -155,41 +156,15 @@ export default {
      * 初始获取全部试卷难度
      */
     getDifficultList() {
-      // TODO: 获取全部试卷难度
-      this.difficultList = [
-        {
-          id: '327071356621533183',
-          value: '困难'
-        },
-        {
-          id: '327071356621533182',
-          value: '中等'
-        },
-        {
-          id: '327071356621533184',
-          value: '简单'
-        }
-      ]
+      searchByCategory(constants.paperDifficult).then(result => {
+        this.difficultList = result.body
+      })
     },
     /**
      * 初始获取全部试卷类型
      */
     getPaperTypeList() {
-      // TODO：获取试卷类型
-      this.paperTypeList = [
-        {
-          id: '327071356621533184',
-          value: 'Java'
-        },
-        {
-          id: '2',
-          value: 'Python'
-        },
-        {
-          id: '3',
-          value: 'C#'
-        }
-      ]
+      searchByCategory(constants.paperType).then(result => { this.paperTypeList = result.body })
     },
     /**
      * 输入框响应enter查询

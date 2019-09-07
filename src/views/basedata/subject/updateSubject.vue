@@ -155,6 +155,7 @@
 
 <script>
 import { searchCategoryTree, selectType, selectDifficult, update } from '@/api/basedata/subject'
+import { constants } from '@/utils'
 export default {
   data() {
     return {
@@ -224,7 +225,7 @@ export default {
       })
       const params2 = {
         name: '题目难度',
-        category: '题目难度',
+        category: constants.subjectDifficult,
         pageSize: 1000000,
         pageNum: 1
       }

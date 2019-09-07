@@ -103,7 +103,7 @@
           >
             <el-table-column align="center" property="name" label="配置项" />
             <el-table-column align="center" property="difficult" label="难度">
-              <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(subjectDifficultList) }}</template>
+              <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(difficultList) }}</template>
             </el-table-column>
             <el-table-column align="center" property="updatedBy" label="修改人" />
             <el-table-column align="center" property="company" label="公司" />
@@ -149,11 +149,11 @@
             highlight-current-row
           >
             <el-table-column type="index" label="序号" width="50" />
-            <el-table-column property="subjectTypeId" label="题目类别" width="200">
-              <template slot-scope="scope">{{ scope.row.subjectTypeId | userIdToValueConversionFilter(subjectTypeList) }}</template>
+            <el-table-column property="categoryId" label="题目类别" width="200">
+              <template slot-scope="scope">{{ scope.row.categoryId | userIdToValueConversionFilter(subjectTypeList) }}</template>
             </el-table-column>
-            <el-table-column property="categoryId" label="题型">
-              <template slot-scope="scope">{{ scope.row.categoryId | userIdToValueConversionFilter(subjectCategoryList) }}</template>
+            <el-table-column property="subjectTypeId" label="题型">
+              <template slot-scope="scope">{{ scope.row.subjectTypeId | userIdToValueConversionFilter(subjectCategoryList) }}</template>
             </el-table-column>
             <el-table-column property="difficult" label="题目难度">
               <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(subjectDifficultList) }}</template>
@@ -166,7 +166,7 @@
     </el-drawer>
 
     <!-- 标准组卷 -->
-    <el-drawer title="标准组卷" size="60%" :visible.sync="normalDialog" :wrapper-closable="false">
+    <el-drawer title="标准组卷" size="60%" :visible.sync="normalDialog" :wrapper-closable="false" :before-close="handleCloseDrawer">
       <div class="drawerClass">
         <div class="drawer-content">
           <span>组卷配置信息</span>
@@ -205,7 +205,9 @@
             >
               <el-table-column type="selection" width="55" />
               <el-table-column type="index" label="序号" width="50" />
-              <el-table-column property="type" label="题目类别" />
+              <el-table-column property="type" label="题目类别">
+                <template slot-scope="scope">{{ scope.row.type[0] | userIdToValueConversionFilter(subjectTypeList) }}</template>
+              </el-table-column>
               <el-table-column property="category" label="题型" />
               <el-table-column property="number" label="题目数量" />
               <el-table-column property="difficult" label="题目难度" />
@@ -224,9 +226,15 @@
     <el-dialog title="添加组卷明细" :visible.sync="addCombConfigItemDialog" width="28%" :close-on-click-modal="false" :show-close="false">
       <el-form ref="combConfigItem" :model="combConfigItem" :rules="combConfigItemRules" size="medium" label-width="80px">
         <el-form-item label="题目类别" prop="type">
-          <el-select v-model="combConfigItem.type" placeholder="请选择题目类别.." style="width:250px">
-            <el-option v-for="item in subjectTypeList" :key="item.id" :label="item.value" :value="item.value" />
-          </el-select>
+          <el-cascader
+            v-model="combConfigItem.type"
+            :options="subjectTypeTree"
+            :props="{ checkStrictly: true }"
+            :show-all-levels="false"
+            clearable
+            placeholder="请选择题目类别.."
+            style="width:250px"
+          />
         </el-form-item>
         <el-form-item label="题目类型" prop="category">
           <el-select v-model="combConfigItem.category" placeholder="请选择题型.." style="width:250px">
@@ -252,7 +260,13 @@
     </el-dialog>
 
     <!-- 试卷详情 -->
-    <paper-view :page-show="paperDetailDialog" :paper-info="paperInfo" size="50%" @show-change="showChange" />
+    <paper-view
+      :page-show="paperDetailDialog"
+      :paper-info="paperInfo"
+      :show-answer-switch="true"
+      size="50%"
+      @show-change="showChange"
+    />
 
     <!-- 填写试卷信息弹框 -->
     <paper-form-dialog ref="paperForm" :default-paper-name="defaultPaperName" :dialog-show="paperFormDialog" :difficult-list="difficultList" :paper-type-list="paperTypeList" @showChange="showPaperFormDialog" @startComposition="getPaperInfo" />
@@ -265,8 +279,11 @@
 <script>
 import { select, startCompositionRequest, normalCompositionRequest, previewRequest } from '@/api/paper/composition.js'
 import { cancel } from '@/utils/requestUtil'
+import { subjectConversion } from '@/utils/subjectType'
 import { selectConfigs, selectItemsByConfigId } from '@/api/basedata/config'
-import { parseTime, idToValueConversionFilter, getIdByValue } from '@/utils'
+import { searchCategoryTree } from '@/api/basedata/subject'
+import { searchByCategory } from '@/api/basedata/dictionary'
+import { parseTime, idToValueConversionFilter, getIdByValue, getTreeList, constants } from '@/utils'
 import Pagination from '@/components/Pagination'
 import PaperView from '@/components/PaperView'
 import CompositionLoading from '@/views/paper/composition/compositionLoading'
@@ -342,7 +359,7 @@ export default {
       searchData: {
         name: '',
         createdBy: '',
-        difficult: '简单',
+        difficult: '',
         comTime: ''
       },
       // 分页的页面数据
@@ -359,7 +376,7 @@ export default {
       // 配置项的查询条件
       searchConfigData: {
         name: '',
-        difficult: '简单'
+        difficult: ''
       },
       // 标准组卷的组卷配置
       normalPaperConfig: {
@@ -400,17 +417,17 @@ export default {
       paperConfigId: Number,
       combConfigDialogStatus: Boolean,
       compositionType: '',
-      defaultPaperName: ''
+      defaultPaperName: '',
+      subjectTypeTree: []
     }
   },
   created() {
-    this.getDifficultList()
     this.getPaperTypeList()
+    this.getDifficultList()
     this.fetchData()
-    this.getConfigDifficultList()
-    this.getSubjectTypeList()
     this.getSubjectCategoryList()
     this.getSubjectDifficultList()
+    this.getSubjectTypeList()
   },
   methods: {
     /**
@@ -467,128 +484,74 @@ export default {
       })
     },
     /**
-     * 初始获取全部试卷难度
-     */
-    getDifficultList() {
-      // TODO: 获取全部试卷难度
-      this.difficultList = [
-        {
-          id: '327071356621533183',
-          value: '困难'
-        },
-        {
-          id: '327071356621533182',
-          value: '中等'
-        },
-        {
-          id: '327071356621533184',
-          value: '简单'
-        }
-      ]
-    },
-    /**
-     * 初始获取全部试卷类型
-     */
-    getPaperTypeList() {
-      // TODO：获取试卷类型
-      this.paperTypeList = [
-        {
-          id: '327071356621533184',
-          value: 'Java'
-        },
-        {
-          id: '2',
-          value: 'Python'
-        },
-        {
-          id: '3',
-          value: 'C#'
-        }
-      ]
-    },
-    /**
-     * 获取组卷配置类型
-     */
-    getConfigDifficultList() {
-      // TODO：获取组卷配置类型
-      this.configDifficultList = [
-        {
-          id: '1',
-          value: '简单'
-        },
-        {
-          id: '2',
-          value: '中等'
-        },
-        {
-          id: '3',
-          value: '困难'
-        }
-      ]
-    },
-    /**
      * 初始获取题目类别
      */
     getSubjectTypeList() {
-      // TODO：获取题目类别
-      this.subjectTypeList = [
-        {
-          id: '1',
-          value: 'Java'
-        },
-        {
-          id: '2',
-          value: 'Python'
-        },
-        {
-          id: '3',
-          value: 'C#'
-        }
-      ]
+      searchCategoryTree().then(result => {
+        const body = result.body
+        this.subjectTypeTree = body.treeData
+        getTreeList(this.subjectTypeTree, this.subjectTypeList)
+      })
     },
     /**
-     * 初始获取题目类型
+     *  获取试题难度
+     */
+    getSubjectDifficultList() {
+      searchByCategory(constants.subjectDifficult).then(result => { this.subjectDifficultList = result.body })
+    },
+    /**
+     * 获取题目类型
      */
     getSubjectCategoryList() {
       // TODO：获取题目类型
       this.subjectCategoryList = [
         {
-          id: '326730406219907072',
+          id: '329196546032566272',
+          attribute: '单选题',
           value: '单选'
         },
         {
-          id: '326730408442888192',
+          id: '329196582854361088',
+          attribute: '多选题',
           value: '多选'
         },
         {
-          id: '326730410808475648',
+          id: '329196619005067264',
+          attribute: '填空题',
           value: '填空'
         },
         {
-          id: '326730412939182080',
+          id: '329196650844028928',
+          attribute: '主观题',
           value: '主观'
         }
       ]
+      // const params = { name: '', pageSize: 1000000, pageNum: 1 }
+      // selectType(params).then(result => {
+      //   const list = result.body.dataList
+      //   list.forEach(item => {
+      //     this.subjectCategoryList.push({
+      //       id: item.id,
+      //       attribute: item.attribute,
+      //       value: item.name
+      //     })
+      //   })
+      // })
     },
     /**
-     * 初始获取题目难度
+     * 获取全部试卷难度和配置项难度
      */
-    getSubjectDifficultList() {
-      // TODO：获取题目难度
-      this.subjectDifficultList = [
-        {
-          id: '1',
-          value: '简单'
-        },
-        {
-          id: '2',
-          value: '中等'
-        },
-        {
-          id: '3',
-          value: '困难'
-        }
-      ]
+    getDifficultList() {
+      searchByCategory(constants.paperDifficult).then(result => {
+        this.difficultList = result.body
+        this.configDifficultList = JSON.parse(JSON.stringify(this.difficultList))
+      })
+    },
+    /**
+     * 获取全部试卷类型
+     */
+    getPaperTypeList() {
+      searchByCategory(constants.paperType).then(result => { this.paperTypeList = result.body })
     },
     /**
      * 响应分页事件
@@ -693,10 +656,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.normalConfigItemList.forEach(item => {
+        const itemList = JSON.parse(JSON.stringify(this.normalConfigItemList))
+        itemList.forEach(item => {
+          const category = item.category
           item.difficult = getIdByValue(this.subjectDifficultList, item.difficult)
-          item.category = getIdByValue(this.subjectCategoryList, item.category)
-          item.type = getIdByValue(this.subjectTypeList, item.type)
+          item.category = item.type[0]
+          item.type = getIdByValue(this.subjectCategoryList, category)
         })
         const params = {
           name: paperInfo.name,
@@ -705,7 +670,7 @@ export default {
           descript: paperInfo.descript,
           configName: this.normalPaperConfig.name,
           status: this.getStatusValue(this.normalPaperConfig.status),
-          itemList: this.normalConfigItemList
+          itemList: itemList
         }
         this.paperTipDialog = true
         this.$refs.compositionLoading.init()
@@ -855,11 +820,7 @@ export default {
         }
         previewRequest(params).then(result => {
           const info = result.body
-          info.subjects.forEach(item => {
-            item.type = idToValueConversionFilter(item.categoryId, this.subjectCategoryList)
-            item.userAnswer = ''
-          })
-          this.paperInfo = info
+          this.paperInfo = subjectConversion(info, this.subjectCategoryList)
           this.paperDetailDialog = true
         })
       } else {
