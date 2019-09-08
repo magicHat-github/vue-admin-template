@@ -47,6 +47,7 @@
               <el-select
                 v-model="formInline.role"
                 value-key="id"
+                clearable
                 filterable
                 placeholder="请选择"
                 size="mini"
@@ -219,7 +220,7 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      // 试卷总数
+      // 用户数据总数
       total: 0,
       loading: true
     }
