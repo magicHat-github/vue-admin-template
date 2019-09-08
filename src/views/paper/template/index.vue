@@ -3,8 +3,8 @@
     <!-- 试卷查询域 -->
     <div class="filter-container searchData">
       <el-form ref="form" :model="searchData" size="mini" label-width="70px" inline>
-        <el-form-item label="试卷名">
-          <el-input v-model="searchData.name" placeholder="试卷名" style="width: 160px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-form-item label="模板名">
+          <el-input v-model="searchData.name" placeholder="模板名" style="width: 160px;" class="filter-item" @keyup.enter.native="handleFilter" />
         </el-form-item>
         <el-form-item label="组卷人">
           <el-input v-model="searchData.createdBy" placeholder="组卷人" style="width: 160px;" class="filter-item" @keyup.enter.native="handleFilter" />
@@ -12,7 +12,7 @@
         <el-form-item label="组卷时间">
           <el-date-picker v-model="searchData.comTime" type="daterange" size="small" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
         </el-form-item>
-        <el-form-item label="试卷难度">
+        <el-form-item label="模板难度">
           <el-select v-model="searchData.difficult" placeholder="请选择难度.." size="mini" style="width: 160px" class="filter-item">
             <el-option v-for="item in difficultList" :key="item.id" :label="item.value" :value="item.value" />
           </el-select>
@@ -40,7 +40,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column label="试卷名" width="110" align="center">
+        <el-table-column label="模板名" width="110" align="center">
           <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
         <el-table-column label="组卷人" width="110" align="center">
@@ -60,7 +60,7 @@
         <el-table-column label="试卷总分" align="center">
           <template slot-scope="scope">{{ scope.row.score }}</template>
         </el-table-column>
-        <el-table-column label="试卷描述" align="center">
+        <el-table-column label="模板描述" align="center">
           <template slot-scope="scope">{{ scope.row.descript }}</template>
         </el-table-column>
         <el-table-column class-name="status-col" label="状态" width="110" align="center">
@@ -73,7 +73,7 @@
           <template slot-scope="scope">
             <el-link class="filter-item" size="mini" type="primary" icon="el-icon-view" style="margin-right: 2px;" @click="paperViewRow(scope.row)">预览</el-link>
             <el-link class="filter-item" size="mini" type="warning" icon="el-icon-info" style="margin-right: 2px;" @click="paperDetailRow(scope.row)">详情</el-link>
-            <el-link class="filter-item" size="mini" type="danger" icon="el-icon-delete" @click="paperDelete(scope.row)">删除</el-link>
+            <el-link class="filter-item" size="mini" type="danger" icon="el-icon-delete" @click="paperDeleteRow(scope.row)">删除</el-link>
           </template>
         </el-table-column>
       </el-table>
@@ -81,13 +81,29 @@
       <pagination v-show="total>0" :total="total" :page.sync="page.pageNumber" :limit.sync="page.size" @pagination="fetchData" />
     </el-card>
     <!-- 试卷详情 -->
-    <paper-view :page-show="paperDetailDialog" :paper-info="paperInfo" size="50%" @show-change="showChange" />
+    <paper-view
+      :page-title="pageTitle"
+      :paper-edit="paperEdit"
+      :page-show="paperDetailDialog"
+      :show-answer-switch="true"
+      :show-disable-switch="disableSwitch"
+      :paper-info="paperInfo"
+      :category-list="subjectCategoryList"
+      :paper-type-list="paperTypeList"
+      :paper-difficult-list="difficultList"
+      :size="paperSize"
+      @show-change="showChange"
+      @submitPaper="submitPaper"
+    />
   </div>
 </template>
 
 <script>
-import { select, previewRequest } from '@/api/paper/composition.js'
-import { parseTime, idToValueConversionFilter, getIdByValue } from '@/utils'
+import { select, previewRequest, deletePaperRequest, maintainPaperRequest } from '@/api/paper/composition.js'
+import { parseTime, idToValueConversionFilter, getIdByValue, constants } from '@/utils'
+import { searchByCategory } from '@/api/basedata/dictionary'
+import { subjectConversion } from '@/utils/subjectType'
+import { code } from '@/utils/code' // 响应码
 import Pagination from '@/components/Pagination'
 import PaperView from '@/components/PaperView'
 
@@ -115,16 +131,20 @@ export default {
       searchData: {
         name: '',
         createdBy: '',
-        difficult: '简单',
+        difficult: '',
         comTime: ''
       },
       page: {
         size: 5,
         pageNumber: 1
       },
+      paperSize: '50%',
       paperInfo: {},
       paperDetailDialog: false,
       listLoading: false,
+      pageTitle: '',
+      paperEdit: false,
+      disableSwitch: false,
       multipleSelection: []
     }
   },
@@ -162,41 +182,15 @@ export default {
      * 初始获取全部试卷难度
      */
     getDifficultList() {
-      // TODO: 获取全部试卷难度
-      this.difficultList = [
-        {
-          id: '327071356621533183',
-          value: '困难'
-        },
-        {
-          id: '327071356621533182',
-          value: '中等'
-        },
-        {
-          id: '327071356621533184',
-          value: '简单'
-        }
-      ]
+      searchByCategory(constants.paperDifficult).then(result => {
+        this.difficultList = result.body
+      })
     },
     /**
      * 初始获取全部试卷类型
      */
     getPaperTypeList() {
-      // TODO：获取试卷类型
-      this.paperTypeList = [
-        {
-          id: '327071356621533184',
-          value: 'Java'
-        },
-        {
-          id: '2',
-          value: 'Python'
-        },
-        {
-          id: '3',
-          value: 'C#'
-        }
-      ]
+      searchByCategory(constants.paperType).then(result => { this.paperTypeList = result.body })
     },
     /**
      * 初始获取题目类型
@@ -205,19 +199,23 @@ export default {
       // TODO：获取题目类型
       this.subjectCategoryList = [
         {
-          id: '326730406219907072',
+          id: '329196546032566272',
+          attribute: '单选题',
           value: '单选'
         },
         {
-          id: '326730408442888192',
+          id: '329196582854361088',
+          attribute: '多选题',
           value: '多选'
         },
         {
-          id: '326730410808475648',
+          id: '329196619005067264',
+          attribute: '填空题',
           value: '填空'
         },
         {
-          id: '326730412939182080',
+          id: '329196650844028928',
+          attribute: '主观题',
           value: '主观'
         }
       ]
@@ -240,7 +238,32 @@ export default {
      * 试卷删除
      */
     paperDelete() {
-      console.log(123)
+      this.$confirm('此操作将永久删除试卷, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const ids = []
+        this.multipleSelection.forEach(item => {
+          ids.push({
+            id: item.id,
+            version: item.version
+          })
+        })
+        this.sendDeletePaperRequest(ids)
+      })
+    },
+    /**
+     * 试卷删除
+     */
+    paperDeleteRow(row) {
+      this.$confirm('此操作将永久删除试卷, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.sendDeletePaperRequest([{ id: row.id, version: row.version }])
+      })
     },
     /**
      * 获取表格选取的数据
@@ -252,88 +275,149 @@ export default {
      * 试卷预览
      */
     paperView() {
-      if (this.multipleSelection.length === 1) {
-        const params = {
-          id: this.multipleSelection[0].id,
-          name: this.multipleSelection[0].name
-        }
-        previewRequest(params).then(result => {
-          const info = result.body
-          info.subjects.forEach(item => {
-            item.type = idToValueConversionFilter(item.categoryId, this.subjectCategoryList)
-            item.userAnswer = ''
-          })
-          this.paperInfo = info
-          this.paperDetailDialog = true
-        })
-      } else {
-        this.$message({
-          type: 'error',
-          message: '只能选择一条试卷数据'
-        })
-      }
+      this.paperSize = '50%'
+      this.pageTitle = '试卷预览'
+      this.paperEdit = false
+      this.disableSwitch = false
+      this.decideTableSelection(() => {
+        this.sendPreviewRequest(this.multipleSelection[0].id, this.multipleSelection[0].name)
+      })
     },
     /**
      * 试卷预览单行
      * @param row 行数据
      */
     paperViewRow(row) {
-      const params = {
-        id: row.id,
-        name: row.name
-      }
-      previewRequest(params).then(result => {
-        const info = result.body
-        info.subjects.forEach(item => {
-          item.type = idToValueConversionFilter(item.categoryId, this.subjectCategoryList)
-          item.userAnswer = ''
-        })
-        this.paperInfo = info
-        this.paperDetailDialog = true
-      })
+      this.paperSize = '50%'
+      this.pageTitle = '试卷预览'
+      this.paperEdit = false
+      this.disableSwitch = false
+      this.sendPreviewRequest(row.id, row.name)
     },
     /**
      * 查看试卷详情
      */
     paperDetail() {
-      if (this.multipleSelection.length === 1) {
-        const params = {
-          id: this.multipleSelection[0].id,
-          name: this.multipleSelection[0].name
-        }
-        previewRequest(params).then(result => {
-          const info = result.body
-          info.subjects.forEach(item => {
-            item.type = idToValueConversionFilter(item.categoryId, this.subjectCategoryList)
-            item.userAnswer = ''
-          })
-          this.paperInfo = info
-          this.paperDetailDialog = true
-        })
-      } else {
-        this.$message({
-          type: 'error',
-          message: '只能选择一条试卷数据'
-        })
-      }
+      this.paperSize = '60%'
+      this.pageTitle = '试卷详情'
+      this.paperEdit = true
+      this.disableSwitch = true
+      this.decideTableSelection(() => {
+        this.sendPreviewRequest(this.multipleSelection[0].id, this.multipleSelection[0].name)
+      })
     },
     /**
      * 查看试卷详情
      * @param row 行数据
      */
     paperDetailRow(row) {
+      this.paperSize = '60%'
+      this.pageTitle = '试卷详情'
+      this.paperEdit = true
+      this.disableSwitch = true
+      this.sendPreviewRequest(row.id, row.name)
+    },
+    /**
+     * 发送试卷预览请求
+     * @param id 参数ID
+     * @param name 参数名称
+     */
+    sendPreviewRequest(id, name) {
       const params = {
-        id: row.id,
-        name: row.name
+        id: id,
+        name: name
       }
       previewRequest(params).then(result => {
         const info = result.body
-        info.subjects.forEach(item => {
-          item.type = idToValueConversionFilter(item.categoryId, this.subjectCategoryList)
-          item.userAnswer = ''
+        this.paperInfo = subjectConversion(info, this.subjectCategoryList)
+        this.list.forEach(item => {
+          if (item.id === id) {
+            this.paperInfo.id = item.id
+            this.paperInfo.paperType = item.paperType
+            this.paperInfo.difficult = item.difficult
+            this.paperInfo.descript = item.descript
+          }
         })
-        this.paperInfo = info
         this.paperDetailDialog = true
+      })
+    },
+    /**
+     * 判断表格只能选择一条数据
+     * @param fun 成功时调用的方法
+     */
+    decideTableSelection(fun) {
+      if (this.multipleSelection.length === 1) {
+        fun()
+      } else {
+        this.$message({
+          type: 'error',
+          message: '只能选择一条试卷数据！'
+        })
+      }
+    },
+    /**
+     * 发送删除试卷请求
+     * @param data 试卷数据
+     */
+    sendDeletePaperRequest(data) {
+      const params = {
+        dataList: data
+      }
+      const notice = this.$notify({
+        title: '提示',
+        type: 'info',
+        message: '正在删除试卷...',
+        duration: 0
+      })
+      deletePaperRequest(params).then(result => {
+        const success = result.head.code === code.SUCCESS
+        this.normalNotice(
+          notice,
+          '提示',
+          success ? 'success' : 'error',
+          success ? '删除成功！' : result.head.msg
+        )
+        this.fetchData()
+      }).catch(result => {
+        this.normalNotice(notice, '提示', 'error', result.msg)
+      })
+    },
+    /**
+     * 错误提示
+     */
+    normalNotice(notice, title, type, message) {
+      setTimeout(() => {
+        notice.close()
+      }, 2000)
+      this.$notify({
+        title: title,
+        type: type,
+        message: message,
+        duration: 3000
+      })
+    },
+    /**
+     * 提交修改的表单
+     * @param params
+     */
+    submitPaper(params) {
+      const notice = this.$notify({
+        title: '提示',
+        type: 'info',
+        message: '正在修改试卷...',
+        duration: 0
+      })
+      maintainPaperRequest(params).then(result => {
+        const success = result.head.code === code.SUCCESS
+        this.normalNotice(
+          notice,
+          '提示',
+          success ? 'success' : 'error',
+          success ? '修改成功！' : result.head.msg
+        )
+        this.fetchData()
+      }).catch(result => {
+        this.normalNotice(notice, '提示', 'error', result.msg)
       })
     }
   }

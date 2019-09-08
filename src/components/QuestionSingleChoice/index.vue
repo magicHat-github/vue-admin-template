@@ -21,7 +21,7 @@ import { optionList } from '@/utils'
  * 填空题组件
  */
 export default {
-  name: 'QuestionFillBlank',
+  name: 'QuestionSingleChoice',
   props: {
     /**
      * 题号

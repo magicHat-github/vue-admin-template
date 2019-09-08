@@ -18,7 +18,7 @@
  * 填空题组件
  */
 export default {
-  name: 'QuestionFillBlank',
+  name: 'QuestionSubjective',
   props: {
     questionIndex: {
       type: Number,
