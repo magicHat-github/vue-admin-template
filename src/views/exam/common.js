@@ -12,47 +12,6 @@ export const pageSizes = [5, 10, 20, 50, 100]
  */
 export const pageSize = 5
 /**
- * 虚拟的数据
- */
-export const mockData = [
-  {
-    recordId: 11,
-    publisher: '小王',
-    publishTimeRange: '2019-8-19 9:03:22 至 2019-8-20 10:00:00',
-    examEndTime: '2019-8-20 10:03:22',
-    planPeopleCount: '100',
-    examLimitTime: '112',
-    judges: '王工,李工',
-    description: '秋招',
-    status: '已发布',
-    publishTimes: 5
-  },
-  {
-    recordId: 12,
-    publisher: '小王',
-    publishTimeRange: '2019-8-19 9:03:22 至 2019-8-20 10:00:00',
-    examEndTime: '2019-8-20 10:03:22',
-    planPeopleCount: '100',
-    examLimitTime: '112',
-    judges: '王工,李工',
-    description: '秋招',
-    status: '未发布',
-    publishTimes: 5
-  },
-  {
-    recordId: 13,
-    publisher: '小王',
-    publishTimeRange: '2019-8-19 9:03:22 至 2019-8-20 10:00:00',
-    examEndTime: '2019-8-20 10:03:22',
-    planPeopleCount: '100',
-    examLimitTime: '112',
-    judges: '王工,李工',
-    description: '秋招',
-    status: '已发布',
-    publishTimes: 5
-  }
-]
-/**
  * 评卷方式
  */
 export const markOptions = [
@@ -72,11 +31,18 @@ export const markOptions = [
 /**
  * 校验规则
  */
-var checkJudges = (rule, value, callback) => {
+const checkJudges = (rule, value, callback) => {
   if (value.length <= 0) {
     return callback(new Error('必须选择一个阅卷官'))
   } else {
     callback()
+  }
+}
+const numberValid = (rule, value, callback) => {
+  if (value > 0 && value < 65535) {
+    callback()
+  } else {
+    callback(new Error('不是有效的数字范围'))
   }
 }
 export const rules = {
@@ -94,7 +60,8 @@ export const rules = {
   ],
   planPeopleNum: [
     { required: true, message: '必须输入计划参加人数', trigger: 'blur' },
-    { type: 'number', message: '必须输入数字' }
+    { type: 'number', message: '必须输入数字' },
+    { validator: numberValid, trigger: 'blur' }
   ],
   examLimitTime: [
     { required: true, message: '必须输入考试时长', trigger: 'blur' },
@@ -119,59 +86,6 @@ export const DialogType = {
   // 编辑记录
   EDITRECORD: 3
 }
-/**
- * 模拟答卷数据
- */
-export const answerData = [
-  {
-    title: '秋招',
-    examSessionName: '十月份场次',
-    endTime: '2019-10-29 12:00:00',
-    tel: '12312341234',
-    examerName: '龙同学',
-    actualStartTime: '2019-10-29 11:00:00',
-    actualEndTime: '2019-10-29 11:00:00',
-    makingStopTime: '2019-11-10 12:00:00',
-    objectiveScore: 24,
-    subjectiveScore: 34
-  },
-  {
-    title: '秋招',
-    examSessionName: '十月份场次',
-    endTime: '2019-10-29 12:00:00',
-    tel: '12312341234',
-    examerName: '龙同学',
-    actualStartTime: '2019-10-29 11:00:00',
-    actualEndTime: '2019-10-29 11:00:00',
-    makingStopTime: '2019-11-10 12:00:00',
-    objectiveScore: 24,
-    subjectiveScore: 34
-  },
-  {
-    title: '秋招',
-    examSessionName: '十月份场次',
-    endTime: '2019-10-29 12:00:00',
-    tel: '12312341234',
-    examerName: '龙同学',
-    actualStartTime: '2019-10-29 11:00:00',
-    actualEndTime: '2019-10-29 11:00:00',
-    makingStopTime: '2019-11-10 12:00:00',
-    objectiveScore: 24,
-    subjectiveScore: 34
-  },
-  {
-    title: '秋招',
-    examSessionName: '十月份场次',
-    endTime: '2019-10-29 12:00:00',
-    tel: '12312341234',
-    examerName: '龙同学',
-    actualStartTime: '2019-10-29 11:00:00',
-    actualEndTime: '2019-10-29 11:00:00',
-    makingStopTime: '2019-11-10 12:00:00',
-    objectiveScore: 24,
-    subjectiveScore: 34
-  }
-]
 /**
  * 考试批阅
  */

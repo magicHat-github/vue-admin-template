@@ -10,7 +10,7 @@
               <el-input v-model="formInline.name" clearable size="mini" />
             </el-form-item>
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" @click="select">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -18,14 +18,15 @@
           <!-- 增删改按钮框 -->
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
-            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="updateCheck">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="deleteCheck">修改</el-link>
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCheck">删除</el-link>
+            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCheck">修改</el-link>
           </div>
 
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
-            :data="configs"
+            v-loading="listLoading"
+            :data="configList"
             tooltip-effect="dark"
             stripe
             height
@@ -39,18 +40,18 @@
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
                 <el-tag
-                  :type="scope.row.status === '1' ? 'primary' : 'info'"
-                >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
+                  :type="scope.row.status === 1 ? 'primary' : 'info'"
+                >{{ scope.row.status === 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="company" label="公司" />
+            <el-table-column prop="companyId" label="公司" />
             <el-table-column prop="remark" label="备注" />
             <el-table-column label="操作" width="140" fixed="right">
               <template slot-scope="scope">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
                 <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />
-                <el-link class="itemAction" type="success" icon="el-icon-view" @click="findConfigDetail(scope.$index, scope.row)" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem(scope.row.id,scope.row.version)" />
+                <el-link class="itemAction" type="success" icon="el-icon-view" @click="findConfigDetail(scope.row.id)" />
               </template>
             </el-table-column>
           </el-table>
@@ -58,11 +59,11 @@
           <!-- 分页部分 -->
           <div class="block">
             <pagination
-              v-show="total>0"
-              :total="total"
-              :page.sync="page.pageNumber"
-              :limit.sync="page.size"
-              @click="queryData"
+              v-show="dataCount>0"
+              :total="dataCount"
+              :page.sync="page.pageNum"
+              :limit.sync="page.pageSize"
+              @pagination="select"
             />
           </div>
         </el-card>
@@ -87,16 +88,11 @@
                 type="index"
                 width="50"
               />
-              <el-table-column prop="category" label="题目类别" />
-              <el-table-column prop="type" label="题型" />
+              <el-table-column prop="categoryId" label="题目类别" />
+              <el-table-column prop="subjectTypeId" label="题型" />
               <el-table-column prop="num" label="题目数量" />
               <el-table-column prop="difficult" label="题目难度" />
               <el-table-column prop="score" label="题目分值" />
-              <!--              <el-table-column label="操作">-->
-              <!--                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />-->
-              <!--                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />-->
-              <!--                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />-->
-              <!--              </el-table-column>-->
             </el-table>
           </el-card>
         </el-drawer>
@@ -106,13 +102,17 @@
 </template>
 
 <script>
-// import { log } from 'util'
 import Pagination from '@/components/Pagination'
+import { selectConfigs, deleteList, selectItemsByConfigId } from '@/api/basedata/config'
 export default {
   name: 'App',
   components: { Pagination },
   data() {
     return {
+      /**
+       *加载
+       */
+      listLoading: false,
       /**
          * 查询字段
          */
@@ -122,110 +122,49 @@ export default {
       },
       tableView: false,
       page: {
-        size: 5,
-        pageNumber: 1
+        pageSize: 5,
+        pageNum: 1
       },
-      // 试卷总数
-      total: 0,
+      // 分页总数
+      dataCount: 0,
       /**
-         * 公司管理
+         * 配置项数据
          */
-      configs: [
-        {
-          configId: '1',
-          name: '11',
-          difficult: '简单',
-          updatedBy: 'lynch',
-          updatedTime: '2019/11/11',
-          status: '1',
-          company: 'boss',
-          remark: 'null'
-        },
-        {
-          configId: '2',
-          name: '22',
-          difficult: '困难',
-          updatedBy: 'lynch',
-          updatedTime: '2019/11/11',
-          status: '1',
-          company: 'boss',
-          remark: 'null'
-        }
-      ],
-      details: [
-        {
-          configId: '1',
-          category: 'Java基础题',
-          type: '选择题',
-          num: '10',
-          difficult: '中等',
-          score: '30'
-        },
-        {
-          configId: '1',
-          category: 'Java基础题',
-          type: '填空题',
-          num: '5',
-          difficult: '中等',
-          score: '20'
-        },
-        {
-          configId: '1',
-          category: 'Java基础题',
-          type: '编程题',
-          num: '3',
-          difficult: '中等',
-          score: '50'
-        },
-        {
-          configId: '2',
-          category: '编程题',
-          type: '第二',
-          num: 'sad',
-          difficult: '',
-          score: ''
-        },
-        {
-          configId: '3',
-          category: '1',
-          type: '',
-          num: '',
-          difficult: '',
-          score: ''
-        },
-        {
-          configId: '4',
-          category: '1',
-          type: '',
-          num: '',
-          difficult: '',
-          score: ''
-        }
-      ],
+      configList: null,
+      detailList: null,
       chooseDetails: [],
       /**
          * 待确认字段
          */
-      multipleSelection: [],
-      /**
-         * 初始显示的页数
-         */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
+      multipleSelection: []
     }
   },
   created() {
-    this.queryData()
+    this.select()
   },
   methods: {
+    /**
+     * 模糊查询
+     */
+    select() {
+      this.listLoading = true
+      const params = {
+        name: this.formInline.name,
+        pageSize: this.page.pageSize,
+        pageNum: this.page.pageNum
+      }
+      selectConfigs(params).then(result => {
+        const body = result.body
+        this.configList = body.list
+        this.dataCount = parseInt(body.total)
+        this.listLoading = false
+      })
+    },
+
     /**
      * 对表格多选项进行判定，成则跳转至修改页面
      */
     updateCheck() {
-      // eslint-disable-next-line eqeqeq
       if (this.multipleSelection.length !== 1) {
         this.$message({
           type: 'warning',
@@ -241,22 +180,36 @@ export default {
      * 对表格多选项进行判定，成功则删除
      */
     deleteCheck() {
-      // eslint-disable-next-line eqeqeq
       if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'warning',
           message: '请选择删除选项'
         })
       } else {
+        const params = { dataList: [] }
+        this.multipleSelection.forEach(item => {
+          const data = { id: item.id,
+            version: item.version }
+          params.dataList.push(data)
+        })
         this.$confirm('是否要删除选定信息', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
           .then(() => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
+            console.log(params)
+            deleteList(params).then(() => {
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.select()
+            }).catch(() => {
+              this.$message({
+                type: 'warning',
+                message: '删除失败!'
+              })
             })
           })
           .catch(() => {
@@ -266,9 +219,6 @@ export default {
             })
           })
       }
-    },
-    queryData() {
-      this.total = this.configs.length
     },
     /**
        * 树结构的点击事件
@@ -298,18 +248,30 @@ export default {
       })
     },
     /**
-       * 删除信息
-       */
-    deleteItem() {
+     * 删除信息
+     */
+    deleteItem(id, version) {
+      const params = { dataList: [] }
+      const data = { id: id,
+        version: version }
+      params.dataList.push(data)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+          deleteList(params).then(() => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.select()
+          }).catch(() => {
+            this.$message({
+              type: 'success',
+              message: '删除失败!'
+            })
           })
         })
         .catch(() => {
@@ -319,12 +281,11 @@ export default {
           })
         })
     },
-    findConfigDetail(index, row) {
+    findConfigDetail(id) {
       this.tableView = true
-      // eslint-disable-next-line no-unused-vars
-      const configId = row.configId
-      // eslint-disable-next-line eqeqeq
-      this.chooseDetails = this.details.filter(p => p.configId.indexOf(configId) !== -1)
+      selectItemsByConfigId(id).then(result => {
+        this.chooseDetails = result.body
+      })
     }
   }
 }

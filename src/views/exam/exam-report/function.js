@@ -6,6 +6,7 @@ export function add(a, b) {
  */
 export const mockData = [
   {
+    id: '111',
     examName: '秋招',
     examSessionName: '第一场',
     examEndTime: '2019-10-1 11:11:11',
@@ -13,6 +14,7 @@ export const mockData = [
     actualPeopleNum: 200
   },
   {
+    id: '111',
     examName: '秋招',
     examSessionName: '第一场',
     examEndTime: '2019-10-1 11:11:11',
@@ -20,6 +22,7 @@ export const mockData = [
     actualPeopleNum: 200
   },
   {
+    id: '111',
     examName: '秋招',
     examSessionName: '第一场',
     examEndTime: '2019-10-1 11:11:11',
@@ -27,6 +30,7 @@ export const mockData = [
     actualPeopleNum: 200
   },
   {
+    id: '111',
     examName: '秋招',
     examSessionName: '第一场',
     examEndTime: '2019-10-1 11:11:11',

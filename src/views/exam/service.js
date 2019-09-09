@@ -1,5 +1,11 @@
 import { addNewRecord } from '@/api/exam'
-import { deleteRecordById, deleteRecordByIdList, publishRecordById, updatePublishRecord } from '../../api/exam'
+import {
+  deleteRecordById,
+  deleteRecordByIdList, getExamRecordById, getJudgeList,
+  getPapers,
+  publishRecordById,
+  updatePublishRecord
+} from '../../api/exam'
 /**
  * service 层,用来调用接口的api
  */
@@ -81,6 +87,39 @@ export default {
   publishExamById(id) {
     return new Promise((resolve, reject) => {
       publishRecordById(id)
+        .then(rsp => resolve(rsp))
+        .catch(err => reject(err))
+    })
+  },
+  /**
+   * 获得试卷列表
+   * @returns {Promise<any>}
+   */
+  getPapers() {
+    return new Promise((resolve, reject) => {
+      getPapers().then(rsp => resolve(rsp))
+        .catch(err => reject(err))
+    })
+  },
+  /**
+   * 获得所有的阅卷官列表
+   * @returns {Promise<any>}
+   */
+  getJudgeList() {
+    return new Promise((resolve, reject) => {
+      getJudgeList()
+        .then(rsp => resolve(rsp))
+        .catch(err => reject(err))
+    })
+  },
+  /**
+   * 根据id获得考试记录
+   * @param id 传进来的id
+   * @returns {Promise<any>}
+   */
+  getExamRecordById(id) {
+    return new Promise((resolve, reject) => {
+      getExamRecordById(id)
         .then(rsp => resolve(rsp))
         .catch(err => reject(err))
     })
