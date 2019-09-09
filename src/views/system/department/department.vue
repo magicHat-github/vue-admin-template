@@ -278,7 +278,25 @@ export default {
      * 树结构的点击事件
      */
     handleNodeClick(data) {
-      console.log(data)
+      if (data.children == null) {
+        this.formInline.departmentName = data.label
+        const params = {
+          departmentId: data.id,
+          departmentName: this.formInline.departmentName,
+          level: '',
+          pageSize: 1,
+          pageNum: 1
+        }
+        queryDepartment(params).then(result => {
+          const body = result.body
+          // 转换表格数据
+          this.departments = body.dataList
+          console.log('this is table data')
+          // 分页信息
+          this.total = parseInt(body.dataCount)
+          this.loading = false
+        })
+      }
     },
 
     /**
