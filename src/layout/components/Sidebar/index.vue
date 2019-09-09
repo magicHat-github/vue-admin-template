@@ -25,7 +25,6 @@ import Logo from './Logo'
 import UserInfo from './UserInfo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
-// import { log } from 'util'
 
 export default {
   components: { SidebarItem, Logo, UserInfo },
@@ -39,7 +38,6 @@ export default {
     activeMenu() {
       const route = this.$route
       const { meta, path } = route
-      // if set path, the sidebar will highlight the path you set
       if (meta.activeMenu) {
         return meta.activeMenu
       }
@@ -49,7 +47,11 @@ export default {
       return this.$store.state.settings.sidebarLogo
     },
     showUserInfo() {
-      return this.$store.state.settings.showUserInfoCache
+      if (this.$store.state.settings.showUserInfo) {
+        return this.$store.state.app.sidebar.opened
+      } else {
+        return false
+      }
     },
     variables() {
       return variables
