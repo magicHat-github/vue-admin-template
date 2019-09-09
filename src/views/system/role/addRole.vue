@@ -1,10 +1,10 @@
 <template>
   <div class="app-container allData">
-    <h1 style="font-size:25px;" class="el-icon-menu">新增用户</h1>
+    <h1 style="font-size:25px;" class="el-icon-menu">新增角色</h1>
     <hr>
     <br>
     <el-col :span="5" :offset="1">
-      <font style="font-size:15px;" color="blue">用户基本信息</font>
+      <font style="font-size:15px;" color="blue">角色基本信息</font>
     </el-col>
     <!--表单输入 -->
     <div class="app-container allData">
