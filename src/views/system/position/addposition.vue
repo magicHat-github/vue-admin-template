@@ -38,6 +38,12 @@
           </el-col>
         </el-form-item>
 
+        <el-form-item label="职位代码" prop="code">
+          <el-col :span="8">
+            <el-input v-model="form.code" />
+          </el-col>
+        </el-form-item>
+
         <el-form-item label="备注" prop="remark">
           <el-col :span="8">
             <el-input v-model="form.remark" />
@@ -76,6 +82,7 @@ export default {
       form: {
         company: '',
         name: '',
+        code: '',
         remark: '',
         status: '1'
       },
@@ -98,6 +105,19 @@ export default {
             min: 4,
             max: 8,
             message: '长度在 4 到 8 个字符',
+            trigger: 'blur'
+          }
+        ],
+        code: [
+          {
+            required: true,
+            message: '请输入职位代码',
+            trigger: 'change'
+          },
+          {
+            min: 4,
+            max: 6,
+            message: '长度在 4 到 6 个字符',
             trigger: 'blur'
           }
         ],
@@ -202,7 +222,7 @@ export default {
       console.log('this is formData')
       const params = {
         name: this.form.name,
-        // code: this.departmentForm.code,
+        code: this.form.code,
         status: this.form.status,
         remark: this.form.remark,
         companyId: this.form.company.id,

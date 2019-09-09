@@ -53,6 +53,7 @@
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column prop="companyName" label="公司" width="120" align="center" />
           <el-table-column prop="name" label="职位名称" width="120" align="center" />
+          <el-table-column prop="code" label="职位代码" width="120" align="center" />
           <el-table-column prop="remark" label="备注" show-overflow-tooltip align="center" />
           <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
             <template slot-scope="scope">
