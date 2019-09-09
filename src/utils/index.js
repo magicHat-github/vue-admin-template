@@ -128,6 +128,22 @@ export function idToValueConversionFilter(target, targetList) {
 }
 
 /**
+ * id转name
+ * @param target
+ * @param targetList
+ * @returns {*}
+ */
+export function idToNameConversionFilter(target, targetList) {
+  let result = null
+  targetList.forEach(item => {
+    if (item.id === target) {
+      result = item.name
+    }
+  })
+  return result
+}
+
+/**
  * 根据value和集合获取对应的ID
  * @param list 集合
  * @param value 值

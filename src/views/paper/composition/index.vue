@@ -597,7 +597,7 @@ export default {
         }
         this.$refs.compositionLoading.init()
         this.cancelId = new Date().getTime()
-        startCompositionRequest(params, this.cancelId).then(result => {
+        startCompositionRequest(params, this.cancelId).then(() => {
           this.$refs.compositionLoading.stopComposition('组卷成功，弹窗即将关闭！', true)
         }).catch(result => {
           this.$refs.compositionLoading.stopComposition(result.msg, false)
@@ -675,7 +675,7 @@ export default {
         this.paperTipDialog = true
         this.$refs.compositionLoading.init()
         this.cancelId = new Date().getTime()
-        normalCompositionRequest(params, this.cancelId).then(result => {
+        normalCompositionRequest(params, this.cancelId).then(() => {
           this.$refs.compositionLoading.stopComposition('组卷成功，弹窗即将关闭！', true)
         }).catch(result => {
           this.$refs.compositionLoading.stopComposition(result.msg, false)

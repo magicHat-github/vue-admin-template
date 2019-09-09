@@ -22,6 +22,26 @@
             <el-radio v-model="form.status" label="2">否</el-radio>
           </el-col>
         </el-form-item>
+        <el-form-item label="难度">
+          <el-select v-model="form.difficult" filterable placeholder="请选择">
+            <el-option
+              v-for="difficult in difficultList"
+              :key="difficult.value"
+              :label="difficult.value"
+              :value="difficult.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注信息">
+          <el-col :span="8">
+            <el-input
+              v-model="form.remark"
+              type="textarea"
+              :rows="10"
+              placeholder="请输入内容"
+            />
+          </el-col>
+        </el-form-item>
         <el-form-item label="添加配置信息" />
         <el-form-item>
           <el-card class="tableData">
@@ -31,36 +51,129 @@
               <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCheck">删除</el-link>
               <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCheck">修改</el-link>
             </div>
-            <el-dialog title="添加配置信息" :visible.sync="addConfigDialog">
+            <!--添加弹窗-->
+            <el-dialog title="添加配置详情" :visible.sync="addConfigDialog" :show-close="false">
+              <el-form ref="form" :model="detailForm" size="mini">
+                <el-form-item label="题目类别">
+                  <el-cascader
+                    v-model="detailForm.categoryId"
+                    :options="categoryTree"
+                    :props="{ checkStrictly: true }"
+                    :show-all-levels="false"
+                    clearable
+                  />
+                </el-form-item>
+                <el-form-item label="题型">
+                  <el-select v-model="detailForm.subjectTypeId" filterable placeholder="请选择">
+                    <el-option
+                      v-for="type in typeList"
+                      :key="type.name"
+                      :label="type.name"
+                      :value="type.id"
+                    />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="题目数量">
+                  <el-col :span="8">
+                    <el-input v-model="detailForm.num" placeholder="请输入内容" />
+                  </el-col>
+                </el-form-item>
+                <el-form-item label="难度">
+                  <el-select v-model="detailForm.difficult" filterable placeholder="请选择">
+                    <el-option
+                      v-for="difficult in difficultList"
+                      :key="difficult.value"
+                      :label="difficult.value"
+                      :value="difficult.id"
+                    />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="题目分值">
+                  <el-col :span="8">
+                    <el-input v-model="detailForm.score" placeholder="请输入内容" />
+                  </el-col>
+                </el-form-item>
+              </el-form>
               <div slot="footer" class="dialog-footer">
-                <el-button @click="addConfigDialog = false">取 消</el-button>
-                <el-button type="primary" @click="addConfigDialog = false">确 定</el-button>
+                <el-button @click="cancelAdd">取 消</el-button>
+                <el-button type="primary" @click="addDetail">确 定</el-button>
               </div>
             </el-dialog>
-            <el-dialog title="修改配置信息" :visible.sync="updateConfigDialog">
+            <!--修改弹窗-->
+            <el-dialog title="修改配置信息" :visible.sync="updateConfigDialog" :show-close="false">
+              <el-form ref="form" :model="detailForm" size="mini">
+                <el-form-item label="题目类别">
+                  <el-cascader
+                    v-model="detailForm.categoryId"
+                    :options="categoryTree"
+                    :props="{ checkStrictly: true }"
+                    :show-all-levels="false"
+                    clearable
+                  />
+                </el-form-item>
+                <el-form-item label="题型">
+                  <el-select v-model="detailForm.subjectTypeId" filterable placeholder="请选择" value="">
+                    <el-option
+                      v-for="type in typeList"
+                      :key="type.name"
+                      :label="type.name"
+                      :value="type.id"
+                    />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="题目数量">
+                  <el-col :span="8">
+                    <el-input v-model="detailForm.num" placeholder="请输入内容" />
+                  </el-col>
+                </el-form-item>
+                <el-form-item label="难度">
+                  <el-select v-model="detailForm.difficult" filterable placeholder="请选择">
+                    <el-option
+                      v-for="difficult in difficultList"
+                      :key="difficult.value"
+                      :label="difficult.value"
+                      :value="difficult.id"
+                    />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="题目分值">
+                  <el-col :span="8">
+                    <el-input v-model="detailForm.score" placeholder="请输入内容" />
+                  </el-col>
+                </el-form-item>
+              </el-form>
               <div slot="footer" class="dialog-footer">
-                <el-button @click="updateConfigDialog = false">取 消</el-button>
-                <el-button type="primary" @click="updateConfigDialog = false">确 定</el-button>
+                <el-button @click="cancelUpdate">取 消</el-button>
+                <el-button type="primary" @click="updateDetail">确 定</el-button>
               </div>
             </el-dialog>
+            <!--显示-->
             <el-table
               ref="multipleTable"
-              :data="configDetail"
+              :data="configDetailList"
               tooltip-effect="dark"
               stripe
               height
               @selection-change="handleSelectionChange"
             >
               <el-table-column type="selection" width="55" fixed="left" />
-              <el-table-column prop="category" label="题目类别" />
-              <el-table-column prop="type" label="题型" />
+              <el-table-column prop="categoryId" label="题目类别">
+                <template slot-scope="scope">{{ scope.row.categoryId | userIdToValueConversionFilter(categoryList) }}</template>
+              </el-table-column>
+              <el-table-column prop="subjectTypeId" label="题型">
+                <template slot-scope="scope">{{ scope.row.subjectTypeId | userIdToNameConversionFilter(typeList) }}</template>
+              </el-table-column>
               <el-table-column prop="num" label="题目数量" />
-              <el-table-column prop="difficult" label="题目难度" />
+              <el-table-column prop="difficult" label="题目难度">
+                <template slot-scope="scope">{{ scope.row.difficult | userIdToNameConversionFilter(difficultList) }}</template>
+              </el-table-column>
               <el-table-column prop="score" label="题目分值" />
               <el-table-column label="操作">
-                <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addConfigDialog=true" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />
+                <template slot-scope="scope">
+                  <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addConfigDialog=true" />
+                  <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem(scope.row)" />
+                  <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDetail(scope.row)" />
+                </template>
               </el-table-column>
             </el-table>
           </el-card>
@@ -78,15 +191,42 @@
 </template>
 
 <script>
+import { searchCategoryTree, selectType, selectDifficult } from '@/api/basedata/subject'
+import { update } from '@/api/basedata/config'
+import { idToNameConversionFilter, getTreeList, idToValueConversionFilter } from '@/utils/index'
 export default {
+  filters: {
+    userIdToNameConversionFilter(target, targetList) {
+      return idToNameConversionFilter(target, targetList)
+    },
+    userIdToValueConversionFilter(target, targetList) {
+      return idToValueConversionFilter(target, targetList)
+    }
+  },
   data() {
     return {
+      categoryTree: null,
+      categoryList: [],
+      typeList: null,
+      difficultList: null,
       addConfigDialog: false,
       updateConfigDialog: false,
       form: {
+        id: '',
         name: '',
-        remark: '',
-        status: '1'
+        remark: '随机',
+        status: '1',
+        difficult: '',
+        version: ''
+      },
+      detailForm: {
+        formId: '',
+        id: '',
+        categoryId: '',
+        subjectTypeId: '',
+        num: '',
+        difficult: '',
+        score: ''
       },
       rules: {
         name: [
@@ -96,22 +236,25 @@ export default {
           { required: true, message: '请选择是否启用', trigger: 'blur' }
         ]
       },
-      configDetail: [
-        {
-          category: '1',
-          type: '1',
-          num: '1',
-          difficult: '1',
-          score: '1'
-        },
-        {
-          category: '2',
-          type: '1',
-          num: '1',
-          difficult: '1',
-          score: '1'
-        }
-      ],
+      configDetailList: [],
+      deleteConfigDetailList: [],
+      detailCount: 0,
+      // configDetailList: [
+      //   {
+      //     category: '1',
+      //     type: '1',
+      //     num: '1',
+      //     difficult: '1',
+      //     score: '1'
+      //   },
+      //   {
+      //     category: '2',
+      //     type: '1',
+      //     num: '1',
+      //     difficult: '1',
+      //     score: '1'
+      //   }
+      // ],
 
       /**
          * 待确认字段
@@ -120,28 +263,116 @@ export default {
     }
   },
   created() {
-    this.queryData()
+    this.searchInline()
   },
   methods: {
+    addDetail() {
+      this.configDetailList.push({
+        categoryId: this.detailForm.categoryId.pop(),
+        subjectTypeId: this.detailForm.subjectTypeId,
+        num: this.detailForm.num,
+        difficult: this.detailForm.difficult,
+        score: this.detailForm.score,
+        formId: this.detailCount,
+        id: ''
+      })
+      this.detailForm = []
+      this.addConfigDialog = false
+      this.detailCount++
+    },
+    cancelAdd() {
+      this.detailForm = []
+      this.addConfigDialog = false
+    },
+    updateDetail() {
+      if (this.detailForm.id !== '') {
+        this.configDetailList.forEach((item, index) => {
+          if (item.id === this.detailForm.id) {
+            this.configDetailList.splice(index, 1, this.detailForm)
+          }
+        })
+      } else if (this.detailForm.formId !== '') {
+        this.configDetailList.forEach((item, index) => {
+          if (item.formId === this.detailForm.formId) {
+            this.configDetailList.splice(index, 1, this.detailForm)
+          }
+        })
+      }
+      this.detailForm = []
+      this.updateConfigDialog = false
+    },
+    cancelUpdate() {
+      this.detailForm = []
+      this.updateConfigDialog = false
+    },
+    updateItem(row) {
+      this.updateConfigDialog = true
+      if (row.id !== '') {
+        this.configDetailList.forEach(item => {
+          if (item.id === row.id) {
+            this.detailForm = item
+          }
+        })
+      } else if (row.formId !== '') {
+        this.configDetailList.forEach(item => {
+          if (item.formId === row.formId) {
+            this.detailForm = item
+          }
+        })
+      }
+    },
+    /**
+       * 查询题目类别、题型、难度
+       */
+    searchInline() {
+      searchCategoryTree().then(result => {
+        const body = result.body
+        this.categoryTree = body.treeData
+        getTreeList(this.categoryTree, this.categoryList)
+      })
+      const params = {
+        name: '',
+        pageSize: 1000000,
+        pageNum: 1
+      }
+      selectType(params).then(result => {
+        const body = result.body
+        this.typeList = body.dataList
+      })
+      const params2 = {
+        name: '题目难度',
+        category: '题目难度',
+        pageSize: 1000000,
+        pageNum: 1
+      }
+      selectDifficult(params2).then(result => {
+        const body = result.body
+        this.difficultList = body.dictionaries.dataList
+      })
+      this.form.id = this.$route.params.id
+      this.form.name = this.$route.params.name
+      this.form.remark = this.$route.params.remark
+      this.form.difficult = this.$route.params.difficult
+      this.form.version = this.$route.params.version
+      this.configDetailList = this.$route.params.configDetailList
+    },
     /**
        * 对表格多选项进行判定，成则跳转至修改页面
        */
     updateCheck() {
-      // eslint-disable-next-line eqeqeq
       if (this.multipleSelection.length !== 1) {
         this.$message({
           type: 'warning',
           message: '请选择单个修改选项'
         })
       } else {
-        this.updateConfigDialog = true
+        this.updateItem(this.multipleSelection[0])
       }
     },
     /**
        * 对表格多选项进行判定，成功则删除
        */
     deleteCheck() {
-      // eslint-disable-next-line eqeqeq
       if (this.multipleSelection.length === 0) {
         this.$message({
           type: 'warning',
@@ -154,6 +385,22 @@ export default {
           type: 'warning'
         })
           .then(() => {
+            this.multipleSelection.forEach(item => {
+              this.configDetailList.forEach((config, index, arry) => {
+                if (item.id !== '') {
+                  if (item.id === config.id) {
+                    arry.splice(index, 1)
+                    this.deleteConfigDetailList.push({
+                      id: item.id
+                    })
+                  }
+                } else if (item.formId !== '') {
+                  if (item.formId === config.formId) {
+                    arry.splice(index, 1)
+                  }
+                }
+              })
+            })
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -167,20 +414,26 @@ export default {
           })
       }
     },
-    queryData() {
-      this.total = this.types.length
-    },
-    /**
-       * 路由跳转
-       */
-    onSubmit() {
-      console.log('submit!')
-    },
     save() {
-      this.$router.push({
-        name: 'Config'
+      const params = {
+        id: this.form.id,
+        name: this.form.name,
+        status: this.form.status,
+        remark: this.form.remark,
+        difficult: this.form.difficult,
+        configDetailList: this.configDetailList,
+        version: this.form.version,
+        deleteConfigDetailList: this.deleteConfigDetailList
+      }
+      update(params).then(() => {
+        this.$router.push({
+          name: 'Config'
+        })
+        this.$message('操作成功')
+      }).catch(() => {
+        this.$message('操作失败')
       })
-      this.$message('操作成功')
+      console.log(params)
     },
     close() {
       this.$router.push({
@@ -193,19 +446,32 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
-    updateItem() {
-      this.updateConfigDialog = true
-    },
     /**
        * 删除信息
        */
-    deleteItem() {
+    deleteDetail(row) {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
+          if (this.detailForm.id !== '') {
+            this.configDetailList.forEach((item, index, arry) => {
+              if (item.id === row.id) {
+                arry.splice(index, 1)
+                this.deleteConfigDetailList.push({
+                  id: item.id
+                })
+              }
+            })
+          } else if (this.detailForm.formId !== '') {
+            this.configDetailList.forEach((item, index, arry) => {
+              if (item.formId === row.formId) {
+                arry.splice(index, 1)
+              }
+            })
+          }
           this.$message({
             type: 'success',
             message: '删除成功!'

@@ -38,6 +38,11 @@
                 {{ scope.row.name }}
               </template>
             </el-table-column>
+            <el-table-column prop="remark" label="属性" show-overflow-tooltip>
+              <template slot-scope="scope">
+                {{ scope.row.attribute }}
+              </template>
+            </el-table-column>
             <el-table-column prop="remark" label="备注" show-overflow-tooltip>
               <template slot-scope="scope">
                 {{ scope.row.remark }}
@@ -45,7 +50,7 @@
             </el-table-column>
             <el-table-column prop="updatedTime" label="更新时间">
               <template slot-scope="scope">
-                {{ scope.row.updatedTime }}
+                {{ scope.row.updatedTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}
               </template>
             </el-table-column>
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
@@ -82,9 +87,15 @@
 <script>
 import Pagination from '@/components/Pagination'
 import { select, deleteList, selectById } from '@/api/basedata/type'
+import { parseTime } from '@/utils/index'
 export default {
   name: 'App',
   components: { Pagination },
+  filters: {
+    parseUserTime(time, cFormat) {
+      return parseTime(time, cFormat)
+    }
+  },
   data() {
     return {
       /**
@@ -106,15 +117,7 @@ export default {
       /**
          * 待确认字段
          */
-      multipleSelection: [],
-      /**
-         * 初始显示的页数
-         */
-      currentPage1: 1,
-      currentPage2: 2,
-      currentPage3: 3,
-      currentPage4: 4,
-      dynamicTags: ['标签一', '标签二', '标签三']
+      multipleSelection: []
     }
   },
   created() {
@@ -142,7 +145,6 @@ export default {
      * 对表格多选项进行判定，成则跳转至修改页面
      */
     updateCheck() {
-      // eslint-disable-next-line eqeqeq
       if (this.multipleSelection.length !== 1) {
         this.$message({
           type: 'warning',
@@ -157,6 +159,7 @@ export default {
             params: {
               id: body.id,
               name: body.name,
+              attribute: body.attribute,
               status: body.status,
               version: body.version,
               remark: body.remark
@@ -240,7 +243,8 @@ export default {
             name: body.name,
             status: body.status,
             version: body.version,
-            remark: body.remark
+            remark: body.remark,
+            attribute: body.attribute
           }
         })
       }).catch(() => {
