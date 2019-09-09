@@ -191,9 +191,6 @@ export default {
             trigger: 'blur'
           }
         ],
-        parent: [
-          { required: true, message: '请选择上级部门', trigger: 'blur' }
-        ],
         company: [
           { required: true, message: '请选择所属公司', trigger: 'blur' }
         ]
@@ -205,7 +202,7 @@ export default {
       /**
 			 * 上级部门下拉框选项
 			 */
-      parents: [{ name: '无', id: 1 }],
+      parents: [],
       companys: []
     }
   },

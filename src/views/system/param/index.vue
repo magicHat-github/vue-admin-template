@@ -75,7 +75,7 @@
               <template slot-scope="scope">{{ scope.row.value }}</template>
             </el-table-column>
             <el-table-column prop="updatedTime" label="更新时间" align="center">
-              <template slot-scope="scope">{{ scope.row.updatedTime }}</template>
+              <template slot-scope="scope">{{ scope.row.updatedTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
             </el-table-column>
             <el-table-column class-name="status-col" prop="status" label="启用标记" sortable="true" align="center">
               <template slot-scope="scope">
@@ -106,9 +106,15 @@
 // import { log } from 'util'
 import Pagination from '@/components/Pagination'
 import { select, searchItem, searchTree, deleteList } from '@/api/system/param'
+import { parseTime } from '@/utils'
 export default {
   name: 'Param',
   components: { Pagination },
+  filters: {
+    parseUserTime(time, cFormat) {
+      return parseTime(time, cFormat)
+    }
+  },
   data() {
     return {
       //  参数记录列表，用于页面显示区域渲染数据

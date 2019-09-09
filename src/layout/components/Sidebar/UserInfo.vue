@@ -2,17 +2,17 @@
   <div class="sidebar-avator-container" :class="{'collapse':collapse}">
     <div class="avatar">
       <div class="avatar-wrapper">
-        <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+        <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar" alt="用户头像">
       </div>
       <div class="user-info">
-        <span class="name">管理员</span>
+        <span class="name">{{ name }}</span>
         <div class="status"><div class="dot" /><span class="value">在线</span></div>
       </div>
     </div>
     <div class="search">
-      <el-input v-model="keyword" size="small" placeholder="搜索">
+      <el-autocomplete v-model="keyword" :fetch-suggestions="querySearch" size="small" placeholder="搜索菜单" @select="handleSelect">
         <i slot="suffix" class="el-input__icon el-icon-search" />
-      </el-input>
+      </el-autocomplete>
     </div>
   </div>
 </template>
@@ -34,8 +34,26 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'avatar'
+      'avatar',
+      'name',
+      'routers'
     ])
+  },
+  methods: {
+    querySearch(queryString, cb) {
+      const list = this.routers
+      const results = queryString ? list.filter(this.createFilter(queryString)) : list
+      cb(results)
+    },
+    createFilter(queryString) {
+      return (item) => {
+        return (item.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
+    },
+    handleSelect(item) {
+      console.log('查询结果')
+      console.log(item)
+    }
   }
 }
 </script>

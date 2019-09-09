@@ -86,7 +86,7 @@ module.exports = {
       },
       // 考试微服务路由配置
       '/boss/bes/exam': {
-        target: `http://140.143.10.22:8061`,
+        target: `http://localhost:8726`,
         changeOrigin: true,
         pathRewrite: {
           '^/boss/bes/exam': ''

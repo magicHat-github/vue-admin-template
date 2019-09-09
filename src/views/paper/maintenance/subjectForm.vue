@@ -9,7 +9,7 @@
     :close-on-press-escape="false"
   >
     <div class="dialog-content">
-      <el-form ref="subjectData" :model="subjectData" :rules="subjectRule" label-width="80px">
+      <el-form ref="subjectData" :model="subjectData" :rules="subjectRule" label-width="80px" class="formClass">
         <el-row>
           <el-col v-if="dialogStatus" :span="12">
             <el-form-item label="题目类型" prop="category">
@@ -275,3 +275,8 @@ export default {
   }
 }
 </script>
+<style>
+.formClass{
+  width: 100%;
+}
+</style>
