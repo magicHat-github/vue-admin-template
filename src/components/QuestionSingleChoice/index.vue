@@ -3,7 +3,14 @@
     <label><span>{{ questionIndex + 1 }}.</span><span style="margin-right: 5px;">({{ questionType }})</span><span>{{ questionDetail }}</span></label>
     <div class="answer">
       <el-radio-group v-model="userAnswerCache">
-        <el-radio v-for="(answerItem, answerIndex) in questionAnswer" :key="answerIndex" :label="answerItem.id">{{ optionList[answerIndex] }}.{{ answerItem.answer }}</el-radio>
+        <el-radio
+          v-for="(answerItem, answerIndex) in questionAnswer"
+          :key="answerIndex"
+          :label="answerItem.id"
+          :disabled="subjectDisable"
+        >
+          <span class="answerText"><span style="margin-right: 5px;">{{ optionList[answerIndex] }}.</span>{{ answerItem.answer }}</span>
+        </el-radio>
       </el-radio-group>
     </div>
   </div>
@@ -14,7 +21,7 @@ import { optionList } from '@/utils'
  * 填空题组件
  */
 export default {
-  name: 'QuestionFillBlank',
+  name: 'QuestionSingleChoice',
   props: {
     /**
      * 题号
@@ -63,6 +70,22 @@ export default {
       type: Array,
       require: true,
       default: null
+    },
+    /**
+     * 是否显示正确答案
+     */
+    showAnswer: {
+      type: Boolean,
+      require: false,
+      default: false
+    },
+    /**
+     * 试题禁止操作
+     */
+    subjectDisable: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
@@ -80,6 +103,9 @@ export default {
         questionId: this.questionId,
         userAnswer: val
       })
+    },
+    showAnswer(val) {
+      this.userAnswerCache = val ? this.userAnswer : null
     }
   }
 }
@@ -88,5 +114,11 @@ export default {
 .answer{
   margin-top: 5px;
   margin-left: 10px;
+}
+.answerText{
+  word-break: break-all;
+  white-space: normal;
+  line-height: 1.5;
+  letter-spacing: 1.5px;
 }
 </style>

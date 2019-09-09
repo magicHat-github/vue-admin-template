@@ -9,7 +9,7 @@ import { baseDataRequestApi } from '@/utils/requestUtil'
  * @param {*} params 参数
  */
 export function selectConfigs(params) {
-  return baseDataRequestApi('/paper/configs', 'post', params)
+  return baseDataRequestApi('/configs', 'post', params)
 }
 
 /**
@@ -17,5 +17,13 @@ export function selectConfigs(params) {
  * @param {*} params 参数
  */
 export function selectItemsByConfigId(params) {
-  return baseDataRequestApi('/paper/items', 'post', params)
+  return baseDataRequestApi('/config/items', 'post', params)
+}
+
+export function deleteList(params) {
+  return baseDataRequestApi('/config', 'delete', params)
+}
+
+export function insert(params) {
+  return baseDataRequestApi('/config', 'post', params)
 }

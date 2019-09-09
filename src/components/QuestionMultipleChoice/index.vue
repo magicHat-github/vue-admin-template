@@ -3,17 +3,23 @@
     <label><span>{{ questionIndex + 1 }}.</span><span style="margin-right: 5px;">({{ questionType }})</span><span>{{ questionDetail }}</span></label>
     <div class="answer">
       <el-checkbox-group v-model="userAnswerCache">
-        <el-checkbox v-for="(answerItem, answerIndex) in questionAnswer" :key="answerIndex" :label="answerItem.answer" />
+        <el-checkbox
+          v-for="(answerItem, answerIndex) in questionAnswer"
+          :key="answerIndex"
+          :label="answerItem.id"
+          :disabled="subjectDisable"
+        >{{ optionList[answerIndex] }}.{{ answerItem.answer }}</el-checkbox>
       </el-checkbox-group>
     </div>
   </div>
 </template>
 <script>
+import { optionList } from '@/utils'
 /**
  * 填空题组件
  */
 export default {
-  name: 'QuestionFillBlank',
+  name: 'QuestionMultipleChoice',
   props: {
     /**
      * 题号
@@ -51,9 +57,9 @@ export default {
      * 用户答案
      */
     userAnswer: {
-      type: String,
+      type: Array,
       require: true,
-      default: ''
+      default: null
     },
     /**
      * 可选答案
@@ -62,11 +68,28 @@ export default {
       type: Array,
       require: true,
       default: null
+    },
+    /**
+     * 是否显示正确答案
+     */
+    showAnswer: {
+      type: Boolean,
+      require: false,
+      default: false
+    },
+    /**
+     * 试题禁止操作
+     */
+    subjectDisable: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data() {
     return {
-      userAnswerCache: []
+      userAnswerCache: [],
+      optionList: optionList
     }
   },
   watch: {
@@ -78,6 +101,9 @@ export default {
         questionId: this.questionId,
         userAnswer: val
       })
+    },
+    showAnswer(val) {
+      this.userAnswerCache = val ? this.userAnswer : null
     }
   }
 }

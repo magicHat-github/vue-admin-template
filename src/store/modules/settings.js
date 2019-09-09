@@ -6,7 +6,6 @@ const { tagsView, showUserInfo, showSettings, fixedHeader, sidebarLogo } = defau
 const state = {
   theme: variables.theme,
   showUserInfo: showUserInfo,
-  showUserInfoCache: showUserInfo === true,
   tagsView: tagsView,
   showSettings: showSettings,
   fixedHeader: fixedHeader,

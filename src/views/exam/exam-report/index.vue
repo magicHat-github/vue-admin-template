@@ -30,7 +30,7 @@
       <div class="edit">
         <el-button type="text" class="el-icon-question" style="font-size:16px;margin-bottom:0px;" @click="detail"> 查看详情</el-button>
       </div>
-      <el-table :data="tableData" stripe size="mini" border fit>
+      <el-table :data="tableData" stripe size="mini" border fit @selection-change="handleSelectionChange">
         <el-table-column type="selection" />
         <el-table-column prop="examName" label="考试名" />
         <el-table-column prop="examSessionName" label="场次" />
@@ -85,6 +85,10 @@ export default {
        */
       tableData: [],
       /**
+       * 复选框的选择列表
+       */
+      selectList: '',
+      /**
        * 分页相关
        */
       layout: layout,
@@ -122,10 +126,38 @@ export default {
       console.log(val)
     },
     /**
+     * 表格复选框组的监听事件
+     */
+    handleSelectionChange(val) {
+      this.selectList = val
+    },
+    /**
      * 查看详情界面
      */
     detail(row) {
-      console.log(row)
+      const id = row.id
+      if (!id) {
+        // 菜单栏查询详情
+        const selectNum = this.selectList.length
+        if (selectNum > 1) {
+          this.showMessage('warning', '你选择太多了')
+        } else if (selectNum === 1) {
+          const selectId = this.selectList[0].id
+          // 跳转到详情界面
+          this.$router.push({ name: 'ReportDetail', params: { recordId: selectId }})
+        } else {
+          this.showMessage('info', '你没有选择任何的一行')
+        }
+      } else {
+        // 侧边栏查看详情
+        this.$router.push({ name: 'ReportDetail', params: { recordId: id }})
+      }
+    },
+    showMessage(type, message) {
+      this.$message({
+        type: type,
+        message: message
+      })
     }
   }
 }
