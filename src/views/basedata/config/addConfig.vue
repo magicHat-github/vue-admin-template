@@ -22,6 +22,16 @@
             <el-radio v-model="form.status" label="2">否</el-radio>
           </el-col>
         </el-form-item>
+        <el-form-item label="难度">
+          <el-select v-model="form.difficult" filterable placeholder="请选择">
+            <el-option
+              v-for="difficult in difficultList"
+              :key="difficult.value"
+              :label="difficult.value"
+              :value="difficult.id"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="备注信息">
           <el-col :span="8">
             <el-input
@@ -47,7 +57,7 @@
                 <el-form-item label="题目类别">
                   <el-cascader
                     v-model="detailForm.categoryId"
-                    :options="categoryList"
+                    :options="categoryTree"
                     :props="{ checkStrictly: true }"
                     :show-all-levels="false"
                     clearable
@@ -95,7 +105,7 @@
                 <el-form-item label="题目类别">
                   <el-cascader
                     v-model="detailForm.categoryId"
-                    :options="categoryList"
+                    :options="categoryTree"
                     :props="{ checkStrictly: true }"
                     :show-all-levels="false"
                     clearable
@@ -147,10 +157,16 @@
               @selection-change="handleSelectionChange"
             >
               <el-table-column type="selection" width="55" fixed="left" />
-              <el-table-column prop="categoryId" label="题目类别" />
-              <el-table-column prop="subjectTypeId" label="题型" />
+              <el-table-column prop="categoryId" label="题目类别">
+                <template slot-scope="scope">{{ scope.row.categoryId | userIdToValueConversionFilter(categoryList) }}</template>
+              </el-table-column>
+              <el-table-column prop="subjectTypeId" label="题型">
+                <template slot-scope="scope">{{ scope.row.subjectTypeId | userIdToNameConversionFilter(typeList) }}</template>
+              </el-table-column>
               <el-table-column prop="num" label="题目数量" />
-              <el-table-column prop="difficult" label="题目难度" />
+              <el-table-column prop="difficult" label="题目难度">
+                <template slot-scope="scope">{{ scope.row.difficult | userIdToNameConversionFilter(difficultList) }}</template>
+              </el-table-column>
               <el-table-column prop="score" label="题目分值" />
               <el-table-column label="操作">
                 <template slot-scope="scope">
@@ -177,19 +193,29 @@
 <script>
 import { searchCategoryTree, selectType, selectDifficult } from '@/api/basedata/subject'
 import { insert } from '@/api/basedata/config'
-// import { idToValueConversionFilter } from '@/utils/index'
+import { idToNameConversionFilter, getTreeList, idToValueConversionFilter } from '@/utils/index'
 export default {
+  filters: {
+    userIdToNameConversionFilter(target, targetList) {
+      return idToNameConversionFilter(target, targetList)
+    },
+    userIdToValueConversionFilter(target, targetList) {
+      return idToValueConversionFilter(target, targetList)
+    }
+  },
   data() {
     return {
-      categoryList: null,
+      categoryTree: null,
+      categoryList: [],
       typeList: null,
       difficultList: null,
       addConfigDialog: false,
       updateConfigDialog: false,
       form: {
         name: '',
-        remark: '随机',
-        status: '1'
+        remark: '',
+        status: '1',
+        difficult: ''
       },
       detailForm: {
         formId: '',
@@ -210,23 +236,6 @@ export default {
       },
       configDetailList: [],
       detailCount: 0,
-      // configDetailList: [
-      //   {
-      //     category: '1',
-      //     type: '1',
-      //     num: '1',
-      //     difficult: '1',
-      //     score: '1'
-      //   },
-      //   {
-      //     category: '2',
-      //     type: '1',
-      //     num: '1',
-      //     difficult: '1',
-      //     score: '1'
-      //   }
-      // ],
-
       /**
        * 待确认字段
        */
@@ -250,7 +259,6 @@ export default {
       this.detailForm = []
       this.addConfigDialog = false
       this.detailCount++
-      console.log(this.configDetailList)
     },
     cancelAdd() {
       this.detailForm = []
@@ -299,7 +307,8 @@ export default {
     searchInline() {
       searchCategoryTree().then(result => {
         const body = result.body
-        this.categoryList = body.treeData
+        this.categoryTree = body.treeData
+        getTreeList(this.categoryTree, this.categoryList)
       })
       const params = {
         name: '',
@@ -319,7 +328,6 @@ export default {
       selectDifficult(params2).then(result => {
         const body = result.body
         this.difficultList = body.dictionaries.dataList
-        console.log(this.difficultList)
       })
     },
     /**
@@ -382,9 +390,9 @@ export default {
         name: this.form.name,
         status: this.form.status,
         remark: this.form.remark,
+        difficult: this.form.difficult,
         configDetailList: this.configDetailList
       }
-      console.log(params)
       insert(params).then(() => {
         this.$router.push({
           name: 'Config'

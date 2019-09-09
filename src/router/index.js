@@ -135,7 +135,7 @@ export const constantRoutes = [
         name: 'AddType',
         hidden: true,
         component: () => import('@/views/basedata/type/addType'),
-        meta: { title: '修改题目类型', icon: 'tree' }
+        meta: { title: '增加题目类型', icon: 'tree' }
       },
       {
         path: 'updateType',

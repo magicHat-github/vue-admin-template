@@ -15,6 +15,16 @@
             <el-input v-model="form.name" />
           </el-col>
         </el-form-item>
+        <el-form-item label="属性">
+          <el-select v-model="form.attribute" placeholder="请选择">
+            <el-option
+              v-for="item in attributeList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
         <!--复选按钮 -->
         <el-form-item label="是否启用" prop="status">
           <el-col :offset="1" :span="8">
@@ -46,14 +56,38 @@
 
 <script>
 import { insert } from '@/api/basedata/type'
+import { questionType } from '@/utils/subjectType'
 export default {
   data() {
     return {
       form: {
         name: '',
         remark: '',
-        status: '1'
+        status: '1',
+        attribute: ''
       },
+      attributeList: [
+        {
+          value: questionType.QUESTION_FILL_BLANK,
+          label: questionType.QUESTION_FILL_BLANK
+        },
+        {
+          value: questionType.QUESTION_JUDGE,
+          label: questionType.QUESTION_JUDGE
+        },
+        {
+          value: questionType.QUESTION_MULTIPLE_CHOICE,
+          label: questionType.QUESTION_MULTIPLE_CHOICE
+        },
+        {
+          value: questionType.QUESTION_SINGLE_CHOICE,
+          label: questionType.QUESTION_SINGLE_CHOICE
+        },
+        {
+          value: questionType.QUESTION_SUBJECTIVE,
+          label: questionType.QUESTION_SUBJECTIVE
+        }
+      ],
       rules: {
         name: [
           { required: true, message: '请输入题目类型', trigger: 'blur' }

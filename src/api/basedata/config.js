@@ -27,3 +27,10 @@ export function deleteList(params) {
 export function insert(params) {
   return baseDataRequestApi('/config', 'post', params)
 }
+export function searchById(params) {
+  return baseDataRequestApi('/config/searchById', 'post', params)
+}
+
+export function update(params) {
+  return baseDataRequestApi('/config', 'put', params)
+}
