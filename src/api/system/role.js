@@ -23,8 +23,8 @@ export function fetchRole(params) {
  * 查询角色增加/修改界面要显示的信息
  * @param {*} params 查询的VO
  */
-export function fetchRoleRelated(params) {
-  return systemRequestApi('/role/related', 'POST', params)
+export function fetchRoleBeforeModify(params) {
+  return systemRequestApi('/role/modification', 'POST', params)
 }
 
 /**
