@@ -379,7 +379,8 @@ export default {
             this.multipleSelection.forEach(item => {
               const deleteData = {
                 id: item.id,
-                version: item.version
+                version: item.version,
+                belongedCompanyId: item.belongedCompanyId
               }
               params.dataList.push(deleteData)
             })
@@ -406,7 +407,8 @@ export default {
           }
           const deleteData = {
             id: row.id,
-            version: row.version
+            version: row.version,
+            belongedCompanyId: row.belongedCompanyId
           }
           params.dataList.push(deleteData)
           this.deleteUser(params)

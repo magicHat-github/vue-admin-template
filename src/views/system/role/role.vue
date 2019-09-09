@@ -17,7 +17,12 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree v-loading="loading" :data="treeData" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              v-loading="loading"
+              :data="treeData"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -129,7 +134,7 @@
                   class="itemAction"
                   type="danger"
                   icon="el-icon-delete"
-                  @click="deleteSpecificUser(row)"
+                  @click="deleteSpecificRole(row)"
                 />
                 <el-link
                   class="itemAction"
@@ -398,7 +403,8 @@ export default {
             this.multipleSelection.forEach(item => {
               const deleteData = {
                 id: item.id,
-                version: item.version
+                version: item.version,
+                belongedCompanyId: item.belongedCompanyId
               }
               params.dataList.push(deleteData)
             })
@@ -425,7 +431,8 @@ export default {
           }
           const deleteData = {
             id: row.id,
-            version: row.version
+            version: row.version,
+            belongedCompanyId: row.belongedCompanyId
           }
           params.dataList.push(deleteData)
           this.deleteRole(params)
@@ -442,6 +449,7 @@ export default {
      * 删除信息
      */
     deleteRole(params) {
+      console.log('this is deleted params')
       console.log(params.idList)
       dropRole(params)
         .then(result => {
