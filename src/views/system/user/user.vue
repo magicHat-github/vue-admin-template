@@ -47,6 +47,7 @@
               <el-select
                 v-model="formInline.role"
                 value-key="id"
+                clearable
                 filterable
                 placeholder="请选择"
                 size="mini"
@@ -219,7 +220,7 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      // 试卷总数
+      // 用户数据总数
       total: 0,
       loading: true
     }
@@ -378,7 +379,8 @@ export default {
             this.multipleSelection.forEach(item => {
               const deleteData = {
                 id: item.id,
-                version: item.version
+                version: item.version,
+                belongedCompanyId: item.belongedCompanyId
               }
               params.dataList.push(deleteData)
             })
@@ -405,7 +407,8 @@ export default {
           }
           const deleteData = {
             id: row.id,
-            version: row.version
+            version: row.version,
+            belongedCompanyId: row.belongedCompanyId
           }
           params.dataList.push(deleteData)
           this.deleteUser(params)

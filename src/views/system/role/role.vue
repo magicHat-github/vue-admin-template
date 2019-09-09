@@ -17,7 +17,12 @@
           </el-header>
           <!-- 树 -->
           <el-main>
-            <el-tree :data="organizationTreeVO" :props="defaultProps" @node-click="handleNodeClick" />
+            <el-tree
+              v-loading="loading"
+              :data="treeData"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+            />
           </el-main>
         </el-container>
       </el-aside>
@@ -35,7 +40,7 @@
             </el-form-item>
             <!-- 查询按钮 -->
             <el-form-item>
-              <el-button size="mini" type="primary">查询</el-button>
+              <el-button size="mini" type="primary" @click="queryData">查询</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -100,6 +105,7 @@
           <!-- 数据显示表单 -->
           <el-table
             ref="multipleTable"
+            v-loading="loading"
             :data="roles"
             tooltip-effect="dark"
             stripe
@@ -110,31 +116,31 @@
           >
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column prop="name" label="角色" align="center" />
-            <el-table-column prop="code" label="角色代号" align="center" />
+            <el-table-column prop="code" label="角色编号" align="center" />
             <el-table-column prop="remark" label="角色备注" show-overflow-tooltip align="center" />
             <el-table-column prop="companyName" label="所属公司" align="center" />
-            <el-table-column prop="organizationName" label="所属机构" align="center" />
+            <el-table-column prop="orgName" label="所属机构" align="center" />
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
                 <el-tag
-                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                  :type="scope.row.status === 1 ? 'primary' : 'info'"
                 >{{ scope.row.status == 1 ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="操作" width="160" align="center">
-              <template slot-scope="scope">
+              <template slot-scope="{ row }">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addRole" />
                 <el-link
                   class="itemAction"
                   type="danger"
                   icon="el-icon-delete"
-                  @click="deleteRole"
+                  @click="deleteSpecificRole(row)"
                 />
                 <el-link
                   class="itemAction"
                   type="warning"
                   icon="el-icon-edit"
-                  @click="updateRole(scope.row)"
+                  @click="updateRole(row)"
                 />
                 <el-link
                   class="itemAction"
@@ -158,7 +164,7 @@
               :total="total"
               :page.sync="page.pageNumber"
               :limit.sync="page.size"
-              @click="queryData"
+              @pagination="queryData"
             />
           </div>
         </el-card>
@@ -170,6 +176,7 @@
 <script>
 // 引入分页组件
 import Pagination from '@/components/Pagination'
+import { fetchRole, dropRole } from '@/api/system/role'
 // import { log } from 'util'
 export default {
   name: 'App',
@@ -179,48 +186,7 @@ export default {
       /**
        * 树结构数据
        */
-      organizationTreeVO: [
-        {
-          label: '组织机构 1',
-          children: [
-            {
-              label: '公司 1-1'
-            }
-          ]
-        },
-        {
-          label: '组织机构 2',
-          children: [
-            {
-              label: '公司 2-1'
-            },
-            {
-              label: '公司 2-2'
-            }
-          ]
-        },
-        {
-          label: '组织机构 3',
-          children: [
-            {
-              label: '公司 3-1',
-              children: [
-                {
-                  label: '这是假数据 3-1-1'
-                }
-              ]
-            },
-            {
-              label: '公司 3-2',
-              children: [
-                {
-                  label: '这是假数据 3-2-1'
-                }
-              ]
-            }
-          ]
-        }
-      ],
+      treeData: [],
       /**
        * 树结构的默认属性
        */
@@ -261,50 +227,9 @@ export default {
       },
 
       /**
-       * 角色管理
+       * 角色数据
        */
-      roles: [
-        {
-          name: 'name1',
-          code: 'code1',
-          remark: '傻瓜许林瑜',
-          companyName: '福报厂',
-          organizationName: '码农基地',
-          status: '1'
-        },
-        {
-          name: 'name1',
-          code: 'code1',
-          remark: '傻瓜许林瑜',
-          companyName: '福报厂',
-          organizationName: '码农基地',
-          status: '1'
-        },
-        {
-          name: 'name1',
-          code: 'code1',
-          remark: '傻瓜许林瑜',
-          companyName: '福报厂',
-          organizationName: '码农基地',
-          status: '1'
-        },
-        {
-          name: 'name1',
-          code: 'code1',
-          remark: '傻瓜许林瑜',
-          companyName: '福报厂',
-          organizationName: '码农基地',
-          status: '0'
-        },
-        {
-          name: 'name1',
-          code: 'code1',
-          remark: '傻瓜许林瑜',
-          companyName: '福报厂',
-          organizationName: '码农基地',
-          status: '0'
-        }
-      ],
+      roles: [],
 
       /**
        * 待确认字段
@@ -334,8 +259,9 @@ export default {
         size: 5,
         pageNumber: 1
       },
-      // 试卷总数
-      total: 0
+      // 用户数据总数
+      total: 0,
+      loading: true
     }
   },
   created() {
@@ -346,7 +272,60 @@ export default {
      * 查询数据
      */
     queryData() {
-      this.total = this.roles.length
+      this.loading = true
+      // 填入表单参数
+      const params = {
+        roleName: this.formInline.roleName,
+        pageSize: this.page.size,
+        pageNum: this.page.pageNumber
+      }
+      console.log('this is formInline params')
+      console.log(params)
+      fetchRole(params).then(result => {
+        const body = result.body
+        console.log('this is response data')
+        console.log(body)
+        // 转换树结构的数据
+        const tree = body.tree.treeNodeList
+        this.treeData = this.transDataToTree(tree)
+        console.log('this is treeData')
+        console.log(this.treeData)
+        // 转换表格数据
+        this.roles = body.dataList
+        console.log('this is table data')
+        console.log(this.roles)
+        // 分页信息
+        this.total = parseInt(body.dataCount)
+        // 加载动画
+        this.loading = false
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    transDataToTree(arr) {
+      return arr.map(element => {
+        return this.getChildren(element)
+      })
+    },
+    /**
+     * 查询树结构的方法
+     */
+    getChildren(element) {
+      if (!element.childList) {
+        const re = {
+          label: element.name,
+          id: element.id,
+          children: null
+        }
+        return re
+      } else {
+        return {
+          label: element.name,
+          id: element.id,
+          children: this.transDataToTree(element.childList)
+        }
+      }
     },
     /**
      * 树结构的点击事件
@@ -412,29 +391,75 @@ export default {
         })
       }
       if (this.multipleSelection.length > 0) {
-        this.deleteRole()
+        this.$confirm('是否要删除选定信息', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(() => {
+            const params = {
+              dataList: []
+            }
+            this.multipleSelection.forEach(item => {
+              const deleteData = {
+                id: item.id,
+                version: item.version,
+                belongedCompanyId: item.belongedCompanyId
+              }
+              params.dataList.push(deleteData)
+            })
+            this.deleteRole(params)
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
       }
     },
-
-    /**
-     * 删除信息
-     */
-    deleteRole() {
+    deleteSpecificRole(row) {
+      console.log(row)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+          const params = {
+            dataList: []
+          }
+          const deleteData = {
+            id: row.id,
+            version: row.version,
+            belongedCompanyId: row.belongedCompanyId
+          }
+          params.dataList.push(deleteData)
+          this.deleteRole(params)
         })
         .catch(() => {
           this.$message({
             type: 'info',
             message: '已取消删除'
+          })
+        })
+    },
+
+    /**
+     * 删除信息
+     */
+    deleteRole(params) {
+      console.log('this is deleted params')
+      console.log(params.idList)
+      dropRole(params)
+        .then(result => {
+          this.$message(result.head.msg)
+          this.queryData()
+        })
+        .catch(err => {
+          this.$message({
+            type: 'error',
+            message: `错误${err}`
           })
         })
     },
