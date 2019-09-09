@@ -10,9 +10,9 @@
       </div>
     </div>
     <div class="search">
-      <el-input v-model="keyword" :fetch-suggestions="querySearch" size="small" placeholder="搜索菜单">
+      <el-autocomplete v-model="keyword" :fetch-suggestions="querySearch" size="small" placeholder="搜索菜单" @select="handleSelect">
         <i slot="suffix" class="el-input__icon el-icon-search" />
-      </el-input>
+      </el-autocomplete>
     </div>
   </div>
 </template>
@@ -35,21 +35,24 @@ export default {
   computed: {
     ...mapGetters([
       'avatar',
-      'name'
+      'name',
+      'routers'
     ])
   },
   methods: {
     querySearch(queryString, cb) {
-      console.log(this.$route.router)
-      // const list = this.restaurants
-      // const results = queryString ? list.filter(this.createFilter(queryString)) : list
-      // cb(results)
-      cb()
+      const list = this.routers
+      const results = queryString ? list.filter(this.createFilter(queryString)) : list
+      cb(results)
     },
     createFilter(queryString) {
-      return (restaurant) => {
-        return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      return (item) => {
+        return (item.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
       }
+    },
+    handleSelect(item) {
+      console.log('查询结果')
+      console.log(item)
     }
   }
 }

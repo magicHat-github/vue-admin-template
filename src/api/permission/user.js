@@ -39,7 +39,7 @@ export function logout() {
   return permissionRequestApi('/logout', 'delete', body)
 }
 
-// 可以删除
+// 获取用户菜单
 export function getMenu(token) {
-  return permissionRequestApi('/menu', 'get', token)
+  return permissionRequestApi('/menu', 'post', token)
 }

@@ -1,12 +1,13 @@
 import { login, logout, getMenu } from '@/api/permission/user'
 import { getToken, setToken, removeToken, setCookies, getCookies, removeCookies } from '@/utils/auth'
 import { saveHead } from '@/utils/requestUtil'
-import { resetRouter } from '@/router'
+import router, { resetRouter } from '@/router'
 
 const state = {
   token: getToken(),
   name: '',
-  avatar: ''
+  avatar: '',
+  routers: []
 }
 
 const mutations = {
@@ -18,6 +19,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_ROUTERS: (state, avatar) => {
+    state.routers = avatar
   }
 }
 
@@ -51,16 +55,6 @@ const actions = {
     const info = JSON.parse(getCookies('userInfo'))
     commit('SET_NAME', info.name)
     commit('SET_AVATAR', info.avatar)
-    // return new Promise((resolve, reject) => {
-    //   getInfo(state.token).then(response => {
-    //     const data = response.body
-    //     commit('SET_NAME', 'Super Admin')
-    //     commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
-    //     resolve(data)
-    //   }).catch(error => {
-    //     reject(error)
-    //   })
-    // })
   },
 
   // 获取用户菜单
@@ -68,16 +62,17 @@ const actions = {
     return new Promise((resolve, reject) => {
       getMenu(state.token).then(response => {
         const data = response.body
-
         if (!data) {
-          reject('Verification failed, please Login again.')
+          reject('权限获取失败, 请联系管理员重新登录！')
         }
+        // 在这里进行路由转换
 
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
+        // 重新设置路由
+        resetRouter()
+        router.options.routes = data
+        router.addRoutes(data)
+        commit('SET_ROUTERS', data)
+        resolve()
       }).catch(error => {
         reject(error)
       })
