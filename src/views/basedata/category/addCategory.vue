@@ -53,7 +53,6 @@
 </template>
 
 <script>
-// eslint-disable-next-line no-unused-vars
 import { searchTree, insert } from '@/api/basedata/catetory'
 export default {
   data() {
@@ -91,7 +90,6 @@ export default {
       console.log('submit!')
     },
     save() {
-      // eslint-disable-next-line no-unused-vars
       const params = {
         name: this.form.name,
         parentId: this.form.parentId.pop(),

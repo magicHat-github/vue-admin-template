@@ -19,7 +19,6 @@
           <div>
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto">增加</el-link>
             <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteCheck">删除</el-link>
-            <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateCheck">修改</el-link>
             <el-link class="itemAction" type="primary" icon="el-icon-upload2" @click="updateItem">导入</el-link>
             <el-link class="itemAction" type="primary" icon="el-icon-download" @click="updateItem">导出</el-link>
           </div>

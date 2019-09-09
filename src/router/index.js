@@ -469,6 +469,13 @@ export const constantRoutes = [
         name: 'report',
         component: () => import('@/views/exam/exam-report/index'),
         meta: { title: '考试报表', icon: 'example' }
+      },
+      {
+        path: 'reportDetail',
+        name: 'ReportDetail',
+        component: () => import('@/views/exam/exam-report/details/index'),
+        meta: { title: '报表详情', icon: 'example' },
+        hidden: true
       }
     ]
   },

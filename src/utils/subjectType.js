@@ -38,17 +38,24 @@ export function subjectConversion(info, subjectCategoryList) {
       item.userAnswer = []
       item.answers.forEach(answer => {
         if (answer.rightAnswer === rightAnswerStatus.right) {
+          answer.rightAnswer = true
           item.userAnswer.push(answer.id)
+        } else {
+          answer.rightAnswer = false
         }
       })
     } else if (item.type === questionType.QUESTION_SINGLE_CHOICE) { // 多选题
       item.answers.forEach(answer => {
         if (answer.rightAnswer === rightAnswerStatus.right) {
+          answer.rightAnswer = true
           item.userAnswer = answer.id
+        } else {
+          answer.rightAnswer = false
         }
       })
     } else {
       item.userAnswer = item.answers[0].answer
+      item.answers[0].rightAnswer = true
     }
   })
   return info

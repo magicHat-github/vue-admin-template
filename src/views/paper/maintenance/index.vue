@@ -88,14 +88,18 @@
       :show-answer-switch="true"
       :show-disable-switch="disableSwitch"
       :paper-info="paperInfo"
+      :category-list="subjectCategoryList"
+      :paper-type-list="paperTypeList"
+      :paper-difficult-list="difficultList"
       :size="paperSize"
       @show-change="showChange"
+      @submitPaper="submitPaper"
     />
   </div>
 </template>
 
 <script>
-import { select, previewRequest, deletePaperRequest } from '@/api/paper/composition.js'
+import { select, previewRequest, deletePaperRequest, maintainPaperRequest } from '@/api/paper/composition.js'
 import { parseTime, idToValueConversionFilter, getIdByValue, constants } from '@/utils'
 import { searchByCategory } from '@/api/basedata/dictionary'
 import { subjectConversion } from '@/utils/subjectType'
@@ -326,6 +330,14 @@ export default {
       previewRequest(params).then(result => {
         const info = result.body
         this.paperInfo = subjectConversion(info, this.subjectCategoryList)
+        this.list.forEach(item => {
+          if (item.id === id) {
+            this.paperInfo.id = item.id
+            this.paperInfo.paperType = item.paperType
+            this.paperInfo.difficult = item.difficult
+            this.paperInfo.descript = item.descript
+          }
+        })
         this.paperDetailDialog = true
       })
     },
@@ -382,6 +394,30 @@ export default {
         type: type,
         message: message,
         duration: 3000
+      })
+    },
+    /**
+     * 提交修改的表单
+     * @param params
+     */
+    submitPaper(params) {
+      const notice = this.$notify({
+        title: '提示',
+        type: 'info',
+        message: '正在修改试卷...',
+        duration: 0
+      })
+      maintainPaperRequest(params).then(result => {
+        const success = result.head.code === code.SUCCESS
+        this.normalNotice(
+          notice,
+          '提示',
+          success ? 'success' : 'error',
+          success ? '修改成功！' : result.head.msg
+        )
+        this.fetchData()
+      }).catch(result => {
+        this.normalNotice(notice, '提示', 'error', result.msg)
       })
     }
   }
