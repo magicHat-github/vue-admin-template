@@ -282,9 +282,11 @@ export default {
           message: '请选择删除选项'
         })
       } else {
-        const params = { idList: [] }
+        const params = { dataList: [] }
         this.multipleSelection.forEach(item => {
-          params.idList.push(item.id)
+          const data = { id: item.id,
+            version: item.version }
+          params.dataList.push(data)
         })
         this.$confirm('是否要删除选定信息', '提示', {
           confirmButtonText: '确定',
@@ -292,15 +294,16 @@ export default {
           type: 'warning'
         })
           .then(() => {
-            deleteList(params).then(result => {
+            console.log(params)
+            deleteList(params).then(() => {
               this.$message({
                 type: 'success',
                 message: '删除成功!'
               })
-              this.select()
-            }).catch(result => {
+              this.queryData()
+            }).catch(() => {
               this.$message({
-                type: 'success',
+                type: 'warning',
                 message: '删除失败!'
               })
             })

@@ -50,7 +50,7 @@
               <template slot-scope="scope">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
                 <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
-                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem" />
+                <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem(scope.row.id,scope.row.version)" />
                 <el-link class="itemAction" type="success" icon="el-icon-view" @click="findConfigDetail(scope.row.id)" />
               </template>
             </el-table-column>
@@ -248,18 +248,30 @@ export default {
       })
     },
     /**
-       * 删除信息
-       */
-    deleteItem() {
+     * 删除信息
+     */
+    deleteItem(id, version) {
+      const params = { dataList: [] }
+      const data = { id: id,
+        version: version }
+      params.dataList.push(data)
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+          deleteList(params).then(() => {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.select()
+          }).catch(() => {
+            this.$message({
+              type: 'success',
+              message: '删除失败!'
+            })
           })
         })
         .catch(() => {

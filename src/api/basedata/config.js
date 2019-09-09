@@ -23,3 +23,7 @@ export function selectItemsByConfigId(params) {
 export function deleteList(params) {
   return baseDataRequestApi('/config', 'delete', params)
 }
+
+export function insert(params) {
+  return baseDataRequestApi('/config', 'post', params)
+}
