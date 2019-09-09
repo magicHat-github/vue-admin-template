@@ -9,7 +9,7 @@
           :label="answerItem.id"
           :disabled="subjectDisable"
         >
-          {{ optionList[answerIndex] }}.{{ answerItem.answer }}
+          <span class="answerText"><span style="margin-right: 5px;">{{ optionList[answerIndex] }}.</span>{{ answerItem.answer }}</span>
         </el-radio>
       </el-radio-group>
     </div>
@@ -21,7 +21,7 @@ import { optionList } from '@/utils'
  * 填空题组件
  */
 export default {
-  name: 'QuestionFillBlank',
+  name: 'QuestionSingleChoice',
   props: {
     /**
      * 题号
@@ -114,5 +114,11 @@ export default {
 .answer{
   margin-top: 5px;
   margin-left: 10px;
+}
+.answerText{
+  word-break: break-all;
+  white-space: normal;
+  line-height: 1.5;
+  letter-spacing: 1.5px;
 }
 </style>

@@ -81,13 +81,27 @@
       <pagination v-show="total>0" :total="total" :page.sync="page.pageNumber" :limit.sync="page.size" @pagination="fetchData" />
     </el-card>
     <!-- 试卷详情 -->
-    <paper-view :page-show="paperDetailDialog" :show-answer-switch="true" :paper-info="paperInfo" size="50%" @show-change="showChange" />
+    <paper-view
+      :page-title="pageTitle"
+      :paper-edit="paperEdit"
+      :page-show="paperDetailDialog"
+      :show-answer-switch="true"
+      :show-disable-switch="disableSwitch"
+      :paper-info="paperInfo"
+      :category-list="subjectCategoryList"
+      :paper-type-list="paperTypeList"
+      :paper-difficult-list="difficultList"
+      :size="paperSize"
+      @show-change="showChange"
+      @submitPaper="submitPaper"
+    />
   </div>
 </template>
 
 <script>
-import { select, previewRequest, deletePaperRequest } from '@/api/paper/composition.js'
-import { parseTime, idToValueConversionFilter, getIdByValue } from '@/utils'
+import { select, previewRequest, deletePaperRequest, maintainPaperRequest } from '@/api/paper/composition.js'
+import { parseTime, idToValueConversionFilter, getIdByValue, constants } from '@/utils'
+import { searchByCategory } from '@/api/basedata/dictionary'
 import { subjectConversion } from '@/utils/subjectType'
 import { code } from '@/utils/code' // 响应码
 import Pagination from '@/components/Pagination'
@@ -117,16 +131,20 @@ export default {
       searchData: {
         name: '',
         createdBy: '',
-        difficult: '简单',
+        difficult: '',
         comTime: ''
       },
       page: {
         size: 5,
         pageNumber: 1
       },
+      paperSize: '50%',
       paperInfo: {},
       paperDetailDialog: false,
       listLoading: false,
+      pageTitle: '',
+      paperEdit: false,
+      disableSwitch: false,
       multipleSelection: []
     }
   },
@@ -164,41 +182,15 @@ export default {
      * 初始获取全部试卷难度
      */
     getDifficultList() {
-      // TODO: 获取全部试卷难度
-      this.difficultList = [
-        {
-          id: '327071356621533183',
-          value: '困难'
-        },
-        {
-          id: '327071356621533182',
-          value: '中等'
-        },
-        {
-          id: '327071356621533184',
-          value: '简单'
-        }
-      ]
+      searchByCategory(constants.paperDifficult).then(result => {
+        this.difficultList = result.body
+      })
     },
     /**
      * 初始获取全部试卷类型
      */
     getPaperTypeList() {
-      // TODO：获取试卷类型
-      this.paperTypeList = [
-        {
-          id: '327071356621533184',
-          value: 'Java'
-        },
-        {
-          id: '2',
-          value: 'Python'
-        },
-        {
-          id: '3',
-          value: 'C#'
-        }
-      ]
+      searchByCategory(constants.paperType).then(result => { this.paperTypeList = result.body })
     },
     /**
      * 初始获取题目类型
@@ -207,24 +199,24 @@ export default {
       // TODO：获取题目类型
       this.subjectCategoryList = [
         {
-          id: '326730406219907072',
+          id: '329196546032566272',
           attribute: '单选题',
-          name: '单选'
+          value: '单选'
         },
         {
-          id: '326730408442888192',
+          id: '329196582854361088',
           attribute: '多选题',
-          name: '多选'
+          value: '多选'
         },
         {
-          id: '326730410808475648',
+          id: '329196619005067264',
           attribute: '填空题',
-          name: '填空'
+          value: '填空'
         },
         {
-          id: '326730412939182080',
+          id: '329196650844028928',
           attribute: '主观题',
-          name: '主观'
+          value: '主观'
         }
       ]
     },
@@ -283,6 +275,10 @@ export default {
      * 试卷预览
      */
     paperView() {
+      this.paperSize = '50%'
+      this.pageTitle = '试卷预览'
+      this.paperEdit = false
+      this.disableSwitch = false
       this.decideTableSelection(() => {
         this.sendPreviewRequest(this.multipleSelection[0].id, this.multipleSelection[0].name)
       })
@@ -292,12 +288,20 @@ export default {
      * @param row 行数据
      */
     paperViewRow(row) {
+      this.paperSize = '50%'
+      this.pageTitle = '试卷预览'
+      this.paperEdit = false
+      this.disableSwitch = false
       this.sendPreviewRequest(row.id, row.name)
     },
     /**
      * 查看试卷详情
      */
     paperDetail() {
+      this.paperSize = '60%'
+      this.pageTitle = '试卷详情'
+      this.paperEdit = true
+      this.disableSwitch = true
       this.decideTableSelection(() => {
         this.sendPreviewRequest(this.multipleSelection[0].id, this.multipleSelection[0].name)
       })
@@ -307,6 +311,10 @@ export default {
      * @param row 行数据
      */
     paperDetailRow(row) {
+      this.paperSize = '60%'
+      this.pageTitle = '试卷详情'
+      this.paperEdit = true
+      this.disableSwitch = true
       this.sendPreviewRequest(row.id, row.name)
     },
     /**
@@ -322,7 +330,14 @@ export default {
       previewRequest(params).then(result => {
         const info = result.body
         this.paperInfo = subjectConversion(info, this.subjectCategoryList)
-        console.log(info)
+        this.list.forEach(item => {
+          if (item.id === id) {
+            this.paperInfo.id = item.id
+            this.paperInfo.paperType = item.paperType
+            this.paperInfo.difficult = item.difficult
+            this.paperInfo.descript = item.descript
+          }
+        })
         this.paperDetailDialog = true
       })
     },
@@ -379,6 +394,30 @@ export default {
         type: type,
         message: message,
         duration: 3000
+      })
+    },
+    /**
+     * 提交修改的表单
+     * @param params
+     */
+    submitPaper(params) {
+      const notice = this.$notify({
+        title: '提示',
+        type: 'info',
+        message: '正在修改试卷...',
+        duration: 0
+      })
+      maintainPaperRequest(params).then(result => {
+        const success = result.head.code === code.SUCCESS
+        this.normalNotice(
+          notice,
+          '提示',
+          success ? 'success' : 'error',
+          success ? '修改成功！' : result.head.msg
+        )
+        this.fetchData()
+      }).catch(result => {
+        this.normalNotice(notice, '提示', 'error', result.msg)
       })
     }
   }

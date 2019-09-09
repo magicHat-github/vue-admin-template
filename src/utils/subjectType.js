@@ -11,6 +11,15 @@ export const questionType = {
 }
 
 /**
+ * 正确答案标志位
+ * @type {{right: number, wrong: number}}
+ */
+export const rightAnswerStatus = {
+  right: 2,
+  wrong: 1
+}
+
+/**
  * 题目数据转换
  * @param info
  * @param subjectCategoryList
@@ -21,25 +30,32 @@ export function subjectConversion(info, subjectCategoryList) {
     subjectCategoryList.forEach(category => {
       if (category.id === item.categoryId) {
         item.type = category.attribute
-        item.typeName = category.name
+        item.typeName = category.value
       }
     })
     item.userAnswer = ''
-    if (item.type === questionType.QUESTION_MULTIPLE_CHOICE) {
+    if (item.type === questionType.QUESTION_MULTIPLE_CHOICE) { // 单选题
       item.userAnswer = []
       item.answers.forEach(answer => {
-        if (answer.rightAnswer === 1) {
+        if (answer.rightAnswer === rightAnswerStatus.right) {
+          answer.rightAnswer = true
           item.userAnswer.push(answer.id)
+        } else {
+          answer.rightAnswer = false
         }
       })
-    } else if (item.type === questionType.QUESTION_SINGLE_CHOICE) {
+    } else if (item.type === questionType.QUESTION_SINGLE_CHOICE) { // 多选题
       item.answers.forEach(answer => {
-        if (answer.rightAnswer === 1) {
+        if (answer.rightAnswer === rightAnswerStatus.right) {
+          answer.rightAnswer = true
           item.userAnswer = answer.id
+        } else {
+          answer.rightAnswer = false
         }
       })
     } else {
       item.userAnswer = item.answers[0].answer
+      item.answers[0].rightAnswer = true
     }
   })
   return info

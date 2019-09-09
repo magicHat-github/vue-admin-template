@@ -144,3 +144,26 @@ export function getIdByValue(list, value) {
 }
 
 export const optionList = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+
+export const constants = {
+  paperType: 'paperType',
+  paperDifficult: 'paperDifficult',
+  subjectDifficult: '题目难度'
+}
+
+/**
+ * 遍历树，获取树的列表集合
+ * @param list
+ * @param treeList
+ */
+export function getTreeList(list, treeList) {
+  list.forEach(item => {
+    treeList.push({
+      id: item.id,
+      value: item.label
+    })
+    if (item.children.length > 0) {
+      getTreeList(item.children, treeList)
+    }
+  })
+}
