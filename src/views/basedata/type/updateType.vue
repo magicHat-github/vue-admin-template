@@ -45,13 +45,15 @@
 </template>
 
 <script>
+import { update } from '@/api/basedata/type'
 export default {
   data() {
     return {
       form: {
-        name: '',
-        remark: '',
-        status: '1'
+        id: this.$route.params.id,
+        name: this.$route.params.name,
+        remark: this.$route.params.remark,
+        status: this.$route.params.status.toString()
       },
       rules: {
         name: [
@@ -64,18 +66,30 @@ export default {
     /**
        * 路由跳转
        */
-    onSubmit() {
-      console.log('submit!')
-    },
     save() {
-      this.$router.push({
-        name: 'Category'
+      console.log(this.form)
+      update(this.form).then(() => {
+        this.$router.push({
+          name: 'Type'
+        })
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'success',
+          message: '操作失败!'
+        })
       })
-      this.$message('操作成功')
     },
     close() {
       this.$router.push({
-        name: 'Category'
+        name: 'Type'
+      })
+      this.$message({
+        type: 'warning',
+        message: '操作取消!'
       })
     }
   }

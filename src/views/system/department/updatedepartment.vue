@@ -8,14 +8,14 @@
     </el-col>
     <div class="app-container allData">
       <hr>
-      <!--表单输入 -->
+      <!--表单输入 		label-position="right"-->
       <el-form
         ref="departmentForm"
         :model="departmentForm"
         :rules="departmentRules"
         label-width="100px"
         class="user-add-Form"
-        label-position="right"
+        label-org-name="left"
       >
         <!-- 第一行 -->
         <el-row>
@@ -56,7 +56,14 @@
           <!-- 上级部门下拉框 -->
           <el-col :span="7" :offset="3">
             <el-form-item label="上级部门" prop="parent">
-              <el-select v-model="departmentForm.parent" value-key="id" placeholder="请选择">
+              <el-select
+                v-model="departmentForm.parent"
+                value-key="name"
+                filterable
+                placeholder="请选择"
+                clearable
+                @visible-change="$forceUpdate()"
+              >
                 <el-option v-for="parent in parents" :key="parent.id" :label="parent.name" :value="parent" />
               </el-select>
             </el-form-item>
@@ -74,10 +81,10 @@
         <!--选择所偶公司按钮 -->
         <el-row>
           <el-col :span="7" :offset="3">
-            <el-form-item label="所属公司">
+            <el-form-item label="所属公司" prop="company">
               <el-select
                 v-model="departmentForm.company"
-                value-key="id"
+                value-key="name"
                 filterable
                 placeholder="请选择"
                 clearable
@@ -134,8 +141,8 @@ export default {
   data() {
     return {
       /**
-       * 表单数据
-       */
+			 * 表单数据
+			 */
       departmentForm: {
         id: '',
         version: '',
@@ -150,30 +157,62 @@ export default {
         status: '1'
       },
       /**
-       * 表单校验规则
-       */
+			 * 表单校验规则
+			 */
       departmentRules: {
         name: [
           { required: true, message: '请输入部门名称', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 4,
+            max: 8,
+            message: '长度在 4 到 8 个字符',
+            trigger: 'blur'
+          }
         ],
         code: [
-          { required: true, message: '请输入编号', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输部门编号', trigger: 'blur' },
+          {
+            min: 4,
+            max: 6,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
         mnemonicCode: [
           { required: true, message: '请输入助记码', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
         ],
         level: [
           { required: true, message: '请选择部门等级', trigger: 'change' }
         ],
-        parent: [
-          { required: true, message: '请选择上级部门', trigger: 'change' }
-        ],
         master: [
-          { required: true, message: '请输入部门负责人', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { required: true, message: '请输负责人', trigger: 'blur' },
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
+        ],
+        descript: [
+          { required: true, message: '请输入相关描述', trigger: 'blur' },
+          {
+            min: 5,
+            max: 15,
+            message: '长度在 5 到 15 个字符',
+            trigger: 'blur'
+          }
+        ],
+        parent: [
+          { required: true, message: '请选择上级部门', trigger: 'blur' }
+        ],
+        company: [
+          { required: true, message: '请选择所属公司', trigger: 'blur' }
         ]
       },
       /**
@@ -183,7 +222,7 @@ export default {
       /**
 			 * 上级部门下拉框选项
 			 */
-      parents: [],
+      parents: [{ name: '无', id: 1 }],
       companys: []
     }
   },
@@ -192,12 +231,12 @@ export default {
     this.queryData(department)
   },
   methods: {
-
     /**
 		 * 查询数据
 		 */
     queryData(department) {
       const params = {
+        departmentId: department.id,
         departmentName: department.name,
         level: department.level,
         pageSize: 1,
@@ -207,7 +246,6 @@ export default {
         .then(result => {
           const body = result.body
           const tree = body.tree.treeNodeList
-          this.transDataToTree(tree)
           console.log('this is result')
           this.departmentForm = body.dataList[0]
           const parent = {
@@ -220,8 +258,9 @@ export default {
           }
           this.departmentForm.parent = parent
           this.departmentForm.company = company
-          // this.departmentForm.status = body.dataList[0].status + ''
+          this.departmentForm.status = body.dataList[0].status + ''
           console.log(this.departmentForm)
+          this.transDataToTree(tree)
         })
         .catch(err => {
           console.log(err)
@@ -254,7 +293,11 @@ export default {
           name: element.name,
           id: element.id
         }
-        this.parents.push(parent)
+        console.log(parent.id)
+        console.log(this.departmentForm.id)
+        if (parent.id !== this.departmentForm.id) {
+          this.parents.push(parent)
+        }
         return re
       } else {
         // 填充公司选项下拉框数据
@@ -270,8 +313,8 @@ export default {
     },
 
     /**
-     * 保存按钮
-     */
+		 * 保存按钮
+		 */
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -300,11 +343,14 @@ export default {
       }
       console.log('this is params')
       console.log(params)
-      updateDepartment(params).then(this.$message('操作成功'))
+      updateDepartment(params).then(result => {
+        this.close()
+        this.$message(result.head.msg)
+      })
     },
     /**
-     * 关闭按钮
-     */
+		 * 关闭按钮
+		 */
     close() {
       this.$router.push({
         name: 'Department'

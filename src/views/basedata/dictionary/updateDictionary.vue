@@ -35,14 +35,14 @@
           <el-col :offset="1" :span="8">
             <el-radio-group v-model="form.status">
               <el-radio :label="1">是</el-radio>
-              <el-radio :label="2">否</el-radio>
+              <el-radio :label="0">否</el-radio>
             </el-radio-group>
           </el-col>
         </el-form-item>
 
         <el-form-item label="备注信息">
           <el-col :span="8">
-            <el-input v-model="form.remark" type="textarea" :rows="10" placeholder="请输入内容" />
+            <el-input v-model="form.remark" type="textarea" :rows="10" />
           </el-col>
         </el-form-item>
 
@@ -70,7 +70,8 @@ export default {
         category: this.$route.params.category,
         value: this.$route.params.value,
         remark: this.$route.params.remark,
-        status: this.$route.params.status
+        status: this.$route.params.status,
+        version: this.$route.params.version
       },
       rules: {
         name: [
@@ -102,7 +103,8 @@ export default {
         category: this.form.category,
         value: this.form.value,
         status: this.form.status,
-        remark: this.form.remark
+        remark: this.form.remark,
+        version: this.form.version
       }
       console.log(params)
       updateItem(params).then(result => {

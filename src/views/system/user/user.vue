@@ -1,3 +1,4 @@
+<!-- 用户管理，只能维护当前组织机构的用户 -->
 <template>
   <el-container>
     <el-card class="aside">
@@ -44,13 +45,13 @@
             <!-- 角色下拉框 -->
             <el-form-item label="角色:">
               <el-select
-                v-model="formInline.roles"
+                v-model="formInline.role"
+                value-key="id"
                 filterable
-                multiple
                 placeholder="请选择"
                 size="mini"
               >
-                <el-option v-for="name in roleNames" :key="name" :value="name" />
+                <el-option v-for="role in roles" :key="role.id" :label="role.name" :value="role" />
               </el-select>
             </el-form-item>
             <!-- 查询按钮 -->
@@ -114,7 +115,7 @@
             <el-table-column prop="roles" label="角色" align="center" />
             <el-table-column prop="sex" label="性别" align="center" />
             <el-table-column prop="birthday" label="生日" align="center" />
-            <el-table-column prop="position" label="职位" align="center" />
+            <el-table-column prop="positionName" label="职位" align="center" />
             <el-table-column prop="tel" label="电话" align="center" />
             <el-table-column prop="email" label="邮箱" align="center" />
             <el-table-column prop="other" label="其它/微信" width="105" align="center" />
@@ -188,9 +189,9 @@ export default {
       },
 
       /**
-       * 所有角色的名称
+       * 所有角色的名称和ID
        */
-      roleNames: [],
+      roles: [],
 
       /**
        * 查询字段
@@ -199,7 +200,7 @@ export default {
         userName: '',
         code: '',
         tel: '',
-        roles: []
+        role: ''
       },
 
       /**
@@ -232,27 +233,23 @@ export default {
      */
     queryData() {
       this.loading = true
-      this.roleNames = []
-      // 初始化选择的角色名数组
-      const roles = []
-      this.formInline.roles.map(role => {
-        roles.push(role)
-      })
+      this.roles = []
       // 填入表单参数
       const params = {
         userName: this.formInline.userName,
         code: this.formInline.code,
         tel: this.formInline.tel,
+        owingRoleId: this.formInline.role.id,
         pageSize: this.page.size,
-        roles: roles,
         pageNum: this.page.pageNumber
       }
       console.log('this is params')
       console.log(params)
       fetchUser(params).then(result => {
         const body = result.body
+        console.log('this is response data')
+        console.log(body)
         // 转换树结构的数据
-        console.log(body.tree)
         const tree = body.tree.treeNodeList
         this.treeData = this.transDataToTree(tree)
         console.log('this is treeData')
@@ -268,9 +265,9 @@ export default {
         console.log(this.users)
         // 分页信息
         this.total = parseInt(body.dataCount)
-        // 所有角色名称
-        body.allRole.map(role => {
-          this.roleNames.push(role)
+        // 所有角色名称和id
+        body.allPermittedRole.map(role => {
+          this.roles.push(role)
         })
         // 加载动画
         this.loading = false
@@ -289,8 +286,6 @@ export default {
      */
     getChildren(element) {
       if (!element.childList) {
-        console.log('this is childNode')
-        console.log(element)
         const re = {
           label: element.name,
           id: element.id,
@@ -298,8 +293,6 @@ export default {
         }
         return re
       } else {
-        console.log('this is parentNode')
-        console.log(element)
         return {
           label: element.name,
           id: element.id,

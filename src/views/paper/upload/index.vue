@@ -48,10 +48,10 @@
           </template>
         </el-table-column>
         <el-table-column label="卷子类型" align="center">
-          <template slot-scope="scope">{{ scope.row.paperType | paperTypeFiler(paperTypeList) }}</template>
+          <template slot-scope="scope">{{ scope.row.paperType | userIdToValueConversionFilter(paperTypeList) }}</template>
         </el-table-column>
         <el-table-column label="卷子难度" align="center">
-          <template slot-scope="scope">{{ scope.row.difficult | paperDifficultFilter(difficultList) }}</template>
+          <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(difficultList) }}</template>
         </el-table-column>
         <el-table-column label="组卷时间" align="center">
           <template slot-scope="scope">{{ scope.row.combExamTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
@@ -84,7 +84,8 @@
 
 <script>
 import { select, uploadPaper } from '@/api/paper/composition.js'
-import { parseTime, getIdByValue } from '@/utils'
+import { searchByCategory } from '@/api/basedata/dictionary'
+import { parseTime, idToValueConversionFilter, getIdByValue, constants } from '@/utils'
 import { code } from '@/utils/code' // 响应码
 import Pagination from '@/components/Pagination'
 
@@ -95,23 +96,8 @@ export default {
     parseUserTime(time, cFormat) {
       return parseTime(time, cFormat)
     },
-    paperTypeFiler(type, paperTypeList) {
-      let result = null
-      paperTypeList.forEach(item => {
-        if (item.id === type) {
-          result = item.value
-        }
-      })
-      return result
-    },
-    paperDifficultFilter(difficult, difficultList) {
-      let result = null
-      difficultList.forEach(item => {
-        if (item.id === difficult) {
-          result = item.value
-        }
-      })
-      return result
+    userIdToValueConversionFilter(target, targetList) {
+      return idToValueConversionFilter(target, targetList)
     }
   },
   data() {
@@ -125,7 +111,7 @@ export default {
       searchData: {
         name: '',
         createdBy: '',
-        difficult: '简单',
+        difficult: '',
         comTime: ''
       },
       page: {
@@ -161,8 +147,8 @@ export default {
       }
       select(params).then(result => {
         const body = result.body
-        this.list = body.list
-        this.total = body.total
+        this.list = body.dataList
+        this.total = body.dataCount * 1
         this.listLoading = false
       })
     },
@@ -170,41 +156,15 @@ export default {
      * 初始获取全部试卷难度
      */
     getDifficultList() {
-      // TODO: 获取全部试卷难度
-      this.difficultList = [
-        {
-          id: '327071356621533183',
-          value: '困难'
-        },
-        {
-          id: '327071356621533182',
-          value: '中等'
-        },
-        {
-          id: '327071356621533184',
-          value: '简单'
-        }
-      ]
+      searchByCategory(constants.paperDifficult).then(result => {
+        this.difficultList = result.body
+      })
     },
     /**
      * 初始获取全部试卷类型
      */
     getPaperTypeList() {
-      // TODO：获取试卷类型
-      this.paperTypeList = [
-        {
-          id: '327071356621533184',
-          value: 'Java'
-        },
-        {
-          id: '2',
-          value: 'Python'
-        },
-        {
-          id: '3',
-          value: 'C#'
-        }
-      ]
+      searchByCategory(constants.paperType).then(result => { this.paperTypeList = result.body })
     },
     /**
      * 输入框响应enter查询

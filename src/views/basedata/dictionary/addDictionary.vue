@@ -4,7 +4,7 @@
     <hr>
     <br>
     <el-col :span="5" :offset="1">
-      <font style="font-size:15px;" color="blue">基本信息</font>
+      <span style="font-size:15px; color: blue; ">基本信息</span>
     </el-col>
 
     <!--表单输入 -->
@@ -14,33 +14,35 @@
 
         <el-form-item label="字典名称" prop="name">
           <el-col :span="8">
-            <el-input v-model="form.name" />
+            <el-input v-model="form.name" placeholder="请输入字典名称" />
           </el-col>
         </el-form-item>
 
         <el-form-item label="字典类型" prop="category">
           <el-col :span="8">
-            <el-input v-model="form.category" />
+            <el-input v-model="form.category" placeholder="请输入字典类型" />
           </el-col>
         </el-form-item>
 
         <el-form-item label="字典值" prop="value">
           <el-col :span="8">
-            <el-input v-model="form.value" />
+            <el-input v-model="form.value" placeholder="请输入字典值" />
           </el-col>
         </el-form-item>
 
-        <!--复选按钮 -->
+        <!--单选按钮 -->
         <el-form-item label="是否启用" prop="status">
           <el-col :offset="1" :span="8">
-            <el-radio v-model="form.status" label="1">是</el-radio>
-            <el-radio v-model="form.status" label="2">否</el-radio>
+            <el-radio-group v-model="form.status">
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
+            </el-radio-group>
           </el-col>
         </el-form-item>
 
         <el-form-item label="备注信息">
           <el-col :span="8">
-            <el-input v-model="form.remark" type="textarea" :rows="10" placeholder="请输入内容" />
+            <el-input v-model="form.remark" type="textarea" :rows="10" placeholder="备注信息" />
           </el-col>
         </el-form-item>
 
@@ -73,7 +75,7 @@ export default {
         name: [
           { required: true, message: '请输入字典名称', trigger: 'blur' }
         ],
-        type: [
+        category: [
           { required: true, message: '请输入字典类型', trigger: 'blur' }
         ],
         value: [

@@ -17,7 +17,7 @@
         size="mini"
         class="demo-ruleForm"
         style="padding-left:30%;"
-        label-position="right"
+        label-org-name="left"
       >
         <el-form-item label="机构名称" prop="name">
           <el-col :span="8">
@@ -84,7 +84,7 @@ export default {
         tel: '',
         address: '',
         version: '',
-        status: ''
+        status: '1'
       },
       rules: {
         name: [
@@ -95,21 +95,21 @@ export default {
           },
           {
             min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
+            max: 15,
+            message: '长度在 3 到 15 个字符',
             trigger: 'blur'
           }
         ],
         code: [
           {
             required: true,
-            message: '请输入组织机构名',
+            message: '请输入组织机构编码',
             trigger: 'change'
           },
           {
-            min: 3,
-            max: 5,
-            message: '长度在 3 到 5 个字符',
+            min: 4,
+            max: 8,
+            message: '长度在 4 到 8 个字符',
             trigger: 'blur'
           }
         ],
@@ -119,6 +119,30 @@ export default {
             required: true,
             message: '请选择启用标记',
             trigger: 'change'
+          }
+        ],
+        master: [
+          {
+            min: 3,
+            max: 5,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
+          }
+        ],
+        tel: [
+          {
+            min: 8,
+            max: 11,
+            message: '长度在 8 到 11 个字符',
+            trigger: 'blur'
+          }
+        ],
+        address: [
+          {
+            min: 5,
+            max: 15,
+            message: '长度在 3 到 5 个字符',
+            trigger: 'blur'
           }
         ]
       }
@@ -142,6 +166,7 @@ export default {
         const body = result.body
         // 转换树结构的数据
         this.form = body.dataList[0]
+        this.form.status = body.dataList[0].status + ''
       })
     },
 
@@ -174,9 +199,10 @@ export default {
       }
       console.log('this is params')
       console.log(params)
-      updateOrg(params).then(
-        this.$message('操作成功')
-      )
+      updateOrg(params).then(result => {
+        this.close()
+        this.$message(result.head.msg)
+      })
     },
 
     /**

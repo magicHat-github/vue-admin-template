@@ -41,7 +41,7 @@
         <el-table-column prop="name" label="字典名" align="center">
           <template slot-scope="scope">{{ scope.row.name }}</template>
         </el-table-column>
-        <el-table-column prop="category" label="字典类型" sortable="true" align="center">
+        <el-table-column prop="category" label="字典类型" align="center">
           <template slot-scope="scope">{{ scope.row.category }}</template>
         </el-table-column>
         <el-table-column prop="value" label="字典值" align="center">
@@ -51,7 +51,7 @@
           <template slot-scope="scope">{{ scope.row.updatedTime }}</template>
         </el-table-column>
         <el-table-column prop="remark" label="备注信息" align="center">
-          <template slot-scope="scope">{{ scope.row.remark }}</template>
+          <template slot-scope="scope">{{ scope.row.remark === null ? "无" : scope.row.remark }}</template>
         </el-table-column>
         <el-table-column class-name="status-col" prop="status" label="启用标记" sortable="true" align="center">
           <template slot-scope="scope">
@@ -64,7 +64,7 @@
           <template slot-scope="{row}">
             <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="addDictionary" />
             <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateDictionary(row.id)" />
-            <el-link class="itemAction" type="danger" :disabled="row.status===1 " icon="el-icon-delete" @click="deleteDictionary(row.id)" />
+            <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteDictionary(row)" />
           </template>
         </el-table-column>
       </el-table>
@@ -187,7 +187,8 @@ export default {
             category: body.category,
             value: body.value,
             remark: body.remark,
-            status: body.status
+            status: body.status,
+            version: body.version
           }
         })
       })
@@ -213,7 +214,7 @@ export default {
     /**
      * 删除信息
      */
-    deleteDictionary(id) {
+    deleteDictionary(row) {
       this.$confirm('是否要删除选定信息', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -221,8 +222,13 @@ export default {
       })
         .then(() => {
           //  确认之后执行删除操作
-          const idList = { idList: [id] }
-          deleteList(idList).then(result => {
+          const params = { dataList: [] }
+          const deleteData = {
+            id: row.id,
+            version: row.version
+          }
+          params.dataList.push(deleteData)
+          deleteList(params).then(result => {
             this.$message({
               type: 'success',
               message: '删除成功!'
@@ -252,9 +258,13 @@ export default {
           message: '请选择删除选项'
         })
       } else {
-        const idList = { idList: [] }
+        const params = { dataList: [] }
         this.multipleSelection.forEach(item => {
-          idList.idList.push(item.id)
+          const deleteData = {
+            id: item.id,
+            version: item.version
+          }
+          params.dataList.push(deleteData)
         })
         this.$confirm('是否要删除选定信息', '提示', {
           confirmButtonText: '确定',
@@ -262,15 +272,15 @@ export default {
           type: 'warning'
         })
           .then(() => {
-            deleteList(idList).then(result => {
-              console.log(idList)
+            deleteList(params).then(result => {
+              console.log(params)
               this.$message({
                 type: 'success',
                 message: '删除成功!'
               })
               this.fetchData()
             }).catch(result => {
-              console.log(idList)
+              console.log(params)
               this.$message({
                 type: 'success',
                 message: '删除失败!'

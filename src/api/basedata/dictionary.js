@@ -43,3 +43,11 @@ export function searchItem(params) {
 export function updateItem(params) {
   return baseDataRequestApi('/dictionary/modifyRecord', 'put', params)
 }
+
+/**
+ * 根据类型查找
+ * @param {*} params 参数
+ */
+export function searchByCategory(params) {
+  return baseDataRequestApi('/dictionary/searchByCategory', 'post', params)
+}

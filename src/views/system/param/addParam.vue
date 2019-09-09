@@ -12,35 +12,37 @@
       <hr>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left" size="mini" style="padding-left:30%;">
 
-        <el-form-item label="父参数类型" prop="parentType">
+        <el-form-item label="参数类型" prop="paramType">
           <el-col :span="8">
-            <el-input v-model="form.parentType" />
+            <el-input v-model="form.paramType" placeholder="请输入参数类型" />
           </el-col>
         </el-form-item>
 
-        <el-form-item label="子参数类型" prop="childType">
+        <el-form-item label="参数项" prop="name">
           <el-col :span="8">
-            <el-input v-model="form.childType" />
+            <el-input v-model="form.name" placeholder="请输入参数项" />
           </el-col>
         </el-form-item>
 
         <el-form-item label="参数值" prop="value">
           <el-col :span="8">
-            <el-input v-model="form.value" />
+            <el-input v-model="form.value" placeholder="请输入参数值" />
+          </el-col>
+        </el-form-item>
+
+        <!--单选按钮 -->
+        <el-form-item label="是否启用" prop="status">
+          <el-col :offset="1" :span="8">
+            <el-radio-group v-model="form.status">
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
+            </el-radio-group>
           </el-col>
         </el-form-item>
 
         <el-form-item label="备注信息">
           <el-col :span="8">
-            <el-input v-model="form.remark" type="textarea" :rows="3" />
-          </el-col>
-        </el-form-item>
-
-        <!--复选按钮 -->
-        <el-form-item label="是否启用" prop="status">
-          <el-col :offset="1" :span="8">
-            <el-radio v-model="status" label="1">是</el-radio>
-            <el-radio v-model="status" label="2">否</el-radio>
+            <el-input v-model="form.remark" type="textarea" :rows="10" placeholder="备注信息" />
           </el-col>
         </el-form-item>
 
@@ -58,22 +60,23 @@
 </template>
 
 <script>
+import { insert } from '@/api/system/param'
 export default {
   data() {
     return {
       form: {
-        parentType: '',
-        childType: '',
+        paramType: '',
+        name: '',
         value: '',
         remark: '',
         status: '1'
       },
       rules: {
-        parentType: [
-          { required: true, message: '请输入父参数类型', trigger: 'blur' }
+        paramType: [
+          { required: true, message: '请输入参数类型', trigger: 'blur' }
         ],
-        childType: [
-          { required: true, message: '请输入子参数类型', trigger: 'blur' }
+        name: [
+          { required: true, message: '请输入参数项', trigger: 'blur' }
         ],
         value: [
           { required: true, message: '请输入参数值', trigger: 'blur' }
@@ -92,10 +95,28 @@ export default {
       console.log('submit!')
     },
     save() {
-      this.$router.push({
-        name: 'Param'
+      const params = {
+        paramType: this.form.paramType,
+        name: this.form.name,
+        value: this.form.value,
+        remark: this.form.remark,
+        status: this.form.status
+      }
+      console.log(params)
+      insert(params).then(result => {
+        this.$message({
+          type: 'success',
+          message: '添加成功!'
+        })
+        this.$router.push({
+          name: 'Param'
+        })
+      }).catch(result => {
+        this.$message({
+          type: 'success',
+          message: '添加失败!'
+        })
       })
-      this.$message('操作成功')
     },
     close() {
       this.$router.push({
