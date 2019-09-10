@@ -1,6 +1,5 @@
 <template>
   <div id="queryanswer">
-    <h2>答卷查询</h2>
     <el-form :inline="true" :model="queryForm" size="mini" class="querydiv">
       <el-form-item label="考试名:">
         <el-input v-model="queryForm.title" />
@@ -26,7 +25,14 @@
       </el-form-item>
     </el-form>
     <div class="table">
-      <el-table :data="tableData" stripe size="mini" border fit>
+      <el-table
+        v-loading="tableLoading"
+        :data="tableData"
+        stripe
+        size="mini"
+        border
+        fit
+      >
         <el-table-column type="selection" />
         <el-table-column type="index" label="序号" />
         <el-table-column prop="title" label="考试名" />
@@ -48,6 +54,8 @@
         :layout="layout"
         :total="total"
         class="pagination"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       />
     </div>
   </div>
@@ -62,21 +70,22 @@ export default {
     return {
       queryForm: {
         // 考试的标题
-        title: '考试标题',
+        title: '',
         // 考试的场次
-        examSession: 2,
+        examSession: '',
         // 考试时间段
         examPeriodTime: '',
         // 考试场次名称
-        examSessionName: '第二场',
+        examSessionName: '',
         // 发布人
-        publisher: '发布人'
+        publisher: ''
       },
       layout: layout,
       pageSizes: pageSizes,
       pageSize: pageSize,
       currentPage: 1,
       total: 100,
+      tableLoading: true,
       tableData: []
     }
   },
@@ -102,6 +111,7 @@ export default {
      */
     async search() {
       // 传到后端的查询数据
+      this.tableLoading = true
       const query = {
         pageNum: this.currentPage,
         pageSize: this.pageSize,
@@ -130,6 +140,21 @@ export default {
       this.currentPage = listData.pageNum
       this.total = listData.total
       this.tableData = listData.list
+      this.tableLoading = false
+    },
+    /**
+     * 页数大小改变
+     */
+    handleSizeChange(val) {
+      this.pageSize = val
+      this.search()
+    },
+    /**
+     * 当前页面改变
+     * */
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.search()
     },
     /**
      * 显示信息
