@@ -29,19 +29,22 @@
             :data="configList"
             tooltip-effect="dark"
             stripe
-            height
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="55" fixed="left" />
             <el-table-column prop="name" label="配置项" />
-            <el-table-column prop="difficult" label="难度" />
+            <el-table-column prop="difficult" label="难度">
+              <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(difficultList) }}</template>
+            </el-table-column>
             <el-table-column prop="updatedBy" label="修改人" />
-            <el-table-column prop="updatedTime" label="修改时间" />
+            <el-table-column label="修改时间">
+              <template slot-scope="scope">{{ scope.row.updatedTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
+            </el-table-column>
             <el-table-column class-name="status-col" label="是否启用" width="110" align="center">
               <template slot-scope="scope">
                 <el-tag
-                  :type="scope.row.status === 1 ? 'primary' : 'info'"
-                >{{ scope.row.status === 1 ? "是" : "否" }}</el-tag>
+                  :type="scope.row.status === '1' ? 'primary' : 'info'"
+                >{{ scope.row.status === '1' ? "是" : "否" }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="companyId" label="公司" />
@@ -49,7 +52,7 @@
             <el-table-column label="操作" width="140" fixed="right">
               <template slot-scope="scope">
                 <el-link class="itemAction" type="primary" icon="el-icon-plus" @click="goto" />
-                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem" />
+                <el-link class="itemAction" type="warning" icon="el-icon-edit" @click="updateItem(scope.row.id)" />
                 <el-link class="itemAction" type="danger" icon="el-icon-delete" @click="deleteItem(scope.row.id,scope.row.version)" />
                 <el-link class="itemAction" type="success" icon="el-icon-view" @click="findConfigDetail(scope.row.id)" />
               </template>
@@ -88,10 +91,16 @@
                 type="index"
                 width="50"
               />
-              <el-table-column prop="categoryId" label="题目类别" />
-              <el-table-column prop="subjectTypeId" label="题型" />
+              <el-table-column label="题目类别">
+                <template slot-scope="scope">{{ scope.row.categoryId | userIdToValueConversionFilter(categoryList) }}</template>
+              </el-table-column>
+              <el-table-column label="题型">
+                <template slot-scope="scope">{{ scope.row.subjectTypeId | userIdToNameConversionFilter(typeList) }}</template>
+              </el-table-column>
               <el-table-column prop="num" label="题目数量" />
-              <el-table-column prop="difficult" label="题目难度" />
+              <el-table-column label="题目难度">
+                <template slot-scope="scope">{{ scope.row.difficult | userIdToValueConversionFilter(difficultList) }}</template>
+              </el-table-column>
               <el-table-column prop="score" label="题目分值" />
             </el-table>
           </el-card>
@@ -103,12 +112,29 @@
 
 <script>
 import Pagination from '@/components/Pagination'
-import { selectConfigs, deleteList, selectItemsByConfigId } from '@/api/basedata/config'
+import { searchCategoryTree, selectType, selectDifficult } from '@/api/basedata/subject'
+import { selectConfigs, deleteList, selectItemsByConfigId, searchById } from '@/api/basedata/config'
+import { parseTime, idToValueConversionFilter, idToNameConversionFilter, getTreeList } from '@/utils'
 export default {
   name: 'App',
   components: { Pagination },
+  filters: {
+    parseUserTime(time, cFormat) {
+      return parseTime(time, cFormat)
+    },
+    userIdToNameConversionFilter(target, targetList) {
+      return idToNameConversionFilter(target, targetList)
+    },
+    userIdToValueConversionFilter(target, targetList) {
+      return idToValueConversionFilter(target, targetList)
+    }
+  },
   data() {
     return {
+      categoryTree: null,
+      categoryList: [],
+      typeList: null,
+      difficultList: [],
       /**
        *加载
        */
@@ -158,6 +184,30 @@ export default {
         this.configList = body.list
         this.dataCount = parseInt(body.total)
         this.listLoading = false
+      })
+      searchCategoryTree().then(result => {
+        const body = result.body
+        this.categoryTree = body.treeData
+        getTreeList(this.categoryTree, this.categoryList)
+      })
+      const params2 = {
+        name: '',
+        pageSize: 1000000,
+        pageNum: 1
+      }
+      selectType(params2).then(result => {
+        const body = result.body
+        this.typeList = body.dataList
+      })
+      const params3 = {
+        name: '题目难度',
+        category: '题目难度',
+        pageSize: 1000000,
+        pageNum: 1
+      }
+      selectDifficult(params3).then(result => {
+        const body = result.body
+        this.difficultList = body.dictionaries.dataList
       })
     },
 
@@ -242,9 +292,25 @@ export default {
         name: 'AddConfig'
       })
     },
-    updateItem() {
-      this.$router.push({
-        name: 'UpdateConfig'
+    updateItem(id) {
+      searchById(id).then(result => {
+        const body = result.body
+        this.$router.push({
+          params: {
+            id: body.id,
+            name: body.name,
+            remark: body.remark,
+            version: body.version,
+            difficult: body.difficult,
+            configDetailList: body.configDetailList
+          },
+          name: 'UpdateConfig'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'warning',
+          message: '系统错误!'
+        })
       })
     },
     /**

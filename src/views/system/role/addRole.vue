@@ -16,7 +16,7 @@
         label-width="80px"
         size="mini"
         class="demo-ruleForm"
-        label-position="right"
+        label-position="left"
         style="padding-left:30%;"
       >
         <el-row>
@@ -46,8 +46,15 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="所属机构" prop="org">
-              <el-select v-model="form.org" filterable placeholder="请选择">
-                <el-option v-for="org in orgs" :key="org.name" :label="org.name" :value="org.name" />
+              <el-select
+                v-model="form.org"
+                value-key="id"
+                clearable
+                filterable
+                placeholder="请选择"
+                @visible-change="$forceUpdate()"
+              >
+                <el-option v-for="org in orgs" :key="org.id" :label="org.name" :value="org" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -56,12 +63,19 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="所属公司" prop="company">
-              <el-select v-model="form.company" filterable placeholder="请选择">
+              <el-select
+                v-model="form.company"
+                value-key="id"
+                clearable
+                filterable
+                placeholder="请选择"
+                @visible-change="$forceUpdate()"
+              >
                 <el-option
                   v-for="company in companys"
-                  :key="company.name"
+                  :key="company.id"
                   :label="company.name"
-                  :value="company.name"
+                  :value="company"
                 />
               </el-select>
             </el-form-item>
@@ -95,6 +109,7 @@
 </template>
 
 <script>
+import { fetchRoleBeforeModify } from '@/api/system/role'
 export default {
   data() {
     return {
@@ -106,6 +121,9 @@ export default {
         company: '',
         status: '1'
       },
+      /**
+       * 表单校验规则
+       */
       rules: {
         name: [
           {
@@ -149,17 +167,85 @@ export default {
         ]
       },
       /**
-       * 职位下拉框选项
+       * 组织机构下拉框选项
        */
-      orgs: [{ name: '中国电信' }, { name: '中国联通' }],
+      orgs: [],
+      computedOrgs: [],
       /**
-       * 角色下拉框选项
+       * 公司下拉框选项
        */
-      companys: [{ name: '福建联通' }, { name: '江苏联通' }]
+      companys: [],
+      computedCompanys: []
     }
   },
-
+  created() {
+    this.query()
+  },
   methods: {
+    /**
+     * 根据所选公司自动填充机构
+     */
+    computeOrgs() {
+      this.computedOrgs = []
+      // 公司表单不为空
+      if (this.form.company && this.form.company !== '') {
+        this.form.org = this.form.company.parent
+      }
+    },
+    /**
+     * 根据所选机构自动填充机构下拉框
+     */
+    computeCompanys() {
+      this.computedOrgs = []
+      // 当前机构表单为空, 填充公司下拉框
+      if (!this.form.org || this.form.org == '') {
+        this.computedCompanys = this.companys
+      // 当前机构表单非空，将机构旗下的公司填入公司下拉框
+      } else {
+        this.companys.map(company => {
+          if (company.parent.id === this.form.org.id) {
+            this.computedCompanys.push(company)
+          }
+        })
+      }
+    },
+    query() {
+      this.orgs = []
+      this.companys = []
+      this.computedOrgs = []
+      this.computedCompanys = []
+      const params = {
+        id: ''
+      }
+      fetchRoleBeforeModify(params).then(result => {
+        const body = result.body
+        // 从树结构中取数据填充下拉框
+        this.fillSelectData(body.orgCompanyTree.treeNodeList)
+      })
+    },
+    /**
+     * 填充下拉框数据
+     */
+    fillSelectData(nodes, parent) {
+      nodes.map(org => {
+        this.fillOrgsAndCompanys(org, parent)
+      })
+    },
+    fillOrgsAndCompanys(node, parent) {
+      const element = {
+        id: node.id,
+        name: node.name,
+        parent: parent
+      }
+      // 公司节点
+      if (!node.childList) {
+        this.companys.push(element)
+      // 组织机构节点
+      } else {
+        this.orgs.push(element)
+        this.fillSelectData(node.childList, element)
+      }
+    },
     /**
      * 路由跳转
      */

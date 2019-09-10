@@ -21,7 +21,8 @@ const getters = {
   avatar: state => state.user.avatar,
   visitedViews: state => state.tagsView.visitedViews,
   cachedViews: state => state.tagsView.cachedViews,
-  name: state => state.user.name
+  name: state => state.user.name,
+  routers: state => state.user.routers
 }
 
 const store = new Vuex.Store({

@@ -48,7 +48,7 @@
           <template slot-scope="scope">{{ scope.row.value }}</template>
         </el-table-column>
         <el-table-column prop="updatedTime" label="更新时间" align="center">
-          <template slot-scope="scope">{{ scope.row.updatedTime }}</template>
+          <template slot-scope="scope">{{ scope.row.updatedTime | parseUserTime('{y}-{m}-{d} {h}:{i}') }}</template>
         </el-table-column>
         <el-table-column prop="remark" label="备注信息" align="center">
           <template slot-scope="scope">{{ scope.row.remark === null ? "无" : scope.row.remark }}</template>
@@ -81,9 +81,15 @@
 // import { log } from 'util'
 import Pagination from '@/components/Pagination'
 import { select, deleteList, searchItem } from '@/api/basedata/dictionary'
+import { parseTime } from '@/utils'
 export default {
   name: 'Dictionary',
   components: { Pagination },
+  filters: {
+    parseUserTime(time, cFormat) {
+      return parseTime(time, cFormat)
+    }
+  },
   data() {
     return {
       // 数据字典集合，用于页面数据的渲染
